@@ -175,6 +175,49 @@
       document.getElementById("likeCount").innerText = "Likes: 0";
     }
   });
+
+    function savePost(title, content) {
+  db.collection("Posts").add({
+    title: title,
+    content: content,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(() => {
+    console.log("পোস্ট সফলভাবে সেভ হয়েছে!");
+  }).catch((error) => {
+    console.error("সেভ করতে ত্রুটি:", error);
+  });
+    }
+
+
+
+    function fetchPosts() {
+  const postsContainer = document.getElementById("postsContainer");
+
+  db.collection("Posts").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
+    postsContainer.innerHTML = ""; // পুরোনো ডেটা মুছুন
+    snapshot.forEach((doc) => {
+      const post = doc.data();
+      const postElement = document.createElement("div");
+      postElement.innerHTML = `
+        <h2>${post.title}</h2>
+        <p>${post.content}</p>
+        <small>প্রকাশিত: ${post.timestamp ? post.timestamp.toDate() : "N/A"}</small>
+      `;
+      postsContainer.appendChild(postElement);
+    });
+  });
+    }
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /Posts/{document} {
+      allow read: if true; // সবাই পড়তে পারবে
+      allow write: if request.auth != null; // শুধুমাত্র লগইন করা ব্যবহারকারী লিখতে পারবে
+    }
+  }
+}
+    
 </script>
 </body>
 </html>
