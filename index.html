@@ -9,6 +9,29 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-analytics.js"></script>
+    <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVSzQS1c7H4BLhsDF_fW8wnqUN4B35LPA",
+    authDomain: "nahid-6714.firebaseapp.com",
+    projectId: "nahid-6714",
+    storageBucket: "nahid-6714.firebasestorage.app",
+    messagingSenderId: "505741217147",
+    appId: "1:505741217147:web:25ed4e9f0d00e3c4d381de",
+    measurementId: "G-QZ7CTRKHCW"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+    </script>
 </head>
 <body class="bg-gray-100">
     <!-- হেডার -->
@@ -122,28 +145,36 @@
 
     <!-- স্ক্রিপ্ট -->
     <script src="script.js"></script>
-    <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+        <button onclick="updateLikes()">Like</button>
+<p id="likeCount">Likes: 0</p>
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyCVSzQS1c7H4BLhsDF_fW8wnqUN4B35LPA",
-    authDomain: "nahid-6714.firebaseapp.com",
-    projectId: "nahid-6714",
-    storageBucket: "nahid-6714.firebasestorage.app",
-    messagingSenderId: "505741217147",
-    appId: "1:505741217147:web:25ed4e9f0d00e3c4d381de",
-    measurementId: "G-QZ7CTRKHCW"
-  };
+<script>
+  // লাইক সংখ্যা আপডেট ফাংশন
+  function updateLikes() {
+    const likeRef = db.collection("likes").doc("website_likes");
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-    </script>
+    likeRef.get().then((doc) => {
+      if (doc.exists) {
+        const currentLikes = doc.data().count || 0;
+        likeRef.update({
+          count: currentLikes + 1
+        });
+      } else {
+        likeRef.set({
+          count: 1
+        });
+      }
+    });
+  }
+
+  // রিয়েল-টাইমে লাইক সংখ্যা আপডেট
+  db.collection("likes").doc("website_likes").onSnapshot((doc) => {
+    if (doc.exists) {
+      document.getElementById("likeCount").innerText = `Likes: ${doc.data().count}`;
+    } else {
+      document.getElementById("likeCount").innerText = "Likes: 0";
+    }
+  });
+</script>
 </body>
 </html>
