@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>প্রোডাক্ট বিস্তারিত</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+    <header class="bg-teal-500 text-white p-4 flex justify-between items-center">
+        <a href="index.html" class="flex items-center">
+            <img src="img.png" alt="কাপড়ের ব্যবসা লোগো" class="h-10 mr-2">
+            <span class="text-lg font-bold">কাপড়ের ব্যবসা</span>
+        </a>
+        <a href="index.html" class="bg-white text-teal-500 px-4 py-2 rounded hover:bg-gray-100">হোমে ফিরুন</a>
+    </header>
+
+    <main class="p-4">
+        <div class="bg-white p-6 rounded-lg shadow-lg max-w-4xl mx-auto">
+            <!-- ইমেজ স্লাইডার -->
+            <div id="imageCarousel" class="relative overflow-hidden w-full mb-6">
+                <div class="slide-track flex transition-transform duration-500 ease-in-out">
+                    <!-- স্লাইডগুলি এখানে ডায়নামিকভাবে যোগ হবে -->
+                </div>
+            </div>
+
+            <!-- প্রোডাক্টের তথ্য -->
+            <h1 id="productTitle" class="text-2xl font-bold mb-4"></h1>
+            <p id="productPrice" class="text-teal-500 text-xl font-bold mb-4"></p>
+            <p id="productDescription" class="text-gray-700 mb-6"></p>
+            <a id="whatsappBtn" target="_blank" class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 inline-block">
+                <i class="fab fa-whatsapp mr-2"></i>WhatsApp এ অর্ডার করুন
+            </a>
+        </div>
+    </main>
+
+    <!-- ফুটার -->
+    <footer class="bg-teal-500 text-white p-4 text-center">
+        <p>&copy; ২০২৫ কাপড়ের ব্যবসা। সর্বস্বত্ব সংরক্ষিত।</p>
+    </footer>
+
+    <style>
+        /* স্লাইডার স্টাইল */
+        .slide {
+            flex: 0 0 100%;
+            min-width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide img {
+            max-width: 100%;
+            max-height: 80vh; /* সর্বোচ্চ উচ্চতা ভিউপোর্টের 80% */
+            object-fit: contain;
+            border-radius: 8px;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const productId = params.get('id');
+            const products = JSON.parse(localStorage.getItem('products')) || [];
+            const product = products.find(p => p.id === productId);
+
+            if (product) {
+                // প্রোডাক্টের তথ্য DOM-এ সেট করুন
+                document.getElementById('productTitle').textContent = product.name;
+                document.getElementById('productPrice').textContent = `দাম: ${product.price} টাকা`;
+                document.getElementById('productDescription').textContent = product.description;
+
+                // WhatsApp মেসেজ সেটআপ
+                const whatsappBtn = document.getElementById('whatsappBtn');
+                const imageList = product.image.split(',').map((img, index) =>
+                    `ছবি-${index + 1}: ${img.trim()}`).join('\n');
+                
+                const message = `
+প্রোডাক্টের নাম: ${product.name}
+দাম: ${product.price} টাকা
+${imageList}
+আমি এই প্রোডাক্টটি কিনতে চাই!
+                `;
+                whatsappBtn.href = `https://wa.me/8801931866636?text=${encodeURIComponent(message)}`;
+
+                // স্লাইডার ইনিশিয়ালাইজেশন
+                const carouselTrack = document.querySelector('#imageCarousel .slide-track');
+                product.image.split(',').forEach(img => {
+                    const slide = document.createElement('div');
+                    slide.className = 'slide';
+                    slide.innerHTML = `<img src="${img.trim()}" alt="Product Image">`;
+                    carouselTrack.appendChild(slide);
+                });
+
+                // টাচ ইভেন্ট হ্যান্ডলার
+                let touchStartX = 0;
+                let isSwiping = false;
+
+                const carousel = document.getElementById('imageCarousel');
+                carousel.addEventListener('touchstart', e => {
+                    touchStartX = e.touches[0].clientX;
+                    isSwiping = true;
+                });
+
+                carousel.addEventListener('touchmove', e => {
+                    if (!isSwiping) return;
+                    e.preventDefault();
+                });
+
+                carousel.addEventListener('touchend', e => {
+                    if (!isSwiping) return;
+                    const touchEndX = e.changedTouches[0].clientX;
+                    const deltaX = touchStartX - touchEndX;
+                    
+                    if (Math.abs(deltaX) > 50) { // 50px থ্রেশহোল্ড
+                        deltaX > 0 ? showNextSlide() : showPrevSlide();
+                    }
+                    isSwiping = false;
+                });
+
+                // মাউস ড্র্যাগ সাপোর্ট (ডেস্কটপের জন্য)
+                let mouseDownX = 0;
+                carousel.addEventListener('mousedown', e => {
+                    mouseDownX = e.clientX;
+                    isSwiping = true;
+                });
+
+                carousel.addEventListener('mousemove', e => {
+                    if (!isSwiping) return;
+                    e.preventDefault();
+                });
+
+                carousel.addEventListener('mouseup', e => {
+                    if (!isSwiping) return;
+                    const mouseUpX = e.clientX;
+                    const deltaX = mouseDownX - mouseUpX;
+                    
+                    if (Math.abs(deltaX) > 50) {
+                        deltaX > 0 ? showNextSlide() : showPrevSlide();
+                    }
+                    isSwiping = false;
+                });
+            } else {
+                alert('প্রোডাক্ট পাওয়া যায়নি!');
+                window.location.href = 'index.html'; // প্রোডাক্ট না পেলে হোমে রিডাইরেক্ট
+            }
+        });
+
+        let currentSlide = 0;
+        const slideTrack = () => document.querySelector('.slide-track');
+
+        function showNextSlide() {
+            const slides = document.querySelectorAll('.slide');
+            currentSlide = (currentSlide + 1) % slides.length;
+            updateSliderPosition();
+        }
+
+        function showPrevSlide() {
+            const slides = document.querySelectorAll('.slide');
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            updateSliderPosition();
+        }
+
+        function updateSliderPosition() {
+            const track = slideTrack();
+            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+        }
+    </script>
+</body>
+</html>
