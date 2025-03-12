@@ -12,15 +12,6 @@ const initialProducts = [
         tags: "Hhh",
         description: "Hhh"
     },
-{
-        id: "1741715254388",
-        name: "হি",
-        price: "580",
-        category: "panjabi",
-        image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1741326256/samples/balloons.jpg",
-        tags: "Boys girls",
-        description: "Boys "
-    },
   {
         id: "1741567573985",
         name: "কত ",
