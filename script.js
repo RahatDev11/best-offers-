@@ -5,7 +5,7 @@ let isAdmin = false;
 const initialProducts = [
 {
         id: "1741750388631",
-        name: "ভিজি",
+        name: "test",
         price: "9999",
         category: "pants",
         image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1741326375/1000038585_wy3vga.png",
