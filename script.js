@@ -5,8 +5,8 @@ let isAdmin = false;
 const initialProducts = [
 {
         id: "1741750388631",
-        name: "test",
-        price: "9999",
+        name: "pass",
+        price: "100",
         category: "pants",
         image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1741326375/1000038585_wy3vga.png",
         tags: "Hhh",
