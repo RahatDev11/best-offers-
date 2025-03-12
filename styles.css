@@ -1,3 +1,13 @@
+/* কাস্টম কালার */
+.bg-brushstroke { background-color: #F4A7B9; }
+.text-lipstick { color: #A52A2A; }
+.bg-lipstick { background-color: #A52A2A; }
+.border-lipstick { border-color: #A52A2A; }
+.hover\:bg-lipstick-dark:hover { background-color: #8B1A1A; }
+.bg-highlight { background-color: #FFD700; }
+.text-highlight { color: #FFD700; }
+.bg-background { background-color: #FFF5F7; }
+
 /* মোবাইল মেনু */
 #dropdownMenu {
     display: none;
