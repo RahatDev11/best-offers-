@@ -4,6 +4,15 @@ let isAdmin = false;
 // প্রোডাক্ট ডাটা
 const initialProducts = [
   {
+        id: "1741809620535",
+        name: "এনক নাহিদ",
+        price: "9996",
+        category: "panjabi",
+        image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1741326260/cld-sample-5.jpg",
+        tags: "এনক নাহিদ",
+        description: "এনক নাহিদ"
+    },
+  {
         id: "1741801010947",
         name: "Milk shake",
         price: "1350",
