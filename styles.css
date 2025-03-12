@@ -158,3 +158,14 @@
 .border-teal-500 {
     border-color: #38b2ac;
 }
+/* সাবমেনু স্টাইল */
+#subMenu, #subMenuMobile {
+    display: none;
+    position: absolute;
+    z-index: 1000;
+}
+
+#subMenuMobile {
+    position: relative;
+    background-color: #f9fafb;
+}
