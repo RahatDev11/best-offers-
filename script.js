@@ -10,7 +10,7 @@ const initialProducts = [
         category: "pants",
         image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1741326375/1000038585_wy3vga.png",
         tags: "Hhh",
-        description: "Hhh"
+        description: "this is test file"
     },
   {
         id: "1741567573985",
