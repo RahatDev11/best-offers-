@@ -4,6 +4,15 @@ let isAdmin = false;
 // প্রোডাক্ট ডাটা
 const initialProducts = [
 {
+        id: "1741750388631",
+        name: "ভিজি",
+        price: "9999",
+        category: "pants",
+        image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1741326375/1000038585_wy3vga.png",
+        tags: "Hhh",
+        description: "Hhh"
+    },
+{
         id: "1741715254388",
         name: "হি",
         price: "580",
