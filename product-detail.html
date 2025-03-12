@@ -6,41 +6,17 @@
     <title>প্রোডাক্ট বিস্তারিত</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-</head>
-<body class="bg-gray-100">
-    <header class="bg-teal-500 text-white p-4 flex justify-between items-center">
-        <a href="index.html" class="flex items-center">
-            <img src="img.png" alt="কাপড়ের ব্যবসা লোগো" class="h-10 mr-2">
-            <span class="text-lg font-bold">কাপড়ের ব্যবসা</span>
-        </a>
-        <a href="index.html" class="bg-white text-teal-500 px-4 py-2 rounded hover:bg-gray-100">হোমে ফিরুন</a>
-    </header>
-
-    <main class="p-4">
-        <div class="bg-white p-6 rounded-lg shadow-lg max-w-4xl mx-auto">
-            <!-- ইমেজ স্লাইডার -->
-            <div id="imageCarousel" class="relative overflow-hidden w-full mb-6">
-                <div class="slide-track flex transition-transform duration-500 ease-in-out">
-                    <!-- স্লাইডগুলি এখানে ডায়নামিকভাবে যোগ হবে -->
-                </div>
-            </div>
-
-            <!-- প্রোডাক্টের তথ্য -->
-            <h1 id="productTitle" class="text-2xl font-bold mb-4"></h1>
-            <p id="productPrice" class="text-teal-500 text-xl font-bold mb-4"></p>
-            <p id="productDescription" class="text-gray-700 mb-6"></p>
-            <a id="whatsappBtn" target="_blank" class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 inline-block">
-                <i class="fab fa-whatsapp mr-2"></i>WhatsApp এ অর্ডার করুন
-            </a>
-        </div>
-    </main>
-
-    <!-- ফুটার -->
-    <footer class="bg-teal-500 text-white p-4 text-center">
-        <p>&copy; ২০২৫ কাপড়ের ব্যবসা। সর্বস্বত্ব সংরক্ষিত।</p>
-    </footer>
-
     <style>
+        /* কাস্টম কালার */
+        .bg-brushstroke { background-color: #F4A7B9; }
+        .text-lipstick { color: #A52A2A; }
+        .bg-lipstick { background-color: #A52A2A; }
+        .border-lipstick { border-color: #A52A2A; }
+        .hover\:bg-lipstick-dark:hover { background-color: #8B1A1A; }
+        .bg-highlight { background-color: #FFD700; }
+        .text-highlight { color: #FFD700; }
+        .bg-background { background-color: #FFF5F7; }
+
         /* স্লাইডার স্টাইল */
         .slide {
             flex: 0 0 100%;
@@ -57,6 +33,66 @@
             border-radius: 8px;
         }
     </style>
+</head>
+<body class="bg-gray-100">
+    <!-- হেডার সেকশন -->
+    <header class="bg-[#F4A7B9] text-white p-4 flex justify-between items-center fixed top-0 left-0 w-full z-50">
+        <a href="index.html" class="flex items-center">
+            <div class="flex items-center">
+                <img src="img.jpg" alt="কাপড়ের ব্যবসা লোগো" class="h-10 w-10 rounded-full mr-2">
+                <span class="text-lg font-bold">Any's Beauty Corner</span>
+            </div>
+        </a>
+        <a href="index.html" class="bg-white text-[#A52A2A] px-4 py-2 rounded hover:bg-gray-100">হোমে ফিরুন</a>
+    </header>
+
+    <!-- মূল কন্টেন্ট -->
+    <main class="p-4 pt-20">
+        <div class="bg-white p-6 rounded-lg shadow-lg max-w-4xl mx-auto">
+            <!-- ইমেজ স্লাইডার -->
+            <div id="imageCarousel" class="relative overflow-hidden w-full mb-6">
+                <div class="slide-track flex transition-transform duration-500 ease-in-out">
+                    <!-- স্লাইডগুলি এখানে ডায়নামিকভাবে যোগ হবে -->
+                </div>
+            </div>
+
+            <!-- প্রোডাক্টের তথ্য -->
+            <h1 id="productTitle" class="text-2xl font-bold mb-4"></h1>
+            <p id="productPrice" class="text-[#A52A2A] text-xl font-bold mb-4"></p>
+            <p id="productDescription" class="text-gray-700 mb-6"></p>
+            <a id="whatsappBtn" target="_blank" class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 inline-block">
+                <i class="fab fa-whatsapp mr-2"></i>WhatsApp এ অর্ডার করুন
+            </a>
+        </div>
+    </main>
+
+    <!-- সোশ্যাল মিডিয়া ফ্লোটিং বাটন -->
+    <div class="fixed bottom-4 right-4 z-50">
+        <!-- শেয়ার বাটন -->
+        <button id="shareButton" class="bg-lipstick text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center">
+            <i class="fas fa-user-circle"></i>
+        </button>
+        <!-- সোশ্যাল মিডিয়া আইকনগুলি (লুকানো অবস্থায়) -->
+        <div id="socialIcons" class="hidden space-y-2 mt-2">
+            <a href="#" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
+                <i class="fab fa-facebook"></i>
+            </a>
+            <a href="#" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="#" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
+                <i class="fab fa-tiktok"></i>
+            </a>
+            <a href="#" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
+                <i class="fab fa-youtube"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- ফুটার -->
+    <footer class="bg-[#F4A7B9] text-white p-4 text-center">
+        <p>&copy; ২০২৫ Any's Beauty Corner। সর্বস্বত্ব সংরক্ষিত।</p>
+    </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -93,7 +129,7 @@ ${imageList}
                     carouselTrack.appendChild(slide);
                 });
 
-                // টাচ ইভেন্ট হ্যান্ডলার
+                // টাচ ইভেন্ট হ্যান্ডলার (মোবাইলের জন্য)
                 let touchStartX = 0;
                 let isSwiping = false;
 
@@ -119,27 +155,17 @@ ${imageList}
                     isSwiping = false;
                 });
 
-                // মাউস ড্র্যাগ সাপোর্ট (ডেস্কটপের জন্য)
-                let mouseDownX = 0;
-                carousel.addEventListener('mousedown', e => {
-                    mouseDownX = e.clientX;
-                    isSwiping = true;
-                });
+                // মাউস ক্লিক ইভেন্ট হ্যান্ডলার (ডেস্কটপের জন্য)
+                carousel.addEventListener('click', (e) => {
+                    const rect = carousel.getBoundingClientRect();
+                    const clickX = e.clientX - rect.left; // ক্লিকের X পজিশন
+                    const carouselWidth = rect.width;
 
-                carousel.addEventListener('mousemove', e => {
-                    if (!isSwiping) return;
-                    e.preventDefault();
-                });
-
-                carousel.addEventListener('mouseup', e => {
-                    if (!isSwiping) return;
-                    const mouseUpX = e.clientX;
-                    const deltaX = mouseDownX - mouseUpX;
-                    
-                    if (Math.abs(deltaX) > 50) {
-                        deltaX > 0 ? showNextSlide() : showPrevSlide();
+                    if (clickX > carouselWidth / 2) {
+                        showNextSlide(); // ডানে ক্লিক করলে পরের ছবি
+                    } else {
+                        showPrevSlide(); // বামে ক্লিক করলে আগের ছবি
                     }
-                    isSwiping = false;
                 });
             } else {
                 alert('প্রোডাক্ট পাওয়া যায়নি!');
@@ -148,7 +174,6 @@ ${imageList}
         });
 
         let currentSlide = 0;
-        const slideTrack = () => document.querySelector('.slide-track');
 
         function showNextSlide() {
             const slides = document.querySelectorAll('.slide');
@@ -163,9 +188,35 @@ ${imageList}
         }
 
         function updateSliderPosition() {
-            const track = slideTrack();
+            const track = document.querySelector('.slide-track');
             track.style.transform = `translateX(-${currentSlide * 100}%)`;
         }
+
+        // শেয়ার বাটন এবং সোশ্যাল মিডিয়া বাটন ব্যবস্থাপনা
+        document.getElementById('shareButton').addEventListener('click', (e) => {
+            e.stopPropagation();
+            const socialIcons = document.getElementById('socialIcons');
+            socialIcons.classList.toggle('hidden');
+            document.getElementById('shareButton').classList.toggle('hidden');
+        });
+
+        // স্ক্রিনে অন্য কোথাও ক্লিক করলে সোশ্যাল মিডিয়া বাটন লুকানো
+        document.addEventListener('click', () => {
+            const socialIcons = document.getElementById('socialIcons');
+            const shareButton = document.getElementById('shareButton');
+            if (socialIcons && !socialIcons.classList.contains('hidden')) {
+                socialIcons.classList.add('hidden');
+                if (shareButton) {
+                    shareButton.classList.remove('hidden');
+                }
+            }
+        });
+
+        // সোশ্যাল মিডিয়া বাটনগুলোর উপর ক্লিক করলে ইভেন্ট বাবলিং বন্ধ করুন
+        document.getElementById('socialIcons').addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+        
     </script>
 </body>
 </html>
