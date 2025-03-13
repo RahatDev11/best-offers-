@@ -3,74 +3,20 @@ let isAdmin = false;
 
 // প্রোডাক্ট ডাটা
 const initialProducts = [
-  {
-        id: "1741809620535",
-        name: "এনক নাহিদ",
-        price: "9996",
-        category: "panjabi",
-        image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1741326260/cld-sample-5.jpg",
-        tags: "এনক নাহিদ",
-        description: "এনক নাহিদ"
-    },
-  {
-        id: "1741801010947",
-        name: "Milk shake",
-        price: "1350",
-        category: "shirts",
-        image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1741800877/1741800666769_dwffvp.jpg,https://res.cloudinary.com/dnvm88wfi/image/upload/v1741800880/1741800664520_cbqmfn.jpg,https://res.cloudinary.com/dnvm88wfi/image/upload/v1741800883/1741800668869_auxbid.jpg",
-        tags: "Milk shake, মিল্ক শেক",
-        description: "পুরো শরীর চিকন স্বাস্থ্য স্থায়ী ভাবে মোটা করুন 100 কার্যকর। অরিজিনাল উপকারিতা খাদ্য চাহিদা বাড়িয়ে দিবে। স্থায়ীভাবে মোটা হবেন।  খাবারে রুচি বাড়াবে।  ৫/৮কেজি ওজন বাড়বে প্রতি মাসে। শরীর দূরবলতা কমাবে।  কোনো রকম সাইড এ*ফেক্ট ছাড়া। হরমোন কে ব্যলেন্স করে কাজ করব।আপনার শরীরের সাথে মুখের শেইপ ঠিক করবে।ছেলে এবং মেয়ে উভয় সেবন করতে পারবে।এটি ১০০ ন্যাচরাল প্রোডাক্ট,প্রাকৃতিক উপাদান দ্বারা তৈরি করা হয়েছে। এতে, কোনো রকম সাইড ইফেক্ট নেই।"
-    },
-  {
-    id: "1741798560687",
-    name: "Nothing তো সে ",
+    {
+    id: "1741365542569",
+    name: "New টেস্ট",
     price: "999",
-    category: "panjabi",
-    image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1741326259/samples/man-portrait.jpg",
-    tags: "Nothing",
-    description: "Nothing "
-  },
-  {
-    id: "1741778664261",
-    name: "Boxer ",
-    price: "999",
-    category: "pants",
-    image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1741326259/samples/man-on-a-street.jpg",
-    tags: "Boxer",
-    description: "Boxer"
-  },
-  {
-    id: "1741723368148",
-    name: "মিল্ক সেক",
-    price: "1350",
-    category: "panjabi",
-    image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1741665598/FB_IMG_1741595084807_r6dfd9.jpg",
-    tags: "মিল্ক সেক, milk shek",
-    description: "Milkshake Delivary done "
-  },
-  {
-    id: "1741719021180",
-    name: "নাহিদ",
-    price: "9999",
-    category: "pants",
-    image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1741665598/FB_IMG_1741595084807_r6dfd9.jpg",
-    tags: "নাহিদ",
-    description: "নাহিদ"
-  },
-  {
-    id: "1741449736422",
-    name: "Fun ",
-    price: "999",
-    category: "shirts",
-    image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1741326249/samples/food/dessert.jpg",
-    tags: "Fun, ",
-    description: "Fun "
+    category: "skincare",
+    image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1741326248/sample.jpg",
+    tags: "new,tag",
+    description: "New product description"
   },
   {
     id: "1741421645699",
     name: "T-shirt ",
     price: "5999",
-    category: "shirts",
+    category: "cosmetics",
     image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1741412399/tshirt-8726716_1280_vyvosl.jpg,https://res.cloudinary.com/dnvm88wfi/image/upload/v1741412399/tshirt-7979852_1280_fn9tw2.jpg,https://res.cloudinary.com/dnvm88wfi/image/upload/v1741412399/tshirt-7979854_1280_jj0vhg.jpg",
     tags: "T-shirt, ganji, shirt, টিশার্ট, ",
     description: "টি-শার্ট বা টি হচ্ছে এক প্রকার শার্ট, যা ঘাড়ের অংশ থেকে দেহের ওপরাংশে কবন্ধের বেশিরভাগ স্থানকে ঢেকে রাখে। ইংরেজি 'টি' (T) আকৃতির ন্যায় দেখতে, তাই এ পোশাকটির নাম টি-শার্ট হয়েছে। টি-শার্টে সাধারণত কোনো বোতাম বা কলার থাকে না। সচারচর এটি হয় গোলাকার ও খাটো হাতাযুক্ত। যদিও কিছু ক্ষেত্রে মানুষ ভুলবশত খাটো হাতাযুক্ত যে-কোনো শার্ট বা ব্লাউজকেই টি-শার্ট ভেবে ভুল করে। পোলো শার্ট বা অন্যান্য কলারযুক্ত শার্ট প্রকৃতপক্ষে টি-শার্ট নয়। কারণ এ ধরনের শার্টের হাতা কাঁধের পাশ দিয়ে সামান্য একটু বাড়তি থাকে, এবং খাটো হাতার ক্ষেত্রে তা কনুই পর্যন্ত হতে পারে।"
@@ -79,6 +25,7 @@ const initialProducts = [
     id: "1741365548108",
     name: "Dog",
     price: "5899",
+    category: "skincare",
     image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1741326251/samples/animals/three-dogs.jpg",
     tags: "Dogs",
     description: "This is dogs"
@@ -87,6 +34,7 @@ const initialProducts = [
     id: "1741365548109",
     name: "New Product",
     price: "999",
+    category: "skincare",
     image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1741326248/sample.jpg",
     tags: "new,tag",
     description: "New product description"
@@ -100,16 +48,30 @@ function loadProductsFromData() {
   loadProducts(); // প্রোডাক্ট লোড করুন
 }
 
-// মেনু টগল
+// মেনু টগল ফাংশন
 function toggleMenu() {
-  document.getElementById("dropdownMenu").classList.toggle("open");
+    const dropdownMenu = document.getElementById("dropdownMenu");
+    dropdownMenu.classList.toggle("hidden");
 }
 
-// সাব মেনু টগল
-function toggleSubMenu() {
-  document.getElementById("subMenu").classList.toggle("hidden");
+// সাবমেনু টগল ফাংশন (ইভেন্ট বাবলিং প্রতিরোধ)
+function toggleSubMenuMobile(event) {
+    event.stopPropagation(); // ইভেন্ট বাবলিং বন্ধ করুন
+    const subMenuMobile = document.getElementById("subMenuMobile");
+    subMenuMobile.classList.toggle("hidden");
 }
+document.addEventListener("click", (event) => {
+    const dropdownMenu = document.getElementById("dropdownMenu");
+    const subMenuMobile = document.getElementById("subMenuMobile");
 
+    if (!event.target.closest('#dropdownMenu') && !event.target.closest('button[onclick="toggleMenu()"]')) {
+        dropdownMenu.classList.add("hidden");
+    }
+
+    if (!event.target.closest('#subMenuMobile') && !event.target.closest('button[onclick="toggleSubMenuMobile(event)"]')) {
+        subMenuMobile.classList.add("hidden");
+    }
+});
 // মোডাল ব্যবস্থাপনা
 function openModal(modalId) {
   document.getElementById(modalId).classList.add("active");
@@ -136,9 +98,24 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
 
 // প্রোডাক্ট ফিল্টার ফাংশন
 function filterProducts(category) {
-  const filteredProducts = category === 'all' ? products : products.filter(product => product.category === category);
-  loadProducts(filteredProducts);
+    const filteredProducts = category === 'all' ? products : products.filter(product => product.category === category);
+    loadProducts(filteredProducts);
 }
+
+// মেনু এবং সাবমেনু ক্লিক ইভেন্ট যোগ করুন
+document.querySelectorAll('nav a').forEach(link => {
+    link.addEventListener('click', (e) => {
+        const category = e.target.getAttribute('href').replace('#', '');
+        filterProducts(category);
+    });
+});
+
+document.querySelectorAll('#subMenu a, #subMenuMobile a').forEach(link => {
+    link.addEventListener('click', (e) => {
+        const category = e.target.getAttribute('href').replace('#', '');
+        filterProducts(category);
+    });
+});
 
 // প্রোডাক্ট লোড করুন
 function loadProducts(filteredProducts = products) {
@@ -459,3 +436,4 @@ document.getElementById('searchInput').addEventListener('input', function (e) {
     e.target.value = ''; // সার্চ বার খালি করুন
   }
 });
+
