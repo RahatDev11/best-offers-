@@ -77,6 +77,28 @@
             </a>
         </div>
     </main>
+    <!-- সোশ্যাল মিডিয়া ফ্লোটিং বাটন -->
+    <div class="fixed bottom-4 right-4 z-50">
+        <!-- শেয়ার বাটন -->
+        <button id="shareButton" class="bg-lipstick text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center">
+            <i class="fas fa-user-circle"></i>
+        </button>
+        <!-- সোশ্যাল মিডিয়া আইকনগুলি (লুকানো অবস্থায়) -->
+        <div id="socialIcons" class="hidden space-y-2 mt-2">
+            <a href="https://www.facebook.com/share/1PyLUzGE9P/" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
+                <i class="fab fa-facebook"></i>
+            </a>
+            <a href="https://www.instagram.com/anysbeautycorner/?utm_medium=copy_link" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://www.tiktok.com/@anysbeautycorner" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
+                <i class="fab fa-tiktok"></i>
+            </a>
+            <a href="https://youtube.com/@anysbeautycorner?si=oXGtEuakP_SIPH_Q" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
+                <i class="fab fa-youtube"></i>
+            </a>
+        </div>
+    </div>
 
     <footer class="bg-[#F4A7B9] text-white p-4 text-center">
         <p>&copy; ২০২৫ Any's Beauty Corner। সর্বস্বত্ব সংরক্ষিত।</p>
@@ -223,6 +245,29 @@ ${imageList}
             }
         });
     });
+});
+// শেয়ার বাটন এবং সোশ্যাল মিডিয়া বাটন ব্যবস্থাপনা
+document.getElementById('shareButton').addEventListener('click', (e) => {
+  e.stopPropagation();
+  const socialIcons = document.getElementById('socialIcons');
+  socialIcons.classList.toggle('hidden');
+  document.getElementById('shareButton').classList.toggle('hidden');
+});
+
+// স্ক্রিনে অন্য কোথাও ক্লিক করলে সোশ্যাল মিডিয়া বাটন লুকানো
+document.addEventListener('click', () => {
+  const socialIcons = document.getElementById('socialIcons');
+  const shareButton = document.getElementById('shareButton');
+  if (socialIcons && !socialIcons.classList.contains('hidden')) {
+    socialIcons.classList.add('hidden');
+    if (shareButton) {
+      shareButton.classList.remove('hidden');
+    }
+  }
+});
+// সোশ্যাল মিডিয়া বাটনগুলোর উপর ক্লিক করলে ইভেন্ট বাবলিং বন্ধ করুন
+document.getElementById('socialIcons').addEventListener('click', (e) => {
+  e.stopPropagation();
 });
     </script>
 </body>
