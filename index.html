@@ -17,7 +17,7 @@
             <span class="text-lg font-bold">Any's Beauty Corner</span>
         </div>
     </a>
-    <nav class="hidden md:flex space-x-4 items-center">
+    <nav class="hidden md:flex space-x-4 items-center mr-20">
         <a href="#home" class="hover:text-highlight">হোম</a>
         <a href="#about" class="hover:text-highlight">আমাদের সম্পর্কে</a>
         <div class="relative">
@@ -29,26 +29,22 @@
                 <a href="#fragrances" class="block px-4 py-2 hover:bg-gray-100">ফ্র্যাগরেন্স</a>
             </div>
         </div>
-        <div class="search-bar">
-            <input type="text" id="searchInputDesktop" class="search-input" placeholder="প্রোডাক্ট সার্চ করুন..." oninput="searchProductsDesktop()">
-            <i class="fas fa-search search-icon"></i>
-            <div id="searchResultsDesktop" class="search-results"></div>
-        </div>
     </nav>
     <button class="bg-white text-lipstick px-4 py-2 rounded md:hidden" onclick="toggleMenu()">☰</button>
-    <div id="dropdownMenu" class="hidden md:hidden absolute top-full right-0 bg-white shadow-lg rounded-lg mt-2 w-48">
-        <a href="#home" class="block px-4 py-2 text-gray-800 hover:bg-gray-100" onclick="hideMenu()">হোম</a>
-        <a href="#about" class="block px-4 py-2 text-gray-800 hover:bg-gray-100" onclick="hideMenu()">আমাদের সম্পর্কে</a>
-        <div class="relative">
-            <button onclick="toggleSubMenuMobile()" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 w-full text-left">পণ্য সমূহ</button>
-            <div id="subMenuMobile" class="hidden bg-gray-100 rounded-lg mt-1 ml-4">
-                <a href="#cosmetics" class="block px-4 py-2 hover:bg-gray-200">মেকআপ</a>
-                <a href="#skincare" class="block px-4 py-2 hover:bg-gray-200">স্কিনকেয়ার</a>
-                <a href="#haircare" class="block px-4 py-2 hover:bg-gray-200">হেয়ারকেয়ার</a>
-                <a href="#fragrances" class="block px-4 py-2 hover:bg-gray-200">ফ্র্যাগরেন্স</a>
-            </div>
+<!-- মোবাইল মেনু -->
+<div id="dropdownMenu" class="hidden absolute top-full right-0 bg-white shadow-lg rounded-lg mt-2 w-48 z-50">
+    <a href="#home" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">হোম</a>
+    <a href="#about" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">আমাদের সম্পর্কে</a>
+    <div class="relative">
+        <button onclick="toggleSubMenuMobile(event)" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 w-full text-left">পণ্য সমূহ</button>
+<div id="subMenuMobile" class="hidden bg-gray-100 rounded-lg mt-1 ml-4 z-50">
+            <a href="#cosmetics" class="block px-4 py-2 hover:bg-gray-200">মেকআপ</a>
+            <a href="#skincare" class="block px-4 py-2 hover:bg-gray-200">স্কিনকেয়ার</a>
+            <a href="#haircare" class="block px-4 py-2 hover:bg-gray-200">হেয়ারকেয়ার</a>
+            <a href="#fragrances" class="block px-4 py-2 hover:bg-gray-200">ফ্র্যাগরেন্স</a>
         </div>
     </div>
+</div>
 </header>
     <!-- সার্চ বার -->
     <div class="p-2 bg-white shadow-md w-80 mx-auto relative mt-16" id="mainSearchBar">
@@ -64,22 +60,16 @@
     <main class="p-4 pt-20">
         <div>  <!-- হোম সেকশন -->
 <section id="home" class="bg-white/20 backdrop-blur-md border border-white/30 rounded-lg shadow-lg text-center p-6 mb-6">
+  <div class="glass-effect">
     <h1 class="text-2xl font-bold mb-4 text-lipstick">Welcome to Any's Beauty Corner</h1>
     <p class="mb-4">আমরা বিভিন্ন ধরনের জামা, প্যান্ট, পাঞ্জাবি ইত্যাদি সরবরাহ করি।</p>
-    <button class="bg-lipstick text-white px-4 py-2 rounded hover:bg-lipstick-dark" onclick="scrollToProducts()">পণ্য দেখুন</button>
+    <button class="bg-lipstick text-white px-4 py-2 rounded hover:bg-lipstick-dark" onclick="scrollToProducts()" >পণ্য দেখুন</button>
+  </div>
 </section>
         <!-- পণ্য সমূহ -->
         <section id="products" class="mb-6">
             <h2 class="text-xl font-bold text-center mb-4 text-lipstick">পণ্য সমূহ</h2>
-            <div class="flex justify-center mb-4">
-                <div class="flex space-x-2">
-                    <button onclick="filterProducts('all')" class="bg-lipstick text-white px-4 py-2 rounded hover:bg-lipstick-dark">সব</button>
-                    <button onclick="filterProducts('shirts')" class="bg-lipstick text-white px-4 py-2 rounded hover:bg-lipstick-dark">শার্ট</button>
-                    <button onclick="filterProducts('pants')" class="bg-lipstick text-white px-4 py-2 rounded hover:bg-lipstick-dark">প্যান্ট</button>
-                    <button onclick="filterProducts('panjabi')" class="bg-lipstick text-white px-4 py-2 rounded hover:bg-lipstick-dark">পাঞ্জাবি</button>
-                    <button onclick="filterProducts('others')" class="bg-lipstick text-white px-4 py-2 rounded hover:bg-lipstick-dark">অন্যান্য</button>
-                </div>
-            </div>
+         
             <div id="productList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
         </section>
             <!-- আমাদের সম্পর্কে -->
@@ -112,16 +102,15 @@
                 <div class="mb-4">
                     <label for="productPrice" class="block text-gray-700">দাম</label>
                     <input type="number" id="productPrice" class="w-full p-2 border rounded" required>
-                </div>
-                <div class="mb-4">
-                    <label for="productCategory" class="block text-gray-700">ক্যাটাগরি</label>
-                    <select id="productCategory" class="w-full p-2 border rounded">
-                        <option value="shirts">শার্ট</option>
-                        <option value="pants">প্যান্ট</option>
-                        <option value="panjabi">পাঞ্জাবি</option>
-                        <option value="others">অন্যান্য</option>
-                    </select>
-                </div>
+                </div><div class="mb-4">
+    <label for="productCategory" class="block text-gray-700">ক্যাটাগরি</label>
+    <select id="productCategory" class="w-full p-2 border rounded">
+        <option value="cosmetics">মেকআপ</option>
+        <option value="skincare">স্কিনকেয়ার</option>
+        <option value="haircare">হেয়ারকেয়ার</option>
+        <option value="fragrances">ফ্র্যাগরেন্স</option>
+    </select>
+</div>
                 <div class="mb-4">
                     <label for="productImages" class="block text-gray-700">ছবি URL (কমা দিয়ে আলাদা করুন)</label>
                     <div id="imageInputs">
@@ -194,7 +183,6 @@
             </form>
         </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
