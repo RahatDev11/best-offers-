@@ -8,35 +8,32 @@
 .text-highlight { color: #FFD700; }
 .bg-background { background-color: #FFF5F7; }
 
-/* মোবাইল মেনু */
-#dropdownMenu {
-    display: none;
-    position: absolute;
-    right: 0;
-    top: 100%;
-    background: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    width: 200px;
-    border-radius: 8px;
-    padding: 10px 0;
+#home {
+    background-image: url('welcome.jpg'); /* আপনার ছবির URL দিন */
+    background-size: cover; /* ছবিটি পুরো সেকশন জুড়ে দেখাবে */
+    background-position: center; /* ছবিটি সেন্টারে থাকবে */
+    background-repeat: no-repeat; /* ছবিটি রিপিট হবে না */
+    padding:  0rem;
+}
+.glass-effect {
+    background: rgba(255, 255, 255, 0.2); /* সাদা কালার সহ ট্রান্সপারেন্ট ব্যাকগ্রাউন্ড */
+    backdrop-filter: blur(10px); /* গ্লাসি ইফেক্টের জন্য ব্লার */
+    border-radius: 15px; /* বর্ডার রেডিয়াস */
+    padding: 2rem; /* কন্টেন্টের জন্য প্যাডিং */
+    border: 1px solid rgba(255, 255, 255, 0.3); /* হালকা সাদা বর্ডার */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* শ্যাডো যোগ করুন */
 }
 
-#dropdownMenu.open {
-    display: block;
+#home h1,
+#home p {
+    color: black; /* হেডিং এবং প্যারাগ্রাফের কালার কালো করুন */
+    text-shadow: none; /* টেক্সট শ্যাডো সরিয়ে দিন */
 }
 
-#dropdownMenu a {
-    display: block;
-    padding: 10px 20px;
-    color: #333;
-    text-decoration: none;
+#home button {
+    color: white; /* বাটনের টেক্সট কালার সাদা রাখুন */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* বাটনের টেক্সটে শ্যাডো যোগ করুন */
 }
-
-#dropdownMenu a:hover {
-    background-color: #f1f1f1;
-}
-
 /* মোডাল স্টাইল */
 #loginModal {
     display: none;
@@ -158,14 +155,50 @@
 .border-teal-500 {
     border-color: #38b2ac;
 }
-/* সাবমেনু স্টাইল */
-#subMenu, #subMenuMobile {
-    display: none;
+
+/* হোভার ইফেক্ট */
+.hover\:bg-gray-100:hover {
+  background-color: #f3f4f6;
+}
+
+.hover\:bg-gray-200:hover {
+  background-color: #e5e7eb;
+}#dropdownMenu {
     position: absolute;
-    z-index: 1000;
+    top: 100%; /* হেডারের নিচে দেখাবে */
+    right: 0;
+    z-index: 1000; /* সর্বোচ্চ স্তরে নিয়ে আসুন */
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 #subMenuMobile {
-    position: relative;
-    background-color: #f9fafb;
+    color: black;
+    position: absolute;
+    top: 100%; /* সাবমেনু মেনুর নিচে দেখাবে */
+    left: 0;
+    z-index: 1001; /* মেনুর চেয়ে উপরে দেখাবে */
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}/* ডেস্কটপ মোডে সাবমেনু দেখানোর জন্য CSS */
+#subMenu {
+    display: none; /* ডিফল্টভাবে লুকানো */
+    position: absolute;
+    top: 100%; /* মেনুর ঠিক নিচে */
+    left: 0;
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+/* হোভার করলে সাবমেনু দেখান */
+.relative:hover #subMenu {
+    display: block;
+}
+
+/* মোবাইল মোডে সাবমেনু লুকানো */
+@media (max-width: 767px) {
+    #subMenu {
+        display: none !important;
+    }
 }
