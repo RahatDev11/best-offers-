@@ -61,26 +61,56 @@ function loadProductsFromData() {
 function toggleMenu() {
     const dropdownMenu = document.getElementById("dropdownMenu");
     dropdownMenu.classList.toggle("hidden");
+    dropdownMenu.classList.toggle("open");
 }
 
-// সাবমেনু টগল ফাংশন (ইভেন্ট বাবলিং প্রতিরোধ)
+// সাবমেনু টগল ফাংশন
 function toggleSubMenuMobile(event) {
-    event.stopPropagation(); // ইভেন্ট বাবলিং বন্ধ করুন
+    event.stopPropagation();
     const subMenuMobile = document.getElementById("subMenuMobile");
     subMenuMobile.classList.toggle("hidden");
+    subMenuMobile.classList.toggle("open");
 }
+
+// ডকুমেন্টে ক্লিক ইভেন্ট লিসেনার
 document.addEventListener("click", (event) => {
     const dropdownMenu = document.getElementById("dropdownMenu");
     const subMenuMobile = document.getElementById("subMenuMobile");
 
+    // মেনু বন্ধ করুন
     if (!event.target.closest('#dropdownMenu') && !event.target.closest('button[onclick="toggleMenu()"]')) {
         dropdownMenu.classList.add("hidden");
+        dropdownMenu.classList.remove("open");
     }
 
+    // সাবমেনু বন্ধ করুন
     if (!event.target.closest('#subMenuMobile') && !event.target.closest('button[onclick="toggleSubMenuMobile(event)"]')) {
         subMenuMobile.classList.add("hidden");
+        subMenuMobile.classList.remove("open");
     }
 });
+
+
+// মোবাইল মেনু টগল
+function toggleMenu() {
+  const dropdownMenu = document.getElementById('dropdownMenu');
+  dropdownMenu.classList.toggle('hidden');
+}
+
+// সাবমেনু টগল (ডেস্কটপ)
+function toggleSubMenu() {
+  const subMenu = document.getElementById('subMenu');
+  subMenu.classList.toggle('hidden');
+}
+
+// সাবমেনু টগল (মোবাইল)
+function toggleSubMenuMobile(event) {
+  event.preventDefault();
+  const subMenuMobile = document.getElementById('subMenuMobile');
+  subMenuMobile.classList.toggle('hidden');
+}
+
+
 // মোডাল ব্যবস্থাপনা
 function openModal(modalId) {
   document.getElementById(modalId).classList.add("active");
@@ -218,38 +248,63 @@ function addImageField() {
   document.getElementById("imageInputs").appendChild(input);
 }
 
-// সার্চ ফাংশনালিটি
+// মোবাইল সার্চ বার ফোকাস
+function focusMobileSearch() {
+  const mobileSearchBar = document.getElementById('mobileSearchBar');
+  mobileSearchBar.classList.toggle('hidden');
+  mobileSearchBar.classList.toggle('show'); // নতুন ক্লাস যোগ
+  document.getElementById('searchInput').focus();
+}
+
+
+// সার্চ ফাংশনালিটি (মোবাইল)
 function searchProducts() {
   const searchTerm = document.getElementById("searchInput").value.toLowerCase();
   const searchResults = document.getElementById("searchResults");
-
+  
   if (searchTerm.trim() === "") {
     searchResults.innerHTML = "";
     searchResults.classList.add("hidden");
-    loadProducts(); // সার্চ টার্ম খালি হলে সব প্রোডাক্ট দেখান
     return;
   }
-
+  
   const filtered = products.filter(product =>
     product.name.toLowerCase().includes(searchTerm) ||
     product.tags.toLowerCase().includes(searchTerm)
   );
-  displaySearchResults(filtered);
+  displaySearchResults(filtered, searchResults);
+}
+
+// সার্চ ফাংশনালিটি (ডেস্কটপ)
+function searchProductsDesktop() {
+  const searchTerm = document.getElementById("searchInputDesktop").value.toLowerCase();
+  const searchResults = document.getElementById("searchResultsDesktop");
+  
+  if (searchTerm.trim() === "") {
+    searchResults.innerHTML = "";
+    searchResults.classList.add("hidden");
+    return;
+  }
+  
+  const filtered = products.filter(product =>
+    product.name.toLowerCase().includes(searchTerm) ||
+    product.tags.toLowerCase().includes(searchTerm)
+  );
+  displaySearchResults(filtered, searchResults);
 }
 
 // সার্চ রেজাল্ট ডিসপ্লে
-function displaySearchResults(filteredProducts) {
-  const searchResults = document.getElementById("searchResults");
+function displaySearchResults(filteredProducts, searchResults) {
   searchResults.innerHTML = "";
-
+  
   if (filteredProducts.length === 0) {
     searchResults.innerHTML = `<div class="p-2 text-gray-600">কোনো প্রোডাক্ট পাওয়া যায়নি</div>`;
   } else {
     filteredProducts.forEach(product => {
       const card = document.createElement("div");
-      card.className = "search-card p-2 hover:bg-gray-100 cursor-pointer";
+      card.className = "p-2 hover:bg-gray-100 cursor-pointer";
       card.onclick = () => showProductDetail(product.id);
-
+      
       card.innerHTML = `
         <div class="flex items-center">
           <img src="${product.image.split(',')[0]}" class="w-12 h-12 object-cover rounded-lg mr-4">
@@ -262,85 +317,43 @@ function displaySearchResults(filteredProducts) {
       searchResults.appendChild(card);
     });
   }
-
+  
   searchResults.classList.remove("hidden");
 }
 
-// সার্চ বারের বাইরে ক্লিক করলে সার্চ রেজাল্ট লুকানো
-document.addEventListener("click", (event) => {
-  const searchBar = document.getElementById("mainSearchBar");
-  const searchResults = document.getElementById("searchResults");
 
-  if (!searchBar.contains(event.target)) {
-    searchResults.classList.add("hidden");
-  }
+// স্ক্রল ইভেন্ট লিসেনার
+window.addEventListener('scroll', () => {
+  closeAllMenusOnScroll();
 });
 
-// সার্চ বার ফোকাস
-function focusSearch() {
-  const searchBar = document.getElementById('mainSearchBar');
-  searchBar.classList.remove('hidden');
-  document.getElementById('searchInput').focus();
-}
+// স্ক্রল করলে মেনু এবং সার্চ বার ক্লোজ করার ফাংশন
+function closeAllMenusOnScroll() {
+  const subMenu = document.getElementById('subMenu');
+  const subMenuMobile = document.getElementById('subMenuMobile');
+  const dropdownMenu = document.getElementById('dropdownMenu');
+  const mobileSearchBar = document.getElementById('mobileSearchBar');
 
-// ডেস্কটপ সার্চ ফাংশন
-function searchProductsDesktop() {
-  const searchTerm = document.getElementById("searchInputDesktop").value.toLowerCase();
-  const searchResults = document.getElementById("searchResultsDesktop");
-
-  if (searchTerm.trim() === "") {
-    searchResults.innerHTML = "";
-    searchResults.classList.add("hidden");
-    loadProducts(); // সার্চ টার্ম খালি হলে সব প্রোডাক্ট দেখান
-    return;
+  // ডেস্কটপ সাবমেনু ক্লোজ করুন
+  if (subMenu && !subMenu.classList.contains('hidden')) {
+    subMenu.classList.add('hidden');
   }
 
-  const filtered = products.filter(product =>
-    product.name.toLowerCase().includes(searchTerm) ||
-    product.tags.toLowerCase().includes(searchTerm)
-  );
-  displaySearchResultsDesktop(filtered);
-}
-
-// ডেস্কটপ সার্চ রেজাল্ট ডিসপ্লে
-function displaySearchResultsDesktop(filteredProducts) {
-  const searchResults = document.getElementById("searchResultsDesktop");
-  searchResults.innerHTML = "";
-
-  if (filteredProducts.length === 0) {
-    searchResults.innerHTML = `<div class="search-item">কোনো প্রোডাক্ট পাওয়া যায়নি</div>`;
-  } else {
-    filteredProducts.forEach(product => {
-      const item = document.createElement("div");
-      item.className = "search-item";
-      item.onclick = () => showProductDetail(product.id);
-
-      item.innerHTML = `
-        <div class="flex items-center">
-          <img src="${product.image.split(',')[0]}" class="w-8 h-8 object-cover rounded-lg mr-2">
-          <div>
-            <h3 class="text-sm font-bold">${product.name}</h3>
-            <p class="text-lipstick text-xs">দাম: ${product.price} টাকা</p>
-          </div>
-        </div>
-      `;
-      searchResults.appendChild(item);
-    });
+  // মোবাইল সাবমেনু ক্লোজ করুন
+  if (subMenuMobile && !subMenuMobile.classList.contains('hidden')) {
+    subMenuMobile.classList.add('hidden');
   }
 
-  searchResults.classList.remove("hidden");
-}
-
-// সার্চ বারের বাইরে ক্লিক করলে সার্চ রেজাল্ট লুকানো
-document.addEventListener("click", (event) => {
-  const searchBar = document.querySelector(".search-bar");
-  const searchResults = document.getElementById("searchResultsDesktop");
-
-  if (!searchBar.contains(event.target)) {
-    searchResults.classList.add("hidden");
+  // মোবাইল মেনু ক্লোজ করুন
+  if (dropdownMenu && !dropdownMenu.classList.contains('hidden')) {
+    dropdownMenu.classList.add('hidden');
   }
-});
 
+  // মোবাইল সার্চ বার ক্লোজ করুন
+  if (mobileSearchBar && !mobileSearchBar.classList.contains('hidden')) {
+    mobileSearchBar.classList.add('hidden');
+  }
+}
 // কোড কপি করুন
 function copyCode() {
   const code = document.getElementById("generatedCode").textContent;
@@ -415,21 +428,23 @@ function scrollToProduct(productId) {
 
 // শেয়ার বাটন এবং সোশ্যাল মিডিয়া বাটন ব্যবস্থাপনা
 document.getElementById('shareButton').addEventListener('click', (e) => {
-  e.stopPropagation();
-  const socialIcons = document.getElementById('socialIcons');
-  socialIcons.classList.toggle('hidden');
-  document.getElementById('shareButton').classList.toggle('hidden');
-});
-
-// স্ক্রিনে অন্য কোথাও ক্লিক করলে সোশ্যাল মিডিয়া বাটন লুকানো
-document.addEventListener('click', () => {
+  e.stopPropagation(); // ইভেন্ট বাবলিং বন্ধ করুন
   const socialIcons = document.getElementById('socialIcons');
   const shareButton = document.getElementById('shareButton');
-  if (socialIcons && !socialIcons.classList.contains('hidden')) {
-    socialIcons.classList.add('hidden');
-    if (shareButton) {
-      shareButton.classList.remove('hidden');
-    }
+  
+  socialIcons.classList.toggle('hidden'); // সোশ্যাল আইকন টগল করুন
+  shareButton.classList.toggle('hidden'); // শেয়ার বাটন টগল করুন
+});
+
+// স্ক্রিনে অন্য কোথাও ক্লিক করলে সোশ্যাল মিডিয়া বাটন লুকানো এবং শেয়ার বাটন দেখানো
+document.addEventListener('click', (e) => {
+  const socialIcons = document.getElementById('socialIcons');
+  const shareButton = document.getElementById('shareButton');
+  
+  // যদি সোশ্যাল আইকন ওপেন থাকে এবং ক্লিক টার্গেট শেয়ার বাটন বা সোশ্যাল আইকন না হয়
+  if (socialIcons && !socialIcons.classList.contains('hidden') && !e.target.closest('#shareButton') && !e.target.closest('#socialIcons')) {
+    socialIcons.classList.add('hidden'); // সোশ্যাল আইকন লুকান
+    shareButton.classList.remove('hidden'); // শেয়ার বাটন দেখান
   }
 });
 
@@ -438,6 +453,20 @@ document.getElementById('socialIcons').addEventListener('click', (e) => {
   e.stopPropagation();
 });
 
+// স্ক্রল করলে সোশ্যাল আইকন ক্লোজ এবং শেয়ার বাটন দেখানো
+function closeSocialIconsOnScroll() {
+  const socialIcons = document.getElementById('socialIcons');
+  const shareButton = document.getElementById('shareButton');
+  
+  // সোশ্যাল আইকন ক্লোজ করুন
+  if (socialIcons && !socialIcons.classList.contains('hidden')) {
+    socialIcons.classList.add('hidden');
+    shareButton.classList.remove('hidden'); // শেয়ার বাটন দেখান
+  }
+}
+
+// স্ক্রল ইভেন্ট লিসেনার
+window.addEventListener('scroll', closeSocialIconsOnScroll);
 // লগইন ফর্ম খোলার জন্য সার্চ বার ইভেন্ট
 document.getElementById('searchInput').addEventListener('input', function (e) {
   if (e.target.value === '3012014') {
