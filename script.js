@@ -3,15 +3,6 @@ let isAdmin = false;
 
 // প্রোডাক্ট ডাটা
 const initialProducts = [
-{
-    id: "1741365542569",
-    name: "New টেস্ট",
-    price: "999",
-    category: "skincare",
-    image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1741326248/sample.jpg",
-    tags: "new,tag",
-    description: "New product description"
-  },
   {
         id: "1741892639007",
         name: "Milk shake",
@@ -476,8 +467,16 @@ function closeSocialIconsOnScroll() {
 
 // স্ক্রল ইভেন্ট লিসেনার
 window.addEventListener('scroll', closeSocialIconsOnScroll);
-// লগইন ফর্ম খোলার জন্য সার্চ বার ইভেন্ট
-document.getElementById('searchInput').addEventListener('input', function (e) {
+// লগইন ফর্ম খোলার জন্য সার্চ বার ইভেন্ট (মোবাইল)
+document.getElementById('searchInput').addEventListener('input', function(e) {
+  if (e.target.value === '3012014') {
+    openModal('loginModal');
+    e.target.value = ''; // সার্চ বার খালি করুন
+  }
+});
+
+// লগইন ফর্ম খোলার জন্য সার্চ বার ইভেন্ট (ডেস্কটপ)
+document.getElementById('searchInputDesktop').addEventListener('input', function(e) {
   if (e.target.value === '3012014') {
     openModal('loginModal');
     e.target.value = ''; // সার্চ বার খালি করুন
