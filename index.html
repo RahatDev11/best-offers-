@@ -22,11 +22,14 @@
 <!-- ডেস্কটপ সার্চ বার -->
 <div class="hidden md:block p-2 w-80 mx-auto relative">
     <div class="relative">
-        <input type="text" id="searchInputDesktop" class="w-full p-2 pl-10 border-0 rounded-full text-gray-800 focus:outline-none focus:ring-2 focus:ring-lipstick focus:border-transparent bg-white" placeholder="প্রোডাক্ট সার্চ করুন..." oninput="searchProductsDesktop()">
-        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+        <input type="text" id="searchInputDesktop" 
+               class="w-full p-2 pl-10 border-0 rounded-full text-gray-800 focus:outline-none focus:ring-2 focus:ring-lipstick bg-white/50 backdrop-blur-sm placeholder:text-gray-400/80" 
+               placeholder="প্রোডাক্ট সার্চ করুন..." 
+               oninput="searchProductsDesktop()">
+        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400/80"></i>
     </div>
     <!-- সার্চ রেজাল্ট -->
-    <div id="searchResultsDesktop" class="mt-2 max-h-60 overflow-y-auto absolute bg-white w-full shadow-lg rounded-lg z-50"></div>
+    <div id="searchResultsDesktop" class="mt-2 max-h-60 overflow-y-auto absolute bg-white/90 backdrop-blur-sm w-full shadow-lg rounded-lg z-50"></div>
 </div>
 
     <!-- মোবাইল সার্চ আইকন -->
@@ -191,24 +194,24 @@
         <p>&copy; ২০২৫ Any's Beauty Corner। সর্বস্বত্ব সংরক্ষিত।</p>
     </footer>
 
-    <!-- লগইন মোডাল -->
-    <div id="loginModal">
-        <div class="login-modal-content">
-            <span class="close" onclick="closeModal('loginModal')">&times;</span>
-            <h2 class="text-xl font-bold mb-4 text-lipstick">লগইন</h2>
-            <form id="loginForm">
-                <div class="mb-4">
-                    <label for="loginNumber" class="block text-gray-700">নাম্বার</label>
-                    <input type="text" id="loginNumber" class="w-full p-2 border rounded" required>
-                </div>
-                <div class="mb-4">
-                    <label for="loginPassword" class="block text-gray-700">পাসওয়ার্ড</label>
-                    <input type="password" id="loginPassword" class="w-full p-2 border rounded" required>
-                </div>
-                <button type="submit" class="bg-lipstick text-white px-4 py-2 rounded w-full hover:bg-lipstick-dark">লগইন</button>
-            </form>
-        </div>
-    </div>
+<!-- লগইন মোডাল -->
+<div id="loginModal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm">
+  <div class="login-modal-content bg-white/20 backdrop-blur-lg rounded-lg p-6 max-w-md mx-auto mt-20 shadow-lg border border-white/20">
+    <span class="close text-gray-600 hover:text-gray-900 cursor-pointer text-2xl absolute top-4 right-4" onclick="closeModal('loginModal')">&times;</span>
+    <h2 class="text-xl font-bold mb-4 text-lipstick">লগইন</h2>
+    <form id="loginForm">
+      <div class="mb-4">
+        <label for="loginNumber" class="block text-gray-700">নাম্বার</label>
+        <input type="text" id="loginNumber" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-lipstick bg-white/50 backdrop-blur-sm" required>
+      </div>
+      <div class="mb-4">
+        <label for="loginPassword" class="block text-gray-700">পাসওয়ার্ড</label>
+        <input type="password" id="loginPassword" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-lipstick bg-white/50 backdrop-blur-sm" required>
+      </div>
+      <button type="submit" class="bg-lipstick text-white px-4 py-2 rounded w-full hover:bg-lipstick-dark transition-colors">লগইন</button>
+    </form>
+  </div>
+</div>
     <script src="script.js"></script>
 </body>
 </html>
