@@ -3,6 +3,15 @@ let isAdmin = false;
 
 // প্রোডাক্ট ডাটা
 const initialProducts = [
+{
+    id: "1741365542569",
+    name: "New টেস্ট",
+    price: "999",
+    category: "skincare",
+    image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1741326248/sample.jpg",
+    tags: "new,tag",
+    description: "New product description"
+  },
   {
         id: "1741892639007",
         name: "Milk shake",
