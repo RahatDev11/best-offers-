@@ -11,18 +11,37 @@
 <body class="bg-background">
     <!-- হেডার -->
 <header class="bg-brushstroke text-white p-4 flex justify-between items-center fixed top-0 left-0 w-full z-50">
+    <!-- লোগো -->
     <a href="index.html" class="flex items-center">
         <div class="flex items-center">
             <img src="img.jpg" alt="কাপড়ের ব্যবসা লোগো" class="h-10 w-10 rounded-full mr-2 border-2 border-lipstick">
             <span class="text-lg font-bold">Any's Beauty Corner</span>
         </div>
     </a>
+
+<!-- ডেস্কটপ সার্চ বার -->
+<div class="hidden md:block p-2 w-80 mx-auto relative">
+    <div class="relative">
+        <input type="text" id="searchInputDesktop" class="w-full p-2 pl-10 border-0 rounded-full text-gray-800 focus:outline-none focus:ring-2 focus:ring-lipstick focus:border-transparent bg-white" placeholder="প্রোডাক্ট সার্চ করুন..." oninput="searchProductsDesktop()">
+        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+    </div>
+    <!-- সার্চ রেজাল্ট -->
+    <div id="searchResultsDesktop" class="mt-2 max-h-60 overflow-y-auto absolute bg-white w-full shadow-lg rounded-lg z-50"></div>
+</div>
+
+    <!-- মোবাইল সার্চ আইকন -->
+    <div class="md:hidden cursor-pointer" onclick="focusMobileSearch()">
+        <i class="fas fa-search text-white text-xl"></i>
+    </div>
+
+    <!-- নেভিগেশন মেনু -->
     <nav class="hidden md:flex space-x-4 items-center mr-20">
         <a href="#home" class="hover:text-highlight">হোম</a>
         <a href="#about" class="hover:text-highlight">আমাদের সম্পর্কে</a>
         <div class="relative">
             <button onclick="toggleSubMenu()" class="hover:text-highlight">পণ্য সমূহ</button>
             <div id="subMenu" class="hidden absolute bg-white text-gray-800 rounded-lg shadow-lg mt-2 w-48">
+                <a href="#all" class="block px-4 py-2 hover:bg-gray-100">সকল প্রোডাক্ট</a>
                 <a href="#cosmetics" class="block px-4 py-2 hover:bg-gray-100">মেকআপ</a>
                 <a href="#skincare" class="block px-4 py-2 hover:bg-gray-100">স্কিনকেয়ার</a>
                 <a href="#haircare" class="block px-4 py-2 hover:bg-gray-100">হেয়ারকেয়ার</a>
@@ -30,32 +49,39 @@
             </div>
         </div>
     </nav>
-    <button class="bg-white text-lipstick px-4 py-2 rounded md:hidden" onclick="toggleMenu()">☰</button>
-<!-- মোবাইল মেনু -->
-<div id="dropdownMenu" class="hidden absolute top-full right-0 bg-white shadow-lg rounded-lg mt-2 w-48 z-50">
-    <a href="#home" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">হোম</a>
-    <a href="#about" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">আমাদের সম্পর্কে</a>
-    <div class="relative">
-        <button onclick="toggleSubMenuMobile(event)" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 w-full text-left">পণ্য সমূহ</button>
-<div id="subMenuMobile" class="hidden bg-gray-100 rounded-lg mt-1 ml-4 z-50">
-            <a href="#cosmetics" class="block px-4 py-2 hover:bg-gray-200">মেকআপ</a>
-            <a href="#skincare" class="block px-4 py-2 hover:bg-gray-200">স্কিনকেয়ার</a>
-            <a href="#haircare" class="block px-4 py-2 hover:bg-gray-200">হেয়ারকেয়ার</a>
-            <a href="#fragrances" class="block px-4 py-2 hover:bg-gray-200">ফ্র্যাগরেন্স</a>
-        </div>
-    </div>
-</div>
-</header>
-    <!-- সার্চ বার -->
-    <div class="p-2 bg-white shadow-md w-80 mx-auto relative mt-16" id="mainSearchBar">
-        <div class="relative">
-            <input type="text" id="searchInput" class="w-full p-1 pl-8 border rounded" placeholder="প্রোডাক্ট সার্চ করুন..." oninput="searchProducts()">
-            <i class="fas fa-search absolute left-2 top-2 text-gray-400"></i>
-        </div>
-        <!-- সার্চ রেজাল্ট -->
-        <div id="searchResults" class="mt-2 max-h-60 overflow-y-auto absolute bg-white w-full shadow-lg rounded-lg z-49"></div>
-    </div>
 
+    <!-- মোবাইল মেনু বাটন -->
+    <button class="bg-white text-lipstick px-4 py-2 rounded md:hidden" onclick="toggleMenu()">☰</button>
+
+    <!-- মোবাইল মেনু -->
+    <div id="dropdownMenu" class="hidden absolute top-full right-0 bg-white shadow-lg rounded-lg mt-2 w-48 z-50">
+        <a href="#home" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">হোম</a>
+        <a href="#about" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">আমাদের সম্পর্কে</a>
+        <div class="relative">
+            <button onclick="toggleSubMenuMobile(event)" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 w-full text-left">পণ্য সমূহ</button>
+            <div id="subMenuMobile" class="hidden bg-gray-100 rounded-lg mt-1 ml-4 z-50">
+                <a href="#all" class="block px-4 py-2 hover:bg-gray-100">সকল প্রোডাক্ট</a>
+                <a href="#cosmetics" class="block px-4 py-2 hover:bg-gray-200">মেকআপ</a>
+                <a href="#skincare" class="block px-4 py-2 hover:bg-gray-200">স্কিনকেয়ার</a>
+                <a href="#haircare" class="block px-4 py-2 hover:bg-gray-200">হেয়ারকেয়ার</a>
+                <a href="#fragrances" class="block px-4 py-2 hover:bg-gray-200">ফ্র্যাগরেন্স</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- মোবাইল সার্চ বার -->
+<div class="md:hidden p-2 w-full fixed top-20 left-0 z-40 hidden bg-transparent" id="mobileSearchBar">
+    <div class="relative">
+        <input type="text" id="searchInput" 
+               class="w-full p-2 pl-10 border-0 rounded-full text-gray-800 focus:outline-none focus:ring-2 focus:ring-lipstick bg-white/50 backdrop-blur-sm placeholder:text-gray-400/80" 
+               placeholder="প্রোডাক্ট সার্চ করুন..." 
+               oninput="searchProducts()">
+        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400/80"></i>
+    </div>
+    <!-- সার্চ রেজাল্ট -->
+    <div id="searchResults" class="mt-2 max-h-60 overflow-y-auto absolute bg-white/50 backdrop-blur-sm w-full shadow-lg rounded-lg z-50"></div>
+</div>
     <!-- মূল কন্টেন্ট -->
     <main class="p-4 pt-20">
         <div>  <!-- হোম সেকশন -->
