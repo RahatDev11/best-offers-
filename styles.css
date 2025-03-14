@@ -69,88 +69,73 @@
     cursor: pointer;
 }
 
-/* সার্চ রেজাল্টের জন্য স্টাইল */
-#searchResults {
-    top: 100%; /* সার্চ বারের ঠিক নিচে */
-    left: 0;
-    border: 1px solid #e2e8f0; /* হালকা গ্রে বর্ডার */
-    margin-top: 0.5rem; /* সার্চ বার থেকে সামান্য দূরত্ব */
-}
-
-/* সার্চ রেজাল্টে কার্ড স্টাইল */
-#searchResults .search-card {
-    padding: 0.5rem;
-    border-bottom: 1px solid #e2e8f0; /* প্রতিটি কার্ডের নিচে হালকা গ্রে লাইন */
-    cursor: pointer;
-}
-
-#searchResults .search-card:hover {
-    background-color: #f7fafc; /* হোভার ইফেক্ট */
-}
-
 /* সার্চ বার স্টাইল */
 .search-bar {
-    position: relative;
-    width: 200px; /* সার্চ বারের প্রস্থ */
+  position: relative;
+  width: 100%; /* সার্চ বারের প্রস্থ */
+  max-width: 400px; /* সর্বোচ্চ প্রস্থ */
+  z-index: 1000; /* সবার উপরে দেখানোর জন্য */
 }
 
-.search-input {
-    width: 100%;
-    padding: 8px 32px 8px 12px; /* টেক্সট ফিল্ডের প্যাডিং */
-    border: 1px solid #e2e8f0; /* বর্ডার */
-    border-radius: 4px; /* বর্ডার রেডিয়াস */
-    font-size: 14px; /* ফন্ট সাইজ */
-    color: #4a5568; /* টেক্সট কালার */
-    outline: none; /* ফোকাসে আউটলাইন সরানো */
+.search-bar input {
+  width: 100%;
+  padding: 8px 32px 8px 12px; /* টেক্সট ফিল্ডের প্যাডিং */
+  border: 1px solid #e2e8f0; /* বর্ডার */
+  border-radius: 4px; /* বর্ডার রেডিয়াস */
+  font-size: 14px; /* ফন্ট সাইজ */
+  color: #4a5568; /* টেক্সট কালার */
+  outline: none; /* ফোকাসে আউটলাইন সরানো */
+  background-color: white; /* ব্যাকগ্রাউন্ড কালার */
 }
 
-.search-input::placeholder {
-    color: #a0aec0; /* প্লেসহোল্ডার কালার */
+.search-bar input::placeholder {
+  color: #a0aec0; /* প্লেসহোল্ডার কালার */
 }
 
-.search-icon {
-    position: absolute;
-    top: 50%;
-    right: 10px;
-    transform: translateY(-50%);
-    color: #a0aec0; /* আইকন কালার */
-    pointer-events: none; /* ক্লিক ইভেন্ট বন্ধ */
+.search-bar .fa-search {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  color: #a0aec0; /* আইকন কালার */
+  pointer-events: none; /* ক্লিক ইভেন্ট বন্ধ */
 }
 
 /* সার্চ রেজাল্ট স্টাইল */
-.search-results {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    max-height: 200px; /* সর্বোচ্চ উচ্চতা */
-    overflow-y: auto; /* স্ক্রলবার */
-    background-color: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 4px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* শ্যাডো */
-    margin-top: 4px; /* সার্চ বার থেকে দূরত্ব */
-    z-index: 1000; /* অন্যান্য এলিমেন্টের উপরে */
+#searchResultsDesktop {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 200px; /* সর্বোচ্চ উচ্চতা */
+  overflow-y: auto; /* স্ক্রলবার */
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* শ্যাডো */
+  color: black;
+  margin-top: 4px; /* সার্চ বার থেকে দূরত্ব */
+  z-index: 1000; /* অন্যান্য এলিমেন্টের উপরে */
 }
 
-.search-results .search-item {
-    padding: 8px 12px;
-    border-bottom: 1px solid #e2e8f0; /* প্রতিটি আইটেমের নিচে বর্ডার */
-    cursor: pointer;
-    color: #4a5568; /* টেক্সট কালার */
+#searchResultsDesktop .search-item {
+  padding: 8px 12px;
+  border-bottom: 1px solid #e2e8f0; /* প্রতিটি আইটেমের নিচে বর্ডার */
+  cursor: pointer;
+  color: #4a5568; /* টেক্সট কালার */
 }
 
-.search-results .search-item:hover {
-    background-color: #f7fafc; /* হোভার ইফেক্ট */
+#searchResultsDesktop .search-item:hover {
+  background-color: #f7fafc; /* হোভার ইফেক্ট */
+  
 }
 
 /* মোবাইল মোডে সার্চ বার লুকানো */
 @media (max-width: 767px) {
-    .search-bar {
-        display: none;
-    }
+  .search-bar {
+    display: none;
+  }
 }
-
 /* প্রোডাক্ট কার্ড হাইলাইট স্টাইল */
 .border-teal-500 {
     border-color: #38b2ac;
@@ -163,7 +148,8 @@
 
 .hover\:bg-gray-200:hover {
   background-color: #e5e7eb;
-}#dropdownMenu {
+}
+#dropdownMenu {
     position: absolute;
     top: 100%; /* হেডারের নিচে দেখাবে */
     right: 0;
