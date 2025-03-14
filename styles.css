@@ -181,7 +181,6 @@
 .relative:hover #subMenu {
     display: block;
 }
-
 /* মোবাইল মোডে সাবমেনু লুকানো */
 @media (max-width: 767px) {
     #subMenu {
