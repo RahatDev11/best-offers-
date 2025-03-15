@@ -3,6 +3,17 @@ let isAdmin = false;
 
 // প্রোডাক্ট ডাটা
 const initialProducts = [
+  {
+        id: "1742051688734",
+        name: "Prem dulhan 6 pcs",
+        price: "190",
+        category: "mehandi",
+        image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1742034017/1742033818555_n0pibz.jpg",
+        tags: "Prem, dulhan, ",
+        description: "প্রেম দুলহান মেহেদি হল একটি জনপ্রিয় ভারতীয় মেহেদি ব্র্যান্ড, যা বিশেষ করে উৎসব এবং বিশেষ অনুষ্ঠানের জন্য ব্যবহার করা হয়। এটি সাধারণত প্রাকৃতিক হেনা দিয়ে তৈরি করা হয় এবং এতে কোনো ক্ষতিকারক রাসায়নিক থাকে না",
+        stockStatus: "in_stock",
+        quantity: "39"
+    },
 {
         id: "1742034562001",
         name: "কাশ্মীরি মেহেদী",
