@@ -57,60 +57,77 @@ function loadProductsFromData() {
   loadProducts(); // প্রোডাক্ট লোড করুন
 }
 
-// মেনু টগল ফাংশন
-function toggleMenu() {
-    const dropdownMenu = document.getElementById("dropdownMenu");
-    dropdownMenu.classList.toggle("hidden");
-    dropdownMenu.classList.toggle("open");
+// মোবাইল সাইডবার খোলার ফাংশন
+function openSidebar() {
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const sidebar = document.getElementById('sidebar');
+    sidebarOverlay.classList.remove('hidden'); // ওভারলে দেখান
+    sidebarOverlay.classList.add('active'); // ওভারলে দেখা যাবে
+    sidebar.classList.remove('-translate-x-full');
+    sidebar.classList.add('slide-in');
 }
 
-// সাবমেনু টগল ফাংশন
+// মোবাইল সাইডবার বন্ধ করার ফাংশন
+function closeSidebar() {
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.add('-translate-x-full');
+    sidebarOverlay.classList.remove('active'); // ওভারলে লুকান
+    sidebarOverlay.classList.add('hidden'); // ওভারলে লুকান
+}
+
+
+// মোবাইল সাবমেনু টগল ফাংশন
 function toggleSubMenuMobile(event) {
     event.stopPropagation();
-    const subMenuMobile = document.getElementById("subMenuMobile");
-    subMenuMobile.classList.toggle("hidden");
-    subMenuMobile.classList.toggle("open");
+    const subMenuMobile = document.getElementById('subMenuMobile');
+    subMenuMobile.classList.toggle('open');
+}
+
+// ডেস্কটপ সাবমেনু টগল করার ফাংশন
+function toggleSubMenuDesktop() {
+  const desktopSubMenuBar = document.getElementById('desktopSubMenuBar');
+  desktopSubMenuBar.classList.toggle('hidden');
+  desktopSubMenuBar.classList.toggle('slide-down'); // এনিমেশন যোগ করুন
+}
+
+// ডেস্কটপ সাবমেনু আইটেমগুলিতে ক্লিক ইভেন্ট যোগ করুন
+document.querySelectorAll('#desktopSubMenuBar a').forEach(link => {
+  link.addEventListener('click', (e) => {
+    const category = e.target.getAttribute('href').replace('#', '');
+    filterProducts(category); // প্রোডাক্ট ফিল্টার ফাংশন কল করুন
+  });
+});
+
+// প্রোডাক্ট ফিল্টার ফাংশন
+function filterProducts(category) {
+  const filteredProducts = category === 'all' ? products : products.filter(product => product.category === category);
+  loadProducts(filteredProducts); // ফিল্টার করা প্রোডাক্ট লোড করুন
 }
 
 // ডকুমেন্টে ক্লিক ইভেন্ট লিসেনার
 document.addEventListener("click", (event) => {
-    const dropdownMenu = document.getElementById("dropdownMenu");
-    const subMenuMobile = document.getElementById("subMenuMobile");
-
-    // মেনু বন্ধ করুন
-    if (!event.target.closest('#dropdownMenu') && !event.target.closest('button[onclick="toggleMenu()"]')) {
-        dropdownMenu.classList.add("hidden");
-        dropdownMenu.classList.remove("open");
-    }
-
-    // সাবমেনু বন্ধ করুন
-    if (!event.target.closest('#subMenuMobile') && !event.target.closest('button[onclick="toggleSubMenuMobile(event)"]')) {
-        subMenuMobile.classList.add("hidden");
-        subMenuMobile.classList.remove("open");
-    }
-});
-
-
-// মোবাইল মেনু টগল
-function toggleMenu() {
-  const dropdownMenu = document.getElementById('dropdownMenu');
-  dropdownMenu.classList.toggle('hidden');
-}
-
-// সাবমেনু টগল (ডেস্কটপ)
-function toggleSubMenu() {
-  const subMenu = document.getElementById('subMenu');
-  subMenu.classList.toggle('hidden');
-}
-
-// সাবমেনু টগল (মোবাইল)
-function toggleSubMenuMobile(event) {
-  event.preventDefault();
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
   const subMenuMobile = document.getElementById('subMenuMobile');
-  subMenuMobile.classList.toggle('hidden');
-}
+  const desktopSubMenuBar = document.getElementById('desktopSubMenuBar');
+  const subMenuButton = document.querySelector('button[onclick="toggleSubMenuDesktop()"]');
 
+  // মোবাইল সাইডবার বন্ধ করুন
+  if (!event.target.closest('#sidebar') && !event.target.closest('button[onclick="openSidebar()"]')) {
+    closeSidebar();
+  }
 
+  // মোবাইল সাবমেনু বন্ধ করুন
+  if (!event.target.closest('#subMenuMobile') && !event.target.closest('button[onclick="toggleSubMenuMobile(event)"]')) {
+    subMenuMobile.classList.add('hidden'); // hidden ক্লাস যোগ করুন
+  }
+
+  // ডেস্কটপ সাবমেনু বন্ধ করুন
+  if (!event.target.closest('#desktopSubMenuBar') && !event.target.closest('button[onclick="toggleSubMenuDesktop()"]')) {
+    desktopSubMenuBar.classList.add('hidden');
+    desktopSubMenuBar.classList.remove('slide-down'); // এনিমেশন সরান
+  }
+});
 // মোডাল ব্যবস্থাপনা
 function openModal(modalId) {
   document.getElementById(modalId).classList.add("active");
@@ -261,13 +278,13 @@ function focusMobileSearch() {
 function searchProducts() {
   const searchTerm = document.getElementById("searchInput").value.toLowerCase();
   const searchResults = document.getElementById("searchResults");
-  
+
   if (searchTerm.trim() === "") {
     searchResults.innerHTML = "";
     searchResults.classList.add("hidden");
     return;
   }
-  
+
   const filtered = products.filter(product =>
     product.name.toLowerCase().includes(searchTerm) ||
     product.tags.toLowerCase().includes(searchTerm)
@@ -279,13 +296,13 @@ function searchProducts() {
 function searchProductsDesktop() {
   const searchTerm = document.getElementById("searchInputDesktop").value.toLowerCase();
   const searchResults = document.getElementById("searchResultsDesktop");
-  
+
   if (searchTerm.trim() === "") {
     searchResults.innerHTML = "";
     searchResults.classList.add("hidden");
     return;
   }
-  
+
   const filtered = products.filter(product =>
     product.name.toLowerCase().includes(searchTerm) ||
     product.tags.toLowerCase().includes(searchTerm)
@@ -296,7 +313,7 @@ function searchProductsDesktop() {
 // সার্চ রেজাল্ট ডিসপ্লে
 function displaySearchResults(filteredProducts, searchResults) {
   searchResults.innerHTML = "";
-  
+
   if (filteredProducts.length === 0) {
     searchResults.innerHTML = `<div class="p-2 text-gray-600">কোনো প্রোডাক্ট পাওয়া যায়নি</div>`;
   } else {
@@ -304,7 +321,7 @@ function displaySearchResults(filteredProducts, searchResults) {
       const card = document.createElement("div");
       card.className = "p-2 hover:bg-gray-100 cursor-pointer";
       card.onclick = () => showProductDetail(product.id);
-      
+
       card.innerHTML = `
         <div class="flex items-center">
           <img src="${product.image.split(',')[0]}" class="w-12 h-12 object-cover rounded-lg mr-4">
@@ -317,7 +334,7 @@ function displaySearchResults(filteredProducts, searchResults) {
       searchResults.appendChild(card);
     });
   }
-  
+
   searchResults.classList.remove("hidden");
 }
 
@@ -431,7 +448,7 @@ document.getElementById('shareButton').addEventListener('click', (e) => {
   e.stopPropagation(); // ইভেন্ট বাবলিং বন্ধ করুন
   const socialIcons = document.getElementById('socialIcons');
   const shareButton = document.getElementById('shareButton');
-  
+
   socialIcons.classList.toggle('hidden'); // সোশ্যাল আইকন টগল করুন
   shareButton.classList.toggle('hidden'); // শেয়ার বাটন টগল করুন
 });
@@ -440,7 +457,7 @@ document.getElementById('shareButton').addEventListener('click', (e) => {
 document.addEventListener('click', (e) => {
   const socialIcons = document.getElementById('socialIcons');
   const shareButton = document.getElementById('shareButton');
-  
+
   // যদি সোশ্যাল আইকন ওপেন থাকে এবং ক্লিক টার্গেট শেয়ার বাটন বা সোশ্যাল আইকন না হয়
   if (socialIcons && !socialIcons.classList.contains('hidden') && !e.target.closest('#shareButton') && !e.target.closest('#socialIcons')) {
     socialIcons.classList.add('hidden'); // সোশ্যাল আইকন লুকান
@@ -457,7 +474,7 @@ document.getElementById('socialIcons').addEventListener('click', (e) => {
 function closeSocialIconsOnScroll() {
   const socialIcons = document.getElementById('socialIcons');
   const shareButton = document.getElementById('shareButton');
-  
+
   // সোশ্যাল আইকন ক্লোজ করুন
   if (socialIcons && !socialIcons.classList.contains('hidden')) {
     socialIcons.classList.add('hidden');
@@ -482,4 +499,10 @@ document.getElementById('searchInputDesktop').addEventListener('input', function
     e.target.value = ''; // সার্চ বার খালি করুন
   }
 });
+
+
+
+
+
+
 
