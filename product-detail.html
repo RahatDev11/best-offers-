@@ -105,86 +105,133 @@
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const params = new URLSearchParams(window.location.search);
-            const productId = params.get('id');
-            const products = JSON.parse(localStorage.getItem('products')) || [];
-            const product = products.find(p => p.id === productId);
-
-            if (product) {
-                document.getElementById('productTitle').textContent = product.name;
-                document.getElementById('productPrice').textContent = `দাম: ${product.price} টাকা`;
-                document.getElementById('productDescription').textContent = product.description;
-
-                const whatsappBtn = document.getElementById('whatsappBtn');
-                const imageList = product.image.split(',').map((img, index) =>
-                    `ছবি-${index + 1}: ${img.trim()}`).join('\n');
-                
-                const message = `
+document.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const productId = params.get('id');
+  const products = JSON.parse(localStorage.getItem('products')) || [];
+  const product = products.find(p => p.id === productId);
+  
+  if (product) {
+    document.getElementById('productTitle').textContent = product.name;
+    document.getElementById('productPrice').textContent = `দাম: ${product.price} টাকা`;
+    document.getElementById('productDescription').textContent = product.description;
+    
+    // স্টক স্ট্যাটাস দেখান
+    const stockElement = document.createElement('p');
+    stockElement.className = "text-gray-700 mb-2";
+    stockElement.innerHTML = `<strong>স্টক:</strong> ${product.stockStatus === 'in_stock' ? 'স্টকে আছে' : 'স্টকে নেই'}`;
+    document.getElementById('productDescription').after(stockElement);
+    
+    // কাউন্টার যোগ করুন
+    const counterHTML = `
+            <div class="flex items-center space-x-4 mb-4">
+                <span class="text-gray-700">পরিমাণ:</span>
+                <div class="flex items-center border rounded-lg overflow-hidden">
+                    <button id="decreaseBtn" class="bg-lipstick text-white px-3 py-1 hover:bg-lipstick-dark">-</button>
+                    <input type="number" id="quantityInput" value="1" min="1" max="100" class="px-2 py-1 border-0 focus:ring-0 w-16 text-center">
+                    <button id="increaseBtn" class="bg-lipstick text-white px-3 py-1 hover:bg-lipstick-dark">+</button>
+                </div>
+            </div>
+        `;
+    document.getElementById('productDescription').insertAdjacentHTML('afterend', counterHTML);
+    
+    // কাউন্টার লজিক
+    const quantityInput = document.getElementById('quantityInput');
+    const decreaseBtn = document.getElementById('decreaseBtn');
+    const increaseBtn = document.getElementById('increaseBtn');
+    
+    decreaseBtn.addEventListener('click', () => {
+      let currentVal = parseInt(quantityInput.value);
+      if (currentVal > 1) quantityInput.value = currentVal - 1;
+    });
+    
+    increaseBtn.addEventListener('click', () => {
+      let currentVal = parseInt(quantityInput.value);
+      if (currentVal < 100) quantityInput.value = currentVal + 1;
+    });
+    
+    quantityInput.addEventListener('input', () => {
+      let value = parseInt(quantityInput.value);
+      if (value < 1) quantityInput.value = 1;
+      if (value > 100) quantityInput.value = 100;
+    });
+    
+    // হোয়াটসঅ্যাপ মেসেজে পরিমাণ যোগ করুন
+    const whatsappBtn = document.getElementById('whatsappBtn');
+    whatsappBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const quantity = quantityInput.value;
+      const imageList = product.image.split(',').map((img, index) =>
+        `ছবি-${index + 1}: ${img.trim()}`).join('\n');
+      
+      const message = `
 প্রোডাক্টের নাম: ${product.name}
 দাম: ${product.price} টাকা
+পরিমাণ: ${quantity} টি
 ${imageList}
 আমি এই প্রোডাক্টটি কিনতে চাই!
-                `;
-                whatsappBtn.href = `https://wa.me/8801931866636?text=${encodeURIComponent(message)}`;
-
-                const carouselTrack = document.querySelector('#imageCarousel .slide-track');
-                const indicatorsContainer = document.getElementById('indicators');
-                product.image.split(',').forEach((img, index) => {
-                    const slide = document.createElement('div');
-                    slide.className = 'slide';
-                    slide.innerHTML = `<img src="${img.trim()}" alt="Product Image">`;
-                    carouselTrack.appendChild(slide);
-
-                    const indicator = document.createElement('div');
-                    indicator.className = 'indicator';
-                    indicator.addEventListener('click', () => showSlide(index));
-                    indicatorsContainer.appendChild(indicator);
-                });
-
-                updateIndicators(0);
-
-                let touchStartX = 0;
-                let isSwiping = false;
-
-                const carousel = document.getElementById('imageCarousel');
-                carousel.addEventListener('touchstart', e => {
-                    touchStartX = e.touches[0].clientX;
-                    isSwiping = true;
-                });
-
-                carousel.addEventListener('touchmove', e => {
-                    if (!isSwiping) return;
-                    e.preventDefault();
-                });
-
-                carousel.addEventListener('touchend', e => {
-                    if (!isSwiping) return;
-                    const touchEndX = e.changedTouches[0].clientX;
-                    const deltaX = touchStartX - touchEndX;
-                    
-                    if (Math.abs(deltaX) > 50) {
-                        deltaX > 0 ? showNextSlide() : showPrevSlide();
-                    }
-                    isSwiping = false;
-                });
-
-                carousel.addEventListener('click', (e) => {
-                    const rect = carousel.getBoundingClientRect();
-                    const clickX = e.clientX - rect.left;
-                    const carouselWidth = rect.width;
-
-                    if (clickX > carouselWidth / 2) {
-                        showNextSlide();
-                    } else {
-                        showPrevSlide();
-                    }
-                });
-            } else {
-                alert('প্রোডাক্ট পাওয়া যায়নি!');
-                window.location.href = 'index.html';
-            }
-        });
+            `;
+      window.open(`https://wa.me/8801931866636?text=${encodeURIComponent(message)}`, '_blank');
+    });
+    
+    // বাকি কোড (ইমেজ ক্যারousel ইত্যাদি)
+    const carouselTrack = document.querySelector('#imageCarousel .slide-track');
+    const indicatorsContainer = document.getElementById('indicators');
+    product.image.split(',').forEach((img, index) => {
+      const slide = document.createElement('div');
+      slide.className = 'slide';
+      slide.innerHTML = `<img src="${img.trim()}" alt="Product Image">`;
+      carouselTrack.appendChild(slide);
+      
+      const indicator = document.createElement('div');
+      indicator.className = 'indicator';
+      indicator.addEventListener('click', () => showSlide(index));
+      indicatorsContainer.appendChild(indicator);
+    });
+    
+    updateIndicators(0);
+    
+    let touchStartX = 0;
+    let isSwiping = false;
+    
+    const carousel = document.getElementById('imageCarousel');
+    carousel.addEventListener('touchstart', e => {
+      touchStartX = e.touches[0].clientX;
+      isSwiping = true;
+    });
+    
+    carousel.addEventListener('touchmove', e => {
+      if (!isSwiping) return;
+      e.preventDefault();
+    });
+    
+    carousel.addEventListener('touchend', e => {
+      if (!isSwiping) return;
+      const touchEndX = e.changedTouches[0].clientX;
+      const deltaX = touchStartX - touchEndX;
+      
+      if (Math.abs(deltaX) > 50) {
+        deltaX > 0 ? showNextSlide() : showPrevSlide();
+      }
+      isSwiping = false;
+    });
+    
+    carousel.addEventListener('click', (e) => {
+      const rect = carousel.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const carouselWidth = rect.width;
+      
+      if (clickX > carouselWidth / 2) {
+        showNextSlide();
+      } else {
+        showPrevSlide();
+      }
+    });
+  } else {
+    alert('প্রোডাক্ট পাওয়া যায়নি!');
+    window.location.href = 'index.html';
+  }
+});
 
         let currentSlide = 0;
 
