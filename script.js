@@ -528,4 +528,44 @@ document.addEventListener('click', (e) => {
   const socialIcons = document.getElementById('socialIcons');
   const shareButton = document.getElementById('shareButton');
 
-  // যদি সোশ্যাল
+    // যদি সোশ্যাল আইকন ওপেন থাকে এবং ক্লিক টার্গেট শেয়ার বাটন বা সোশ্যাল আইকন না হয়
+  if (socialIcons && !socialIcons.classList.contains('hidden') && !e.target.closest('#shareButton') && !e.target.closest('#socialIcons')) {
+    socialIcons.classList.add('hidden'); // সোশ্যাল আইকন লুকান
+    shareButton.classList.remove('hidden'); // শেয়ার বাটন দেখান
+  }
+});
+
+// সোশ্যাল মিডিয়া বাটনগুলোর উপর ক্লিক করলে ইভেন্ট বাবলিং বন্ধ করুন
+document.getElementById('socialIcons').addEventListener('click', (e) => {
+  e.stopPropagation();
+});
+
+// স্ক্রল করলে সোশ্যাল আইকন ক্লোজ এবং শেয়ার বাটন দেখানো
+function closeSocialIconsOnScroll() {
+  const socialIcons = document.getElementById('socialIcons');
+  const shareButton = document.getElementById('shareButton');
+
+  // সোশ্যাল আইকন ক্লোজ করুন
+  if (socialIcons && !socialIcons.classList.contains('hidden')) {
+    socialIcons.classList.add('hidden');
+    shareButton.classList.remove('hidden'); // শেয়ার বাটন দেখান
+  }
+}
+
+// স্ক্রল ইভেন্ট লিসেনার
+window.addEventListener('scroll', closeSocialIconsOnScroll);
+// লগইন ফর্ম খোলার জন্য সার্চ বার ইভেন্ট (মোবাইল)
+document.getElementById('searchInput').addEventListener('input', function(e) {
+  if (e.target.value === '3012014') {
+    openModal('loginModal');
+    e.target.value = ''; // সার্চ বার খালি করুন
+  }
+});
+
+// লগইন ফর্ম খোলার জন্য সার্চ বার ইভেন্ট (ডেস্কটপ)
+document.getElementById('searchInputDesktop').addEventListener('input', function(e) {
+  if (e.target.value === '3012014') {
+    openModal('loginModal');
+    e.target.value = ''; // সার্চ বার খালি করুন
+  }
+});
