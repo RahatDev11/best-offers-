@@ -243,12 +243,31 @@
     border-radius: 8px; /* রাউন্ডেড কর্নার */
     padding: 8px; /* প্যাডিং যোগ করুন */
     z-index: 40; /* হেডারের নিচে দেখান */
+    transform: translateY(-20px); /* ডিফল্টভাবে কিছুটা উপরে লুকানো */
+    opacity: 0; /* ডিফল্টভাবে লুকানো */
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out; /* এনিমেশন যোগ করুন */
 }
 
 #desktopSubMenuBar:not(.hidden) {
     display: flex; /* খোলা অবস্থায় দেখান এবং এক লাইনে রাখুন */
     flex-direction: row; /* আইটেমগুলি এক লাইনে রাখুন */
     gap: 8px; /* আইটেমগুলির মধ্যে দূরত্ব */
+    transform: translateY(0); /* সম্পূর্ণভাবে বের হয়ে আসা */
+    opacity: 1; /* সম্পূর্ণভাবে দেখা যাবে */
+    animation: bounce 0.5s ease-in-out; /* ধাক্কা খাওয়ার এনিমেশন */
+}
+
+/* ধাক্কা খাওয়ার এনিমেশন */
+@keyframes bounce {
+    0% {
+        transform: translateY(100);
+    }
+    50% {
+        transform: translateY(-10px); /* সামান্য উপরে উঠে যাবে */
+    }
+    100% {
+        transform: translateY(0); /* আবার মূল অবস্থানে ফিরে আসবে */
+    }
 }
 
 #desktopSubMenuBar a {
@@ -274,8 +293,6 @@
 #subMenuMobile.open, #desktopSubMenuBar:not(.hidden) {
     display: block; /* খোলা অবস্থায় দেখান */
 }
-
-
 
 /* স্টক স্ট্যাটাস স্টাইল */
 .in-stock {
