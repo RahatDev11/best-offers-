@@ -127,63 +127,139 @@
 
 #searchResultsDesktop .search-item:hover {
   background-color: #f7fafc; /* হোভার ইফেক্ট */
-  
+
 }
 
-/* মোবাইল মোডে সার্চ বার লুকানো */
-@media (max-width: 767px) {
-  .search-bar {
-    display: none;
-  }
-}
-/* প্রোডাক্ট কার্ড হাইলাইট স্টাইল */
-.border-teal-500 {
-    border-color: #38b2ac;
-}
-
-/* হোভার ইফেক্ট */
-.hover\:bg-gray-100:hover {
-  background-color: #f3f4f6;
-}
-
-.hover\:bg-gray-200:hover {
-  background-color: #e5e7eb;
-}
-#dropdownMenu {
-    position: absolute;
-    top: 100%; /* হেডারের নিচে দেখাবে */
-    right: 0;
-    z-index: 1000; /* সর্বোচ্চ স্তরে নিয়ে আসুন */
-    background-color: white;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-#subMenuMobile {
-    color: black;
-    position: absolute;
-    top: 100%; /* সাবমেনু মেনুর নিচে দেখাবে */
-    left: 0;
-    z-index: 1001; /* মেনুর চেয়ে উপরে দেখাবে */
-    background-color: white;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}/* ডেস্কটপ মোডে সাবমেনু দেখানোর জন্য CSS */
-#subMenu {
-    display: none; /* ডিফল্টভাবে লুকানো */
-    position: absolute;
-    top: 100%; /* মেনুর ঠিক নিচে */
-    left: 0;
-    background-color: white;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-}
-
-/* হোভার করলে সাবমেনু দেখান */
-.relative:hover #subMenu {
-    display: block;
-}
-/* মোবাইল মোডে সাবমেনু লুকানো */
-@media (max-width: 767px) {
-    #subMenu {
-        display: none !important;
+/* সাইডবারের জন্য এনিমেশন */
+@keyframes slideInWithBounce {
+    0% {
+        transform: translateX(-100%);
+    }
+    70% {
+        transform: translateX(10%); /* ডান দিকে একটু বেশি চলে যাবে */
+    }
+    80% {
+        transform: translateX(-5%); /* বাম দিকে ফিরে আসবে */
+    }
+    90% {
+        transform: translateX(5%); /* আবার ডান দিকে যাবে */
+    }
+    100% {
+        transform: translateX(0); /* শেষে মূল অবস্থানে ফিরে আসবে */
     }
 }
+
+/* সাইডবার স্টাইল */
+#sidebar {
+    transform: translateX(-100%); /* ডিফল্টভাবে লুকানো */
+    animation: slideInWithBounce 0.8s ease-out forwards; /* এনিমেশন প্রয়োগ */
+}
+
+/* সাইডবার খোলা থাকলে অবস্থান */
+#sidebar.slide-in {
+    transform: translateX(0);
+}
+
+/* সাইডবার স্টাইল (আরও বেশি ট্রান্সপারেন্ট এবং গ্লাসি ইফেক্ট সহ) */
+#sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 80%; /* সাইডবারের প্রস্থ */
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2); /* হালকা সাদা ব্যাকগ্রাউন্ড */
+    backdrop-filter: blur(20px); /* আরও বেশি গ্লাসি ইফেক্ট */
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1); /* শ্যাডো যোগ করুন */
+    transform: translateX(-100%); /* ডিফল্টভাবে লুকানো */
+    transition: transform 0.5s ease-in-out; /* ধীরে ধীরে ওপেন হবে */
+    z-index: 50; /* ওভারলের উপরে রাখুন */
+}
+
+/* মেনু আইটেম এবং সাবমেনু আইটেমের জন্য সাধারণ স্টাইল */
+#sidebar ul li a,
+#sidebar ul li button {
+    display: block;
+    padding: 12px 16px;
+    margin: 8px;
+    background: rgba(255, 255, 255, 0.3); /* হালকা গ্লাসি ইফেক্ট */
+    backdrop-filter: blur(5px); /* হালকা ব্লার ইফেক্ট */
+    border-radius: 12px; /* রাউন্ডেড কর্নার */
+    color: #333; /* টেক্সট কালার */
+    text-decoration: none; /* আন্ডারলাইন সরান */
+    transition: all 0.3s ease-in-out; /* এনিমেশন যোগ করুন */
+    width: 100%; /* পুরো প্রস্থ নেওয়ার জন্য */
+    text-align: left; /* টেক্সট বাম দিকে সারিবদ্ধ করুন */
+}
+
+/* মেনু আইটেম এবং সাবমেনু আইটেম হোভার ইফেক্ট */
+#sidebar ul li a:hover,
+#sidebar ul li button:hover {
+    background: rgba(255, 255, 255, 0.5); /* হোভারে গ্লাসি ইফেক্ট বাড়ান */
+    transform: translateX(10px); /* হোভারে সামান্য ডান দিকে সরান */
+}
+
+/* সাবমেনু স্টাইল */
+#subMenuMobile {
+    background: rgba(255, 255, 255, 0.2); /* আরও বেশি ট্রান্সপারেন্ট গ্লাসি ইফেক্ট */
+    backdrop-filter: blur(5px); /* হালকা ব্লার ইফেক্ট */
+    border-radius: 12px; /* রাউন্ডেড কর্নার */
+    margin-top: 8px;
+    padding: 8px;
+    display: none; /* ডিফল্টভাবে লুকানো */
+}
+
+#subMenuMobile:not(.hidden) {
+    display: block; /* সাবমেনু দেখান */
+}
+
+/* সাবমেনু আইটেম স্টাইল */
+#subMenuMobile a {
+    display: block;
+    padding: 8px 12px;
+    margin: 4px 0;
+    background: rgba(255, 255, 255, 0.3); /* হালকা গ্লাসি ইফেক্ট */
+    backdrop-filter: blur(3px); /* হালকা ব্লার ইফেক্ট */
+    border-radius: 8px; /* রাউন্ডেড কর্নার */
+    color: #333; /* টেক্সট কালার */
+    text-decoration: none; /* আন্ডারলাইন সরান */
+    transition: all 0.3s ease-in-out; /* এনিমেশন যোগ করুন */
+}
+
+/* সাবমেনু আইটেম হোভার ইফেক্ট */
+#subMenuMobile a:hover {
+    background: rgba(255, 255, 255, 0.5); /* হোভারে গ্লাসি ইফেক্ট বাড়ান */
+    transform: translateX(5px); /* হোভারে সামান্য ডান দিকে সরান */
+}
+#desktopSubMenuBar {
+    display: none; /* ডিফল্টভাবে লুকানো */
+    top: 100%; /* হেডারের নিচ থেকে শুরু */
+    left: 0;
+    width: 100%; /* পুরো প্রস্থ জুড়ে */
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 40; /* হেডারের নিচে দেখান */
+    border-radius: 8px; /* রাউন্ডেড কর্নার */
+}
+
+#desktopSubMenuBar:not(.hidden) {
+    display: block; /* খোলা অবস্থায় দেখান */
+}
+
+#desktopSubMenuBar a {
+    display: block;
+    padding: 8px 12px;
+    color: #2d3748; /* কালার */
+    text-decoration: none; /* আন্ডারলাইন সরান */
+}
+
+#desktopSubMenuBar a:hover {
+    background-color: #f7fafc; /* হোভার ইফেক্ট */
+}
+/* সাবমেনু স্টাইল */
+#subMenuMobile, #desktopSubMenuBar {
+    display: none; /* ডিফল্টভাবে লুকানো */
+}
+
+#subMenuMobile.open, #desktopSubMenuBar:not(.hidden) {
+    display: block; /* খোলা অবস্থায় দেখান */
+} 
