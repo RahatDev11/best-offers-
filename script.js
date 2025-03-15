@@ -4,17 +4,17 @@ let isAdmin = false;
 // প্রোডাক্ট ডাটা
 const initialProducts = [
   {
-        id: "1742055698117",
+        id: "1742051688734",
         name: "Prem dulhan 6 pcs",
-        price: "170",
+        price: "190",
         category: "mehandi",
         image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1742034017/1742033818555_n0pibz.jpg",
-        tags: "Prem, dulhan",
+        tags: "Prem, dulhan, ",
         description: "প্রেম দুলহান মেহেদি হল একটি জনপ্রিয় ভারতীয় মেহেদি ব্র্যান্ড, যা বিশেষ করে উৎসব এবং বিশেষ অনুষ্ঠানের জন্য ব্যবহার করা হয়। এটি সাধারণত প্রাকৃতিক হেনা দিয়ে তৈরি করা হয় এবং এতে কোনো ক্ষতিকারক রাসায়নিক থাকে না",
         stockStatus: "in_stock",
-        quantity: "26"
+        quantity: "39"
     },
-{
+  {
         id: "1742034562001",
         name: "কাশ্মীরি মেহেদী",
         price: "35",
@@ -23,7 +23,7 @@ const initialProducts = [
         tags: "মেহেন্দি, মেহেদী, mehedi, mehandi",
         description: " কাশ্মিরি ফাস্টকালার কোন এর গুনগত মান এবং দীর্ঘ সময় রঙ ধরে রাখার জন্য বিখ্যাত। এটি ত্বকের জন্য নিরাপদ। কাশ্মিরি ফাস্টকালার কোন মেহেদি পাতার নির্যাস থেকে তৈরি হয় এবং মেহেদির মতো রঙ হয়।",
         stockStatus: "in_stock",
-        quantity: "26"
+        quantity: "39"
     },
   {
         id: "1741892639007",
@@ -34,7 +34,7 @@ const initialProducts = [
         tags: "Milk shake, মিল্ক শেক",
         description: "Milkshake Delivary done🥰🌿ও*জন বাড়ানোর জন্য আপনার পছন্দের সেরা পণ্যটি ডিসকাউন্ট মূল্যে লুফে নিন🥀🌿কোনোরকম এডভান্স করতে হবেনা!  পণ্য হাতে পেয়ে চেক করবেন এবং সবকিছু ঠিকঠাক থাকলে পেমেন্ট করবেন! 🪴১০০% অ*রিজিনাল এবং ১০০% জেনুইন প্রোডাক্ট দেওয়া হবে ইনশাআল্লাহ 💥👉 দাম মাত্র ১৩৫০ টাকা 👈এখনই অর্ডার করুন ",
         stockStatus: "in_stock",
-        quantity: "26"
+        quantity: "39"
     },
     {
     id: "1741365542569",
@@ -44,8 +44,8 @@ const initialProducts = [
     image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1741326248/sample.jpg",
     tags: "new,tag",
     description: "New product description",
-        stockStatus: "in_stock",
-        quantity: "26"
+    stockStatus: "in_stock",
+    quantity: "39"
   },
   {
     id: "1741421645699",
@@ -55,8 +55,8 @@ const initialProducts = [
     image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1741412399/tshirt-8726716_1280_vyvosl.jpg,https://res.cloudinary.com/dnvm88wfi/image/upload/v1741412399/tshirt-7979852_1280_fn9tw2.jpg,https://res.cloudinary.com/dnvm88wfi/image/upload/v1741412399/tshirt-7979854_1280_jj0vhg.jpg",
     tags: "T-shirt, ganji, shirt, টিশার্ট, ",
     description: "টি-শার্ট বা টি হচ্ছে এক প্রকার শার্ট, যা ঘাড়ের অংশ থেকে দেহের ওপরাংশে কবন্ধের বেশিরভাগ স্থানকে ঢেকে রাখে। ইংরেজি 'টি' (T) আকৃতির ন্যায় দেখতে, তাই এ পোশাকটির নাম টি-শার্ট হয়েছে। টি-শার্টে সাধারণত কোনো বোতাম বা কলার থাকে না। সচারচর এটি হয় গোলাকার ও খাটো হাতাযুক্ত। যদিও কিছু ক্ষেত্রে মানুষ ভুলবশত খাটো হাতাযুক্ত যে-কোনো শার্ট বা ব্লাউজকেই টি-শার্ট ভেবে ভুল করে। পোলো শার্ট বা অন্যান্য কলারযুক্ত শার্ট প্রকৃতপক্ষে টি-শার্ট নয়। কারণ এ ধরনের শার্টের হাতা কাঁধের পাশ দিয়ে সামান্য একটু বাড়তি থাকে, এবং খাটো হাতার ক্ষেত্রে তা কনুই পর্যন্ত হতে পারে।",
-        stockStatus: "in_stock",
-        quantity: "26"
+    stockStatus: "in_stock",
+    quantity: "39"
   },
   {
     id: "1741365548108",
@@ -66,8 +66,8 @@ const initialProducts = [
     image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1741326251/samples/animals/three-dogs.jpg",
     tags: "Dogs",
     description: "This is dogs",
-        stockStatus: "in_stock",
-        quantity: "26"
+    stockStatus: "in_stock",
+    quantity: "39"
   },
   {
     id: "1741365548109",
@@ -77,8 +77,8 @@ const initialProducts = [
     image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1741326248/sample.jpg",
     tags: "new,tag",
     description: "New product description",
-        stockStatus: "in_stock",
-        quantity: "26"
+    stockStatus: "in_stock",
+  quantity: "39"
   }
 ];
 
@@ -271,22 +271,36 @@ ${imageLinks}
 function showProductDetail(productId) {
   window.location.href = `product-detail.html?id=${productId}`;
 }
-
+document.addEventListener("DOMContentLoaded", () => {
+    // পরিমাণ ড্রপডাউন অপশন (১-১০০) যোগ করুন
+    const quantitySelect = document.getElementById("productQuantity");
+    for (let i = 1; i <= 100; i++) {
+        const option = document.createElement("option");
+        option.value = i;
+        option.textContent = i;
+        quantitySelect.appendChild(option);
+    }
+});
 // নতুন প্রোডাক্ট ডাটা জেনারেট করুন
 document.getElementById("productForm").addEventListener("submit", function (e) {
   e.preventDefault();
+
+  // ছবির URL গুলো সংগ্রহ করুন
   const imageUrls = Array.from(document.querySelectorAll('#imageInputs input'))
     .map(input => input.value.trim())
     .filter(url => url);
 
+  // নতুন প্রোডাক্ট অবজেক্ট তৈরি করুন
   const newProduct = {
-    id: Date.now().toString(),
-    name: document.getElementById("productName").value,
-    price: document.getElementById("productPrice").value,
-    category: document.getElementById("productCategory").value,
-    image: imageUrls.join(','),
-    tags: document.getElementById("productTags").value.split(',').map(tag => tag.trim()),
-    description: document.getElementById("productDescription").value
+    id: Date.now().toString(), // ইউনিক আইডি জেনারেট করুন
+    name: document.getElementById("productName").value, // প্রোডাক্টের নাম
+    price: document.getElementById("productPrice").value, // দাম
+    category: document.getElementById("productCategory").value, // ক্যাটাগরি
+    image: imageUrls.join(','), // ছবির URL গুলো কমা দিয়ে যুক্ত করুন
+    tags: document.getElementById("productTags").value.split(',').map(tag => tag.trim()), // ট্যাগ গুলো কমা দিয়ে আলাদা করুন
+    description: document.getElementById("productDescription").value, // বিবরণ
+    stockStatus: document.getElementById("productStockStatus").value, // স্টক স্ট্যাটাস
+    quantity: document.getElementById("productQuantity").value // পরিমাণ
   };
 
   // প্রোডাক্ট ডেটা অ্যারে যোগ করুন
@@ -307,10 +321,11 @@ document.getElementById("productForm").addEventListener("submit", function (e) {
         category: "${newProduct.category}",
         image: "${newProduct.image}",
         tags: "${newProduct.tags.join(', ')}",
-        description: "${newProduct.description}"
+        description: "${newProduct.description}",
+        stockStatus: "${newProduct.stockStatus}",
+        quantity: "${newProduct.quantity}"
     },`;
 });
-
 // ছবি ফিল্ড যোগ করুন
 function addImageField() {
   const input = document.createElement('input');
@@ -513,51 +528,4 @@ document.addEventListener('click', (e) => {
   const socialIcons = document.getElementById('socialIcons');
   const shareButton = document.getElementById('shareButton');
 
-  // যদি সোশ্যাল আইকন ওপেন থাকে এবং ক্লিক টার্গেট শেয়ার বাটন বা সোশ্যাল আইকন না হয়
-  if (socialIcons && !socialIcons.classList.contains('hidden') && !e.target.closest('#shareButton') && !e.target.closest('#socialIcons')) {
-    socialIcons.classList.add('hidden'); // সোশ্যাল আইকন লুকান
-    shareButton.classList.remove('hidden'); // শেয়ার বাটন দেখান
-  }
-});
-
-// সোশ্যাল মিডিয়া বাটনগুলোর উপর ক্লিক করলে ইভেন্ট বাবলিং বন্ধ করুন
-document.getElementById('socialIcons').addEventListener('click', (e) => {
-  e.stopPropagation();
-});
-
-// স্ক্রল করলে সোশ্যাল আইকন ক্লোজ এবং শেয়ার বাটন দেখানো
-function closeSocialIconsOnScroll() {
-  const socialIcons = document.getElementById('socialIcons');
-  const shareButton = document.getElementById('shareButton');
-
-  // সোশ্যাল আইকন ক্লোজ করুন
-  if (socialIcons && !socialIcons.classList.contains('hidden')) {
-    socialIcons.classList.add('hidden');
-    shareButton.classList.remove('hidden'); // শেয়ার বাটন দেখান
-  }
-}
-
-// স্ক্রল ইভেন্ট লিসেনার
-window.addEventListener('scroll', closeSocialIconsOnScroll);
-// লগইন ফর্ম খোলার জন্য সার্চ বার ইভেন্ট (মোবাইল)
-document.getElementById('searchInput').addEventListener('input', function(e) {
-  if (e.target.value === '3012014') {
-    openModal('loginModal');
-    e.target.value = ''; // সার্চ বার খালি করুন
-  }
-});
-
-// লগইন ফর্ম খোলার জন্য সার্চ বার ইভেন্ট (ডেস্কটপ)
-document.getElementById('searchInputDesktop').addEventListener('input', function(e) {
-  if (e.target.value === '3012014') {
-    openModal('loginModal');
-    e.target.value = ''; // সার্চ বার খালি করুন
-  }
-});
-
-
-
-
-
-
-
+  // যদি সোশ্যাল
