@@ -85,12 +85,35 @@ function closeSidebar() {
     sidebarOverlay.classList.add('hidden'); // ওভারলে লুকান
 }
 
+// মেনু আইটেম ক্লিক করার ফাংশন
+function handleMenuItemClick() {
+    closeSidebar(); // সাইডবার বন্ধ করুন
+}
 
-// মোবাইল সাবমেনু টগল ফাংশন
+// সাবমেনু আইটেম ক্লিক করার ফাংশন
+function handleSubMenuItemClick() {
+    const subMenuMobile = document.getElementById('subMenuMobile');
+    subMenuMobile.classList.remove('open'); // সাবমেনু বন্ধ করুন
+    closeSidebar(); // সাইডবার বন্ধ করুন
+}
+
+// সাবমেনু টগল করার ফাংশন
 function toggleSubMenuMobile(event) {
     event.stopPropagation();
     const subMenuMobile = document.getElementById('subMenuMobile');
-    subMenuMobile.classList.toggle('open');
+    const arrowIcon = document.getElementById('arrowIcon');
+    
+    subMenuMobile.classList.toggle('open'); // সাবমেনু টগল করুন
+    arrowIcon.classList.toggle('rotate-180'); // ডাউন এরো ঘোরানো
+}
+//সাব মেনুডাউন অ্যারো যোগ করা
+function toggleSubMenuMobile(event) {
+    event.stopPropagation();
+    const subMenuMobile = document.getElementById('subMenuMobile');
+    const arrowIcon = document.getElementById('arrowIcon');
+    
+    subMenuMobile.classList.toggle('open'); // সাবমেনু টগল করুন
+    arrowIcon.classList.toggle('rotate-180'); // ডাউন এরো ঘোরানো
 }
 
 // ডেস্কটপ সাবমেনু টগল করার ফাংশন
