@@ -175,6 +175,22 @@
                     <label for="productDescription" class="block text-gray-700">বিবরণ</label>
                     <textarea id="productDescription" class="w-full p-2 border rounded" rows="4" required></textarea>
                 </div>
+                <!-- স্টক স্ট্যাটাস -->
+<div class="mb-4">
+    <label for="productStockStatus" class="block text-gray-700">স্টক স্ট্যাটাস</label>
+    <select id="productStockStatus" class="w-full p-2 border rounded">
+        <option value="in_stock">স্টকে আছে</option>
+        <option value="out_of_stock">স্টকে নেই</option>
+    </select>
+</div>
+
+<!-- পরিমাণ (১-১০০ পর্যন্ত ড্রপডাউন) -->
+<div class="mb-4">
+    <label for="productQuantity" class="block text-gray-700">পরিমাণ</label>
+    <select id="productQuantity" class="w-full p-2 border rounded">
+        <!-- অপশনগুলি জাভাস্ক্রিপ্ট দিয়ে যোগ করা হবে -->
+    </select>
+</div>
                 <button type="submit" class="bg-lipstick text-white px-4 py-2 rounded hover:bg-lipstick-dark">কোড জেনারেট করুন</button>
             </form>
             <div class="mt-4 bg-gray-100 p-4 rounded-lg">
