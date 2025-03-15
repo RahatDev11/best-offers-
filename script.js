@@ -3,6 +3,15 @@ let isAdmin = false;
 
 // প্রোডাক্ট ডাটা
 const initialProducts = [
+{
+        id: "1742034562001",
+        name: "কাশ্মীরি মেহেদী",
+        price: "35",
+        category: "mehandi",
+        image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1742034019/1742033775697_tovzsu.jpg,https://res.cloudinary.com/dnvm88wfi/image/upload/v1742034015/1742033780107_x2fjnv.jpg",
+        tags: "মেহেন্দি, মেহেদী, mehedi, mehandi",
+        description: " কাশ্মিরি ফাস্টকালার কোন এর গুনগত মান এবং দীর্ঘ সময় রঙ ধরে রাখার জন্য বিখ্যাত। এটি ত্বকের জন্য নিরাপদ। কাশ্মিরি ফাস্টকালার কোন মেহেদি পাতার নির্যাস থেকে তৈরি হয় এবং মেহেদির মতো রঙ হয়।"
+    },
   {
         id: "1741892639007",
         name: "Milk shake",
