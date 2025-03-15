@@ -48,18 +48,21 @@
                 <i class="fas fa-times"></i>
             </button>
             <ul class="mt-4">
-                <li><a href="#home" class="block py-2 text-gray-800 hover:bg-gray-100">হোম</a></li>
-                <li><a href="#about" class="block py-2 text-gray-800 hover:bg-gray-100">আমাদের সম্পর্কে</a></li>
-<li>
-    <button onclick="toggleSubMenuMobile(event)" class="block py-2 w-full text-left text-gray-800 hover:bg-gray-100">পণ্য সমূহ</button>
-    <div id="subMenuMobile" class="hidden bg-white/5 backdrop-blur-sm rounded-lg mt-1 ml-4">
-        <a href="#all" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">সকল প্রোডাক্ট</a>
-        <a href="#cosmetics" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">মেকআপ</a>
-        <a href="#skincare" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">স্কিনকেয়ার</a>
-        <a href="#haircare" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">হেয়ারকেয়ার</a>
-        <a href="#fragrances" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">ফ্র্যাগরেন্স</a>
-    </div>
-</li>
+                <li><a href="#home" onclick="handleMenuItemClick()" class="block py-2 text-gray-800 hover:bg-gray-100">হোম</a></li>
+                <li><a href="#about" onclick="handleMenuItemClick()" class="block py-2 text-gray-800 hover:bg-gray-100">আমাদের সম্পর্কে</a></li>
+                <li>
+                    <button onclick="toggleSubMenuMobile(event)" class="flex items-center justify-between w-full text-left text-gray-800 hover:bg-gray-100">
+                        <span>পণ্য সমূহ</span>
+                        <i id="arrowIcon" class="fas fa-chevron-down ml-2 transition-transform duration-300"></i>
+                    </button>
+                    <div id="subMenuMobile" class="hidden bg-white/5 backdrop-blur-sm rounded-lg mt-1 ml-4">
+                        <a href="#all" onclick="handleSubMenuItemClick()" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">সকল প্রোডাক্ট</a>
+                        <a href="#cosmetics" onclick="handleSubMenuItemClick()" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">মেকআপ</a>
+                        <a href="#skincare" onclick="handleSubMenuItemClick()" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">স্কিনকেয়ার</a>
+                        <a href="#haircare" onclick="handleSubMenuItemClick()" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">হেয়ারকেয়ার</a>
+                        <a href="#medandi" onclick="handleSubMenuItemClick()" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">মেহেদী</a>
+                    </div>
+                </li>
             </ul>
         </div>
     </div>
@@ -70,7 +73,7 @@
   <a href="#home" class="text-gray-800 hover:text-highlight">হোম</a>
   <a href="#about" class="text-gray-800 hover:text-highlight">আমাদের সম্পর্কে</a>
   <div class="relative">
-    <button onclick="toggleSubMenuDesktop()" class="text-gray-800 hover:text-highlight">পণ্য সমূহ</button>
+    <button onclick="toggleSubMenuDesktop()" class="text-gray-800 hover:text-highlight">পণ্য সমূহ<i id="desktopArrowIcon" class="fas fa-chevron-down ml-2 transition-transform duration-300"></i></button>
   </div>
 </nav>
 
@@ -82,7 +85,7 @@
       <a href="#cosmetics" class="block p-2 text-gray-800 hover:bg-gray-100">মেকআপ</a>
       <a href="#skincare" class="block p-2 text-gray-800 hover:bg-gray-100">স্কিনকেয়ার</a>
       <a href="#haircare" class="block p-2 text-gray-800 hover:bg-gray-100">হেয়ারকেয়ার</a>
-      <a href="#fragrances" class="block p-2 text-gray-800 hover:bg-gray-100">ফ্র্যাগরেন্স</a>
+      <a href="#mehandi" class="block p-2 text-gray-800 hover:bg-gray-100">মেহেদী</a>
     </div>
   </div>
 </div>
@@ -152,7 +155,7 @@
         <option value="cosmetics">মেকআপ</option>
         <option value="skincare">স্কিনকেয়ার</option>
         <option value="haircare">হেয়ারকেয়ার</option>
-        <option value="fragrances">ফ্র্যাগরেন্স</option>
+        <option value="mehandi">মেহেদী</option>
     </select>
 </div>
                 <div class="mb-4">
