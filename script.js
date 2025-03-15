@@ -65,7 +65,7 @@ const initialProducts = [
     category: "skincare",
     image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1741326251/samples/animals/three-dogs.jpg",
     tags: "Dogs",
-    description: "This is dogs"
+    description: "This is dogs",
         stockStatus: "in_stock",
         quantity: "26"
   },
@@ -76,7 +76,7 @@ const initialProducts = [
     category: "skincare",
     image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1741326248/sample.jpg",
     tags: "new,tag",
-    description: "New product description"
+    description: "New product description",
         stockStatus: "in_stock",
         quantity: "26"
   }
