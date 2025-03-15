@@ -230,31 +230,42 @@
     background: rgba(255, 255, 255, 0.5); /* হোভারে গ্লাসি ইফেক্ট বাড়ান */
     transform: translateX(5px); /* হোভারে সামান্য ডান দিকে সরান */
 }
+/* ডেস্কটপ সাবমেনু স্টাইল */
 #desktopSubMenuBar {
     display: none; /* ডিফল্টভাবে লুকানো */
+    position: absolute;
     top: 100%; /* হেডারের নিচ থেকে শুরু */
     left: 0;
     width: 100%; /* পুরো প্রস্থ জুড়ে */
-    background-color: white;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 40; /* হেডারের নিচে দেখান */
+    background: rgba(255, 255, 255, 0.2); /* হালকা সাদা ব্যাকগ্রাউন্ড */
+    backdrop-filter: blur(20px); /* গ্লাসি ইফেক্ট */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* শ্যাডো যোগ করুন */
     border-radius: 8px; /* রাউন্ডেড কর্নার */
+    padding: 8px; /* প্যাডিং যোগ করুন */
+    z-index: 40; /* হেডারের নিচে দেখান */
 }
 
 #desktopSubMenuBar:not(.hidden) {
-    display: block; /* খোলা অবস্থায় দেখান */
+    display: flex; /* খোলা অবস্থায় দেখান এবং এক লাইনে রাখুন */
+    flex-direction: row; /* আইটেমগুলি এক লাইনে রাখুন */
+    gap: 8px; /* আইটেমগুলির মধ্যে দূরত্ব */
 }
 
 #desktopSubMenuBar a {
     display: block;
     padding: 8px 12px;
     color: #2d3748; /* কালার */
+    border-radius: 6px; /* রাউন্ডেড কর্নার */
     text-decoration: none; /* আন্ডারলাইন সরান */
+    background: rgba(255, 255, 255, 0.3); /* হালকা গ্লাসি ইফেক্ট */
+    backdrop-filter: blur(5px); /* হালকা ব্লার ইফেক্ট */
+    transition: background 0.3s ease; /* হোভার এনিমেশন */
 }
 
 #desktopSubMenuBar a:hover {
-    background-color: #f7fafc; /* হোভার ইফেক্ট */
+    background: rgba(255, 255, 255, 0.5); /* হোভারে গ্লাসি ইফেক্ট বাড়ান */
 }
+
 /* সাবমেনু স্টাইল */
 #subMenuMobile, #desktopSubMenuBar {
     display: none; /* ডিফল্টভাবে লুকানো */
@@ -262,4 +273,4 @@
 
 #subMenuMobile.open, #desktopSubMenuBar:not(.hidden) {
     display: block; /* খোলা অবস্থায় দেখান */
-} 
+}
