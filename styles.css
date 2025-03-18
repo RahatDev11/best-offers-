@@ -313,3 +313,173 @@ select#productQuantity {
   background-position: right 0.5rem center;
   background-size: 1.5em;
 }
+/* সাইডবার ওভারলে স্টাইল */
+#sidebarOverlay {
+    display: none; /* ডিফল্টভাবে লুকানো */
+}
+
+/* সাইডবার ওপেন থাকা অবস্থায় ওভারলে দেখান */
+#sidebarOverlay.active {
+    display: block;
+}
+
+/* কার্ট সাইডবার স্টাইল */
+.cart-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 80%; /* সাইডবারের প্রস্থ */
+  height: 100%;
+  background: rgba(255, 255, 255, 0.95); /* হালকা সাদা ব্যাকগ্রাউন্ড */
+  backdrop-filter: blur(10px); /* গ্লাসি ইফেক্ট */
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1); /* শ্যাডো যোগ করুন */
+  transform: translateX(100%); /* ডিফল্টভাবে লুকানো */
+  transition: transform 0.3s ease-in-out; /* ধীরে ধীরে ওপেন হবে */
+  z-index: 1000; /* ওভারলের উপরে রাখুন */
+  padding: 1rem; /* প্যাডিং যোগ করুন */
+  display: flex;
+  flex-direction: column;
+}
+
+/* কার্ট সাইডবার খোলা থাকলে অবস্থান */
+.cart-sidebar:not(.translate-x-full) {
+  transform: translateX(0); /* সম্পূর্ণভাবে বের হয়ে আসা */
+}
+
+/* কার্ট হেডার */
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.cart-header h2 {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #1f2937;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.close-btn:hover {
+  color: #1f2937;
+}
+
+/* কার্ট আইটেম স্টাইল */
+.cart-items {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: rgba(255, 255, 255, 0.9); /* হালকা গ্লাসি ইফেক্ট */
+  backdrop-filter: blur(5px); /* হালকা ব্লার ইফেক্ট */
+  border-radius: 12px; /* রাউন্ডেড কর্নার */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* শ্যাডো যোগ করুন */
+}
+
+.cart-item img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.cart-item h3 {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #1f2937;
+}
+
+.cart-item p {
+  font-size: 0.875rem;
+  color: #ef4444;
+  font-weight: bold;
+}
+
+.cart-item button {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.cart-item button:hover {
+  background: #dc2626;
+}
+
+/* কার্ট ফুটার */
+.cart-footer {
+  padding: 1rem;
+  border-top: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+.cart-footer p {
+  font-size: 1.125rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.checkout-btn {
+  background: darkred;
+  color: whitesmoke;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 1rem;
+}
+
+.checkout-btn:hover {
+  background: #b91c1c;
+}
+
+/* কার্ট ওভারলে স্টাইল */
+.cart-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: none;
+}
+
+/* কার্ট সাইডবার খোলা থাকা অবস্থায় ওভারলে দেখান */
+#cartSidebar:not(.translate-x-full) + #cartOverlay {
+  display: block;
+}
+
+/* টোস্ট নোটিফিকেশন স্টাইল */
+#toast {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  background-color: #48bb78; /* সবুজ কালার */
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transition: opacity 0.3s ease-in-out;
+}
