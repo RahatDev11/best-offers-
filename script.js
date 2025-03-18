@@ -3,7 +3,7 @@ let isAdmin = false;
 
 // প্রোডাক্ট ডাটা
 const initialProducts = [
-  {
+   {
         id: "1742051688734",
         name: "Prem dulhan 6 pcs",
         price: "190",
@@ -205,20 +205,28 @@ ${imageLinks}
 আমি এই প্রোডাক্টটি কিনতে চাই!
     `);
 
-    card.innerHTML = `
-      <img src="${product.image.split(',')[0]}" class="w-full h-48 object-cover mb-4 rounded-lg">
-      <h3 class="text-lg font-bold mb-2">${product.name}</h3>
-      <p class="text-lipstick font-bold mb-2">দাম: ${product.price} টাকা</p>
-      <p class="text-gray-600 mb-4">${product.description.substring(0, 80)}...</p>
-      <div class="flex justify-between items-center">
+card.innerHTML = `
+    <div onclick="event.stopPropagation(); showProductDetail('${product.id}')">
+        <img src="${product.image.split(',')[0]}" class="w-full h-48 object-cover mb-4 rounded-lg">
+        <h3 class="text-lg font-bold mb-2">${product.name}</h3>
+        <p class="text-lipstick font-bold mb-2">দাম: ${product.price} টাকা</p>
+        <p class="text-gray-600 mb-4">${product.description.substring(0, 80)}...</p>
+    </div>
+    <div class="flex justify-between items-center">
         <button onclick="event.stopPropagation(); showProductDetail('${product.id}')" class="text-blue-500 hover:underline">বিস্তারিত দেখুন</button>
-        <a href="https://wa.me/8801931866636?text=${whatsappMessage}" 
-           target="_blank" 
-           class="bg-lipstick text-white px-3 py-1 rounded text-sm hover:bg-lipstick-dark">
-          কিনুন
-        </a>
-      </div>
-    `;
+        <div class="flex space-x-2">
+            <a href="https://wa.me/8801931866636?text=${whatsappMessage}" 
+               target="_blank" 
+               class="bg-lipstick text-white px-3 py-1 rounded text-sm hover:bg-lipstick-dark">
+              কিনুন
+            </a>
+            <!-- এড টু কার্ট বাটন -->
+            <button onclick="event.stopPropagation(); addToCart('${product.id}')" class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600">
+              Add to Cart
+            </button>
+        </div>
+    </div>
+`;
     productList.appendChild(card);
   });
 }
@@ -299,7 +307,6 @@ function focusMobileSearch() {
   document.getElementById('searchInput').focus();
 }
 
-
 // সার্চ ফাংশনালিটি (মোবাইল)
 function searchProducts() {
   const searchTerm = document.getElementById("searchInput").value.toLowerCase();
@@ -369,6 +376,24 @@ function displaySearchResults(filteredProducts, searchResults) {
 window.addEventListener('scroll', () => {
   closeAllMenusOnScroll();
 });
+
+// কার্টের জন্য ভেরিয়েবল
+let cart = [];
+
+// প্রোডাক্ট কার্টে যোগ করার ফাংশন
+function addToCart(productId) {
+  const product = products.find(p => p.id === productId);
+  if (product) {
+    const existingProduct = cart.find(p => p.id === productId);
+    if (existingProduct) {
+      existingProduct.quantity += 1; // যদি প্রোডাক্টটি কার্টে থাকে, পরিমাণ বাড়ান
+    } else {
+      cart.push({ ...product, quantity: 1 }); // যদি না থাকে, প্রোডাক্টটি কার্টে যোগ করুন
+    }
+    updateCartUI();
+  }
+}
+
 
 // স্ক্রল করলে মেনু এবং সার্চ বার ক্লোজ করার ফাংশন
 function closeAllMenusOnScroll() {
@@ -484,7 +509,7 @@ document.addEventListener('click', (e) => {
   const socialIcons = document.getElementById('socialIcons');
   const shareButton = document.getElementById('shareButton');
 
-    // যদি সোশ্যাল আইকন ওপেন থাকে এবং ক্লিক টার্গেট শেয়ার বাটন বা সোশ্যাল আইকন না হয়
+  // যদি সোশ্যাল আইকন ওপেন থাকে এবং ক্লিক টার্গেট শেয়ার বাটন বা সোশ্যাল আইকন না হয়
   if (socialIcons && !socialIcons.classList.contains('hidden') && !e.target.closest('#shareButton') && !e.target.closest('#socialIcons')) {
     socialIcons.classList.add('hidden'); // সোশ্যাল আইকন লুকান
     shareButton.classList.remove('hidden'); // শেয়ার বাটন দেখান
@@ -524,4 +549,95 @@ document.getElementById('searchInputDesktop').addEventListener('input', function
     openModal('loginModal');
     e.target.value = ''; // সার্চ বার খালি করুন
   }
+});
+
+
+// কার্ট UI ও মোট মূল্য আপডেট
+function updateCartUI() {
+  const cartItems = document.getElementById('cartItems');
+  cartItems.innerHTML = '';
+
+  cart.forEach((product, index) => {
+    const item = document.createElement('div');
+    item.className = 'flex items-center justify-between bg-gray-100 p-3 rounded-lg mb-2';
+    item.innerHTML = `
+      <div class="flex items-center space-x-4">
+        <img src="${product.image.split(',')[0]}" class="w-16 h-16 object-cover rounded-lg" alt="${product.name}">
+        <div>
+          <h3 class="text-lg font-bold text-gray-800">${product.name}</h3>
+          <p class="text-lipstick font-bold">দাম: ${product.price} টাকা</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2">
+        <button onclick="decreaseQuantity(${index})" class="bg-lipstick text-white px-2 py-1 rounded">-</button>
+        <span class="text-gray-800">${product.quantity}</span>
+        <button onclick="increaseQuantity(${index})" class="bg-lipstick text-white px-2 py-1 rounded">+</button>
+      </div>
+    `;
+    cartItems.appendChild(item);
+  });
+
+  // মোট মূল্য ক্যালকুলেশন
+  const totalPrice = cart.reduce((sum, product) => sum + (product.price * product.quantity), 0);
+  if(document.getElementById('totalPrice')) {
+    document.getElementById('totalPrice').textContent = `মোট মূল্য: ${totalPrice} টাকা`;
+  }
+}
+
+// কার্ট ফাংশনালিটি
+window.addToCart = (productId) => {
+  const product = products.find((p) => p.id === productId);
+  if(!product) return;
+
+  const existingProduct = cart.find((p) => p.id === productId);
+  existingProduct ? existingProduct.quantity++ : cart.push({...product, quantity: 1});
+  
+  updateCartUI();
+  showToast('আপনার প্রোডাক্টটি কার্টে যোগ করা হয়েছে!');
+};
+
+window.decreaseQuantity = (index) => {
+  cart[index].quantity > 1 ? cart[index].quantity-- : cart.splice(index, 1);
+  updateCartUI();
+};
+
+window.increaseQuantity = (index) => {
+  cart[index].quantity++;
+  updateCartUI();
+};
+
+// কার্ট সাইডবার কন্ট্রোল
+window.openCartSidebar = () => {
+  document.getElementById('cartSidebar').classList.remove('translate-x-full');
+  document.getElementById('sidebarOverlay').classList.remove('hidden');
+};
+
+window.closeCartSidebar = () => {
+  document.getElementById('cartSidebar').classList.add('translate-x-full');
+  document.getElementById('sidebarOverlay').classList.add('hidden');
+};
+
+// চেকআউট ফাংশন
+window.checkout = () => {
+  const message = cart.map(product => 
+    `প্রোডাক্টের নাম: ${product.name}\nদাম: ${product.price} টাকা\nপরিমাণ: ${product.quantity}\nছবি: ${product.image.split(',')[0]}`
+  ).join('\n\n');
+  
+  window.open(`https://wa.me/8801825620497?text=${encodeURIComponent(message + '\n\nআমি এই প্রোডাক্ট গুলো নিতে চাই।')}`, '_blank');
+};
+
+// টোস্ট নোটিফিকেশন
+window.showToast = (message) => {
+  const toast = document.getElementById('toast');
+  if(!toast) return;
+  
+  toast.textContent = message;
+  toast.classList.remove('hidden');
+  setTimeout(() => toast.classList.add('hidden'), 3000);
+};
+
+// DOM ইনিশিয়ালাইজেশন
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('cartButton').addEventListener('click', openCartSidebar);
+  document.getElementById('cartSidebar').addEventListener('click', (e) => e.stopPropagation());
 });
