@@ -5,7 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>প্রোডাক্ট বিস্তারিত</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script> 
+        $(function(){
+            $("#header").load("header.html"); 
+            $("#footer").load("footer.html"); 
+        });
+    </script>
     <style>
         .bg-brushstroke { background-color: #F4A7B9; }
         .text-lipstick { color: #A52A2A; }
@@ -29,7 +35,7 @@
             max-height: 80vh;
             object-fit: contain;
             border-radius: 8px;
-            border: 2px solid #A52A2A; /* ছবির জন্য বর্ডার যোগ করা হয়েছে */
+            border: 2px solid #A52A2A;
         }
 
         .indicator {
@@ -47,28 +53,14 @@
         }
     </style>
 </head>
-<body class="bg-gray-100">
-    <header class="bg-[#F4A7B9] text-white p-4 flex justify-between items-center fixed top-0 left-0 w-full z-50">
-        <a href="index.html" class="flex items-center">
-            <div class="flex items-center">
-                <img src="img.jpg" alt="কাপড়ের ব্যবসা লোগো" class="h-10 w-10 rounded-full mr-2">
-                <span class="text-lg font-bold">Any's Beauty Corner</span>
-            </div>
-        </a>
-        <a href="index.html" class="bg-white text-[#A52A2A] px-4 py-2 rounded hover:bg-gray-100">হোমে ফিরুন</a>
-    </header>
-
+<body class="bg-gray-100 bg-background">
+    <div id="header"></div>
     <main class="p-4 pt-20">
         <div class="bg-white p-6 rounded-lg shadow-lg max-w-4xl mx-auto">
             <div id="imageCarousel" class="relative overflow-hidden w-full mb-6">
-                <div class="slide-track flex transition-transform duration-500 ease-in-out">
-                    <!-- স্লাইডগুলি এখানে ডায়নামিকভাবে যোগ হবে -->
-                </div>
-                <div id="indicators" class="flex justify-center mt-4">
-                    <!-- ইন্ডিকেটরগুলি এখানে যোগ হবে -->
-                </div>
+                <div class="slide-track flex transition-transform duration-500 ease-in-out"></div>
+                <div id="indicators" class="flex justify-center mt-4"></div>
             </div>
-
             <h1 id="productTitle" class="text-2xl font-bold mb-4"></h1>
             <p id="productPrice" class="text-[#A52A2A] text-xl font-bold mb-4"></p>
             <p id="productDescription" class="text-gray-700 mb-6"></p>
@@ -77,35 +69,10 @@
             </a>
         </div>
     </main>
-    <!-- সোশ্যাল মিডিয়া ফ্লোটিং বাটন -->
-    <div class="fixed bottom-4 right-4 z-50">
-        <!-- শেয়ার বাটন -->
-        <button id="shareButton" class="bg-lipstick text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center">
-            <i class="fas fa-user-circle"></i>
-        </button>
-        <!-- সোশ্যাল মিডিয়া আইকনগুলি (লুকানো অবস্থায়) -->
-        <div id="socialIcons" class="hidden space-y-2 mt-2">
-            <a href="https://www.facebook.com/share/1PyLUzGE9P/" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
-                <i class="fab fa-facebook"></i>
-            </a>
-            <a href="https://www.instagram.com/anysbeautycorner/?utm_medium=copy_link" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
-                <i class="fab fa-instagram"></i>
-            </a>
-            <a href="https://www.tiktok.com/@anysbeautycorner" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
-                <i class="fab fa-tiktok"></i>
-            </a>
-            <a href="https://youtube.com/@anysbeautycorner?si=oXGtEuakP_SIPH_Q" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
-                <i class="fab fa-youtube"></i>
-            </a>
-        </div>
-    </div>
-
-    <footer class="bg-[#F4A7B9] text-white p-4 text-center">
-        <p>&copy; ২০২৫ Any's Beauty Corner। সর্বস্বত্ব সংরক্ষিত।</p>
-    </footer>
-
+    <div id="footer"></div>
+    <script src="script.js"></script>
     <script>
-document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
   const productId = params.get('id');
   const products = JSON.parse(localStorage.getItem('products')) || [];
@@ -124,15 +91,15 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // কাউন্টার যোগ করুন
     const counterHTML = `
-            <div class="flex items-center space-x-4 mb-4">
-                <span class="text-gray-700">পরিমাণ:</span>
-                <div class="flex items-center border rounded-lg overflow-hidden">
-                    <button id="decreaseBtn" class="bg-lipstick text-white px-3 py-1 hover:bg-lipstick-dark">-</button>
-                    <input type="number" id="quantityInput" value="1" min="1" max="100" class="px-2 py-1 border-0 focus:ring-0 w-16 text-center">
-                    <button id="increaseBtn" class="bg-lipstick text-white px-3 py-1 hover:bg-lipstick-dark">+</button>
-                </div>
-            </div>
-        `;
+      <div class="flex items-center space-x-4 mb-4">
+        <span class="text-gray-700">পরিমাণ:</span>
+        <div class="flex items-center border rounded-lg overflow-hidden">
+          <button id="decreaseBtn" class="bg-lipstick text-white px-3 py-1 hover:bg-lipstick-dark">-</button>
+          <input type="number" id="quantityInput" value="1" min="1" max="100" class="px-2 py-1 border-0 focus:ring-0 w-16 text-center">
+          <button id="increaseBtn" class="bg-lipstick text-white px-3 py-1 hover:bg-lipstick-dark">+</button>
+        </div>
+      </div>
+    `;
     document.getElementById('productDescription').insertAdjacentHTML('afterend', counterHTML);
     
     // কাউন্টার লজিক
@@ -170,11 +137,11 @@ document.addEventListener('DOMContentLoaded', () => {
 পরিমাণ: ${quantity} টি
 ${imageList}
 আমি এই প্রোডাক্টটি কিনতে চাই!
-            `;
+      `;
       window.open(`https://wa.me/8801931866636?text=${encodeURIComponent(message)}`, '_blank');
     });
     
-    // বাকি কোড (ইমেজ ক্যারousel ইত্যাদি)
+    // ইমেজ ক্যারousel সেটআপ
     const carouselTrack = document.querySelector('#imageCarousel .slide-track');
     const indicatorsContainer = document.getElementById('indicators');
     product.image.split(',').forEach((img, index) => {
@@ -233,89 +200,67 @@ ${imageList}
   }
 });
 
-        let currentSlide = 0;
+let currentSlide = 0;
 
-        function showNextSlide() {
-            const slides = document.querySelectorAll('.slide');
-            currentSlide = (currentSlide + 1) % slides.length;
-            updateSliderPosition();
-            updateIndicators(currentSlide);
-        }
+function showNextSlide() {
+  const slides = document.querySelectorAll('.slide');
+  currentSlide = (currentSlide + 1) % slides.length;
+  updateSliderPosition();
+  updateIndicators(currentSlide);
+}
 
-        function showPrevSlide() {
-            const slides = document.querySelectorAll('.slide');
-            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-            updateSliderPosition();
-            updateIndicators(currentSlide);
-        }
+function showPrevSlide() {
+  const slides = document.querySelectorAll('.slide');
+  currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+  updateSliderPosition();
+  updateIndicators(currentSlide);
+}
 
-        function showSlide(index) {
-            currentSlide = index;
-            updateSliderPosition();
-            updateIndicators(currentSlide);
-        }
+function showSlide(index) {
+  currentSlide = index;
+  updateSliderPosition();
+  updateIndicators(currentSlide);
+}
 
-        function updateSliderPosition() {
-            const track = document.querySelector('.slide-track');
-            track.style.transform = `translateX(-${currentSlide * 100}%)`;
-        }
+function updateSliderPosition() {
+  const track = document.querySelector('.slide-track');
+  track.style.transform = `translateX(-${currentSlide * 100}%)`;
+}
 
-        function updateIndicators(index) {
-            const indicators = document.querySelectorAll('.indicator');
-            indicators.forEach((indicator, i) => {
-                if (i === index) {
-                    indicator.classList.add('active');
-                } else {
-                    indicator.classList.remove('active');
-                }
-            });
-        }
-        document.addEventListener('DOMContentLoaded', () => {
-    const images = document.querySelectorAll('.slide img');
-    images.forEach(img => {
-        img.addEventListener('click', () => {
-            if (window.innerWidth <= 768) { // শুধুমাত্র মোবাইলে
-                const modal = document.createElement('div');
-                modal.style.position = 'fixed';
-                modal.style.top = '0';
-                modal.style.left = '0';
-                modal.style.width = '100%';
-                modal.style.height = '100%';
-                modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-                modal.style.display = 'flex';
-                modal.style.justifyContent = 'center';
-                modal.style.alignItems = 'center';
-                modal.style.zIndex = '1000';
-                modal.innerHTML = `<img src="${img.src}" style="max-width: 90%; max-height: 90%; border-radius: 8px;">`;
-                modal.addEventListener('click', () => modal.remove());
-                document.body.appendChild(modal);
-            }
-        });
-    });
-});
-// শেয়ার বাটন এবং সোশ্যাল মিডিয়া বাটন ব্যবস্থাপনা
-document.getElementById('shareButton').addEventListener('click', (e) => {
-  e.stopPropagation();
-  const socialIcons = document.getElementById('socialIcons');
-  socialIcons.classList.toggle('hidden');
-  document.getElementById('shareButton').classList.toggle('hidden');
-});
-
-// স্ক্রিনে অন্য কোথাও ক্লিক করলে সোশ্যাল মিডিয়া বাটন লুকানো
-document.addEventListener('click', () => {
-  const socialIcons = document.getElementById('socialIcons');
-  const shareButton = document.getElementById('shareButton');
-  if (socialIcons && !socialIcons.classList.contains('hidden')) {
-    socialIcons.classList.add('hidden');
-    if (shareButton) {
-      shareButton.classList.remove('hidden');
+function updateIndicators(index) {
+  const indicators = document.querySelectorAll('.indicator');
+  indicators.forEach((indicator, i) => {
+    if (i === index) {
+      indicator.classList.add('active');
+    } else {
+      indicator.classList.remove('active');
     }
-  }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const images = document.querySelectorAll('.slide img');
+  images.forEach(img => {
+    img.addEventListener('click', () => {
+      if (window.innerWidth <= 768) { // শুধুমাত্র মোবাইলে
+        const modal = document.createElement('div');
+        modal.style.position = 'fixed';
+        modal.style.top = '0';
+        modal.style.left = '0';
+        modal.style.width = '100%';
+        modal.style.height = '100%';
+        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        modal.style.display = 'flex';
+        modal.style.justifyContent = 'center';
+        modal.style.alignItems = 'center';
+        modal.style.zIndex = '1000';
+        modal.innerHTML = `<img src="${img.src}" style="max-width: 90%; max-height: 90%; border-radius: 8px;">`;
+        modal.addEventListener('click', () => modal.remove());
+        document.body.appendChild(modal);
+      }
+    });
+  });
 });
-// সোশ্যাল মিডিয়া বাটনগুলোর উপর ক্লিক করলে ইভেন্ট বাবলিং বন্ধ করুন
-document.getElementById('socialIcons').addEventListener('click', (e) => {
-  e.stopPropagation();
-});
-    </script>
+</script>
 </body>
 </html>
