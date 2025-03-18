@@ -1,0 +1,848 @@
+<html lang="bn">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Any's Beauty Corner
+  </title>
+  
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <style>
+/* কাস্টম কালার */
+.bg-brushstroke { background-color: #F4A7B9; }
+.text-lipstick { color: #A52A2A; }
+.bg-lipstick { background-color: #A52A2A; }
+.border-lipstick { border-color: #A52A2A; }
+.hover\:bg-lipstick-dark:hover { background-color: #8B1A1A; }
+.bg-highlight { background-color: #FFD700; }
+.text-highlight { color: #FFD700; }
+.bg-background { background-color: #FFF5F7; }
+
+/* সার্চ বার স্টাইল */
+.search-bar {
+  position: relative;
+  width: 100%; /* সার্চ বারের প্রস্থ */
+  max-width: 400px; /* সর্বোচ্চ প্রস্থ */
+  z-index: 1000; /* সবার উপরে দেখানোর জন্য */
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 8px 32px 8px 12px; /* টেক্সট ফিল্ডের প্যাডিং */
+  border: 1px solid #e2e8f0; /* বর্ডার */
+  border-radius: 4px; /* বর্ডার রেডিয়াস */
+  font-size: 14px; /* ফন্ট সাইজ */
+  color: #4a5568; /* টেক্সট কালার */
+  outline: none; /* ফোকাসে আউটলাইন সরানো */
+  background-color: white; /* ব্যাকগ্রাউন্ড কালার */
+}
+
+.search-bar input::placeholder {
+  color: #a0aec0; /* প্লেসহোল্ডার কালার */
+}
+
+.search-bar .fa-search {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  color: #a0aec0; /* আইকন কালার */
+  pointer-events: none; /* ক্লিক ইভেন্ট বন্ধ */
+}
+
+/* সার্চ রেজাল্ট স্টাইল */
+#searchResultsDesktop {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 200px; /* সর্বোচ্চ উচ্চতা */
+  overflow-y: auto; /* স্ক্রলবার */
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* শ্যাডো */
+  color: black;
+  margin-top: 4px; /* সার্চ বার থেকে দূরত্ব */
+  z-index: 1000; /* অন্যান্য এলিমেন্টের উপরে */
+}
+
+#searchResultsDesktop .search-item {
+  padding: 8px 12px;
+  border-bottom: 1px solid #e2e8f0; /* প্রতিটি আইটেমের নিচে বর্ডার */
+  cursor: pointer;
+  color: #4a5568; /* টেক্সট কালার */
+}
+
+#searchResultsDesktop .search-item:hover {
+  background-color: #f7fafc; /* হোভার ইফেক্ট */
+}
+
+/* সাইডবারের জন্য এনিমেশন */
+@keyframes slideInWithBounce {
+    0% {
+        transform: translateX(-100%);
+    }
+    70% {
+        transform: translateX(10%); /* ডান দিকে একটু বেশি চলে যাবে */
+    }
+    80% {
+        transform: translateX(-5%); /* বাম দিকে ফিরে আসবে */
+    }
+    90% {
+        transform: translateX(5%); /* আবার ডান দিকে যাবে */
+    }
+    100% {
+        transform: translateX(0); /* শেষে মূল অবস্থানে ফিরে আসবে */
+    }
+}
+
+/* সাইডবার স্টাইল */
+#sidebar {
+    transform: translateX(-100%); /* ডিফল্টভাবে লুকানো */
+    animation: slideInWithBounce 0.8s ease-out forwards; /* এনিমেশন প্রয়োগ */
+}
+
+/* সাইডবার খোলা থাকলে অবস্থান */
+#sidebar.slide-in {
+    transform: translateX(0);
+}
+
+/* সাইডবার স্টাইল (আরও বেশি ট্রান্সপারেন্ট এবং গ্লাসি ইফেক্ট সহ) */
+#sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 80%; /* সাইডবারের প্রস্থ */
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2); /* হালকা সাদা ব্যাকগ্রাউন্ড */
+    backdrop-filter: blur(20px); /* আরও বেশি গ্লাসি ইফেক্ট */
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1); /* শ্যাডো যোগ করুন */
+    transform: translateX(-100%); /* ডিফল্টভাবে লুকানো */
+    transition: transform 0.5s ease-in-out; /* ধীরে ধীরে ওপেন হবে */
+    z-index: 50; /* ওভারলের উপরে রাখুন */
+}
+
+/* মেনু আইটেম এবং সাবমেনু আইটেমের জন্য সাধারণ স্টাইল */
+#sidebar ul li a,
+#sidebar ul li button {
+    display: block;
+    padding: 12px 16px;
+    margin: 8px;
+    background: rgba(255, 255, 255, 0.3); /* হালকা গ্লাসি ইফেক্ট */
+    backdrop-filter: blur(5px); /* হালকা ব্লার ইফেক্ট */
+    border-radius: 12px; /* রাউন্ডেড কর্নার */
+    color: #333; /* টেক্সট কালার */
+    text-decoration: none; /* আন্ডারলাইন সরান */
+    transition: all 0.3s ease-in-out; /* এনিমেশন যোগ করুন */
+    width: 100%; /* পুরো প্রস্থ নেওয়ার জন্য */
+    text-align: left; /* টেক্সট বাম দিকে সারিবদ্ধ করুন */
+}
+
+/* মেনু আইটেম এবং সাবমেনু আইটেম হোভার ইফেক্ট */
+#sidebar ul li a:hover,
+#sidebar ul li button:hover {
+    background: rgba(255, 255, 255, 0.5); /* হোভারে গ্লাসি ইফেক্ট বাড়ান */
+    transform: translateX(10px); /* হোভারে সামান্য ডান দিকে সরান */
+}
+
+/* সাবমেনু স্টাইল */
+#subMenuMobile {
+    background: rgba(255, 255, 255, 0.2); /* আরও বেশি ট্রান্সপারেন্ট গ্লাসি ইফেক্ট */
+    backdrop-filter: blur(5px); /* হালকা ব্লার ইফেক্ট */
+    border-radius: 12px; /* রাউন্ডেড কর্নার */
+    margin-top: 8px;
+    padding: 8px;
+    display: none; /* ডিফল্টভাবে লুকানো */
+}
+
+#subMenuMobile:not(.hidden) {
+    display: block; /* সাবমেনু দেখান */
+}
+
+/* সাবমেনু আইটেম স্টাইল */
+#subMenuMobile a {
+    display: block;
+    padding: 8px 12px;
+    margin: 4px 0;
+    background: rgba(255, 255, 255, 0.3); /* হালকা গ্লাসি ইফেক্ট */
+    backdrop-filter: blur(3px); /* হালকা ব্লার ইফেক্ট */
+    border-radius: 8px; /* রাউন্ডেড কর্নার */
+    color: #333; /* টেক্সট কালার */
+    text-decoration: none; /* আন্ডারলাইন সরান */
+    transition: all 0.3s ease-in-out; /* এনিমেশন যোগ করুন */
+}
+
+/* সাবমেনু আইটেম হোভার ইফেক্ট */
+#subMenuMobile a:hover {
+    background: rgba(255, 255, 255, 0.5); /* হোভারে গ্লাসি ইফেক্ট বাড়ান */
+    transform: translateX(5px); /* হোভারে সামান্য ডান দিকে সরান */
+}
+
+/* ডেস্কটপ সাবমেনু স্টাইল */
+#desktopSubMenuBar {
+    display: none; /* ডিফল্টভাবে লুকানো */
+    position: absolute;
+    top: 100%; /* হেডারের নিচ থেকে শুরু */
+    left: 0;
+    width: 100%; /* পুরো প্রস্থ জুড়ে */
+    background: rgba(255, 255, 255, 0.2); /* হালকা সাদা ব্যাকগ্রাউন্ড */
+    backdrop-filter: blur(20px); /* গ্লাসি ইফেক্ট */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* শ্যাডো যোগ করুন */
+    border-radius: 8px; /* রাউন্ডেড কর্নার */
+    padding: 8px; /* প্যাডিং যোগ করুন */
+    z-index: 40; /* হেডারের নিচে দেখান */
+    transform: translateY(-20px); /* ডিফল্টভাবে কিছুটা উপরে লুকানো */
+    opacity: 0; /* ডিফল্টভাবে লুকানো */
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out; /* এনিমেশন যোগ করুন */
+}
+
+#desktopSubMenuBar:not(.hidden) {
+    display: flex; /* খোলা অবস্থায় দেখান এবং এক লাইনে রাখুন */
+    flex-direction: row; /* আইটেমগুলি এক লাইনে রাখুন */
+    gap: 8px; /* আইটেমগুলির মধ্যে দূরত্ব */
+    transform: translateY(0); /* সম্পূর্ণভাবে বের হয়ে আসা */
+    opacity: 1; /* সম্পূর্ণভাবে দেখা যাবে */
+    animation: bounce 0.5s ease-in-out; /* ধাক্কা খাওয়ার এনিমেশন */
+}
+
+/* ধাক্কা খাওয়ার এনিমেশন */
+@keyframes bounce {
+    0% {
+        transform: translateY(100);
+    }
+    50% {
+        transform: translateY(-10px); /* সামান্য উপরে উঠে যাবে */
+    }
+    100% {
+        transform: translateY(0); /* আবার মূল অবস্থানে ফিরে আসবে */
+    }
+}
+
+#desktopSubMenuBar a {
+    display: block;
+    padding: 8px 12px;
+    color: #2d3748; /* কালার */
+    border-radius: 6px; /* রাউন্ডেড কর্নার */
+    text-decoration: none; /* আন্ডারলাইন সরান */
+    background: rgba(255, 255, 255, 0.3); /* হালকা গ্লাসি ইফেক্ট */
+    backdrop-filter: blur(5px); /* হালকা ব্লার ইফেক্ট */
+    transition: background 0.3s ease; /* হোভার এনিমেশন */
+}
+
+#desktopSubMenuBar a:hover {
+    background: rgba(255, 255, 255, 0.5); /* হোভারে গ্লাসি ইফেক্ট বাড়ান */
+}
+
+/* সাবমেনু স্টাইল */
+#subMenuMobile, #desktopSubMenuBar {
+    display: none; /* ডিফল্টভাবে লুকানো */
+}
+
+#subMenuMobile.open, #desktopSubMenuBar:not(.hidden) {
+    display: block; /* খোলা অবস্থায় দেখান */
+}
+
+/* স্টক স্ট্যাটাস স্টাইল */
+.in-stock {
+  color: #38a169;
+  font-weight: 600;
+}
+
+.out-of-stock {
+  color: #e53e3e;
+  font-weight: 600;
+}
+
+/* পরিমাণ ড্রপডাউন স্টাইল */
+select#productQuantity {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 1.5em;
+}
+/* সাইডবার ওভারলে স্টাইল */
+#sidebarOverlay {
+    display: none; /* ডিফল্টভাবে লুকানো */
+}
+
+/* সাইডবার ওপেন থাকা অবস্থায় ওভারলে দেখান */
+#sidebarOverlay.active {
+    display: block;
+}
+
+/* কার্ট সাইডবার স্টাইল */
+.cart-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 80%; /* সাইডবারের প্রস্থ */
+  height: 100%;
+  background: rgba(255, 255, 255, 0.95); /* হালকা সাদা ব্যাকগ্রাউন্ড */
+  backdrop-filter: blur(10px); /* গ্লাসি ইফেক্ট */
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1); /* শ্যাডো যোগ করুন */
+  transform: translateX(100%); /* ডিফল্টভাবে লুকানো */
+  transition: transform 0.3s ease-in-out; /* ধীরে ধীরে ওপেন হবে */
+  z-index: 1000; /* ওভারলের উপরে রাখুন */
+  padding: 1rem; /* প্যাডিং যোগ করুন */
+  display: flex;
+  flex-direction: column;
+}
+
+/* কার্ট সাইডবার খোলা থাকলে অবস্থান */
+.cart-sidebar:not(.translate-x-full) {
+  transform: translateX(0); /* সম্পূর্ণভাবে বের হয়ে আসা */
+}
+
+/* কার্ট হেডার */
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.cart-header h2 {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #1f2937;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.close-btn:hover {
+  color: #1f2937;
+}
+
+/* কার্ট আইটেম স্টাইল */
+.cart-items {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: rgba(255, 255, 255, 0.9); /* হালকা গ্লাসি ইফেক্ট */
+  backdrop-filter: blur(5px); /* হালকা ব্লার ইফেক্ট */
+  border-radius: 12px; /* রাউন্ডেড কর্নার */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* শ্যাডো যোগ করুন */
+}
+
+.cart-item img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.cart-item h3 {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #1f2937;
+}
+
+.cart-item p {
+  font-size: 0.875rem;
+  color: #ef4444;
+  font-weight: bold;
+}
+
+.cart-item button {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.cart-item button:hover {
+  background: #dc2626;
+}
+
+/* কার্ট ফুটার */
+.cart-footer {
+  padding: 1rem;
+  border-top: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+.cart-footer p {
+  font-size: 1.125rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.checkout-btn {
+  background: darkred;
+  color: whitesmoke;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 1rem;
+}
+
+.checkout-btn:hover {
+  background: #b91c1c;
+}
+
+/* কার্ট ওভারলে স্টাইল */
+.cart-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: none;
+}
+
+/* কার্ট সাইডবার খোলা থাকা অবস্থায় ওভারলে দেখান */
+#cartSidebar:not(.translate-x-full) + #cartOverlay {
+  display: block;
+}
+
+/* টোস্ট নোটিফিকেশন স্টাইল */
+#toast {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  background-color: #48bb78; /* সবুজ কালার */
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transition: opacity 0.3s ease-in-out;
+}
+  </style>
+ </head>
+ <body class="bg-background">
+  <!-- হেডার -->
+  <header class="bg-brushstroke text-white p-4 flex justify-between items-center fixed top-0 left-0 w-full z-50">
+   <!-- লোগো -->
+   <a class="flex items-center" href="index.html">
+    <div class="flex items-center">
+     <img alt="Any's Beauty Corner লোগো" class="h-10 w-10 rounded-full mr-2 border-2 border-lipstick" height="40" src="img.jpg" width="40"/>
+     <span class="text-lg font-bold">
+      Any's Beauty Corner
+     </span>
+    </div>
+   </a>
+   <!-- ডেস্কটপ সার্চ বার -->
+   <div class="hidden md:block p-2 w-80 mx-auto relative">
+    <div class="relative">
+     <input class="w-full p-2 pl-10 border-0 rounded-full text-gray-800 focus:outline-none focus:ring-2 focus:ring-lipstick bg-white/50 backdrop-blur-sm placeholder:text-gray-400/80" id="searchInputDesktop" oninput="searchProductsDesktop()" placeholder="প্রোডাক্ট সার্চ করুন..." type="text"/>
+     <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400/80">
+     </i>
+    </div>
+    <!-- সার্চ রেজাল্ট -->
+    <div class="mt-2 max-h-60 overflow-y-auto absolute bg-white/90 backdrop-blur-sm w-full shadow-lg rounded-lg z-50" id="searchResultsDesktop">
+    </div>
+   </div>
+   <!-- মোবাইল সার্চ আইকন -->
+   <div class="md:hidden cursor-pointer" onclick="focusMobileSearch()">
+    <i class="fas fa-search text-white text-xl">
+    </i>
+   </div>
+<!-- শপিং ব্যাগ আইকন -->
+<button id="cartButton" class="bg-lipstick text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center">
+    <i class="fas fa-shopping-bag"></i>
+</button>
+
+<!-- কার্ট সাইডবার -->
+<div id="cartSidebar" class="fixed top-0 right-0 h-full w-80 bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out z-50">
+    <div class="p-4">
+        <!-- কার্ট বন্ধ করার বাটন -->
+        <button onclick="closeCartSidebar()" class="text-gray-600 hover:text-gray-900">
+            <i class="fas fa-times"></i>
+        </button>
+        <!-- কার্ট হেডিং -->
+        <h2 class="text-xl text-black font-bold mb-4">কার্ট</h2>
+        <!-- কার্ট আইটেমগুলি -->
+        <div id="cartItems" class="space-y-4">
+            <!-- কার্ট আইটেমগুলি এখানে যোগ হবে -->
+        </div>
+        <!-- চেকআউট বাটন -->
+  <div class="cart-footer">
+    <p id="totalPrice">মোট মূল্য: 0 টাকা</p>
+    <button onclick="checkout()" class="checkout-btn">চেকআউট</button>
+  </div>
+    </div>
+</div>
+
+<!-- কার্ট ওভারলে -->
+<div id="cartOverlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="closeCartSidebar()"></div>
+<!-- টোস্ট নোটিফিকেশন -->
+<div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg hidden">
+    আপনার প্রোডাক্টটি কার্টে যোগ করা হয়েছে!
+</div>
+   <!-- মোবাইল মেনু বাটন -->
+   <button class="bg-white text-lipstick px-4 py-2 rounded md:hidden" onclick="openSidebar()">
+    ☰
+   </button>
+   <!-- মোবাইল সাইডবার ওভারলে -->
+   <div class="fixed inset-0 z-40 hidden" id="sidebarOverlay">
+    <div class="fixed top-0 left-0 h-full w-4/5 bg-white/5 backdrop-blur-lg shadow-lg transform -translate-x-full transition-transform duration-500 ease-in-out" id="sidebar">
+     <div class="p-4">
+      <button class="text-gray-600 hover:text-gray-900" onclick="closeSidebar()">
+       <i class="fas fa-times">
+       </i>
+      </button>
+      <ul class="mt-4">
+       <li>
+        <a class="block py-2 text-gray-800 hover:bg-gray-100" href="index.html#home" onclick="handleMenuItemClick()">
+         হোম
+        </a>
+       </li>
+       <li>
+        <a class="block py-2 text-gray-800 hover:bg-gray-100" href="index.html#about" onclick="handleMenuItemClick()">
+         আমাদের সম্পর্কে
+        </a>
+       </li>
+       <li>
+        <button class="flex items-center justify-between w-full text-left text-gray-800 hover:bg-gray-100" onclick="toggleSubMenuMobile(event)">
+         <span>
+          পণ্য সমূহ
+         </span>
+         <i class="fas fa-chevron-down ml-2 transition-transform duration-300" id="arrowIcon">
+         </i>
+        </button>
+        <div class="hidden bg-white/5 backdrop-blur-sm rounded-lg mt-1 ml-4" id="subMenuMobile">
+         <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200" href="index.html#all" onclick="handleSubMenuItemClick()">
+          সকল প্রোডাক্ট
+         </a>
+         <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200" href="index.html#cosmetics" onclick="handleSubMenuItemClick()">
+          মেকআপ
+         </a>
+         <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200" href="index.html#skincare" onclick="handleSubMenuItemClick()">
+          স্কিনকেয়ার
+         </a>
+         <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200" href="index.html#haircare" onclick="handleSubMenuItemClick()">
+          হেয়ারকেয়ার
+         </a>
+         <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200" href="index.html#mehandi" onclick="handleSubMenuItemClick()">
+          মেহেদী
+         </a>
+        </div>
+       </li>
+      </ul>
+     </div>
+    </div>
+    <div class="fixed top-0 right-0 h-full w-1/5" id="blankArea" onclick="closeSidebar()">
+    </div>
+   </div>
+   <!-- ডেস্কটপ মেনু -->
+   <nav class="hidden md:flex space-x-4 items-center mr-20">
+    <a class="text-gray-800 hover:text-highlight" href="index.html#home">
+     হোম
+    </a>
+    <a class="text-gray-800 hover:text-highlight" href="index.html#about">
+     আমাদের সম্পর্কে
+    </a>
+    <div class="relative">
+     <button class="text-gray-800 hover:text-highlight" onclick="toggleSubMenuDesktop()">
+      পণ্য সমূহ
+      <i class="fas fa-chevron-down ml-2 transition-transform duration-300" id="desktopArrowIcon">
+      </i>
+     </button>
+    </div>
+   </nav>
+   <!-- ডেস্কটপ টপ বার (সাবমেনু) -->
+   <div class="hidden absolute top-full left-0 w-full bg-white shadow-lg z-40" id="desktopSubMenuBar">
+    <div class="container mx-auto p-4">
+     <div class="grid grid-cols-4 gap-4">
+      <a class="block p-2 text-gray-800 hover:bg-gray-100" href="#all">
+       সকল প্রোডাক্ট
+      </a>
+      <a class="block p-2 text-gray-800 hover:bg-gray-100" href="#cosmetics">
+       মেকআপ
+      </a>
+      <a class="block p-2 text-gray-800 hover:bg-gray-100" href="#skincare">
+       স্কিনকেয়ার
+      </a>
+      <a class="block p-2 text-gray-800 hover:bg-gray-100" href="#haircare">
+       হেয়ারকেয়ার
+      </a>
+      <a class="block p-2 text-gray-800 hover:bg-gray-100" href="#mehandi">
+       মেহেদী
+      </a>
+     </div>
+    </div>
+   </div>
+  </header>
+      <!-- মোবাইল সার্চ বার -->
+    <div class="md:hidden p-2 w-full fixed top-20 left-0 z-40 hidden bg-transparent" id="mobileSearchBar">
+        <div class="relative">
+            <input type="text" id="searchInput" 
+                   class="w-full p-2 pl-10 border-0 rounded-full text-gray-800 focus:outline-none focus:ring-2 focus:ring-lipstick bg-white/50 backdrop-blur-sm placeholder:text-gray-400/80" 
+                   placeholder="প্রোডাক্ট সার্চ করুন..." 
+                   oninput="searchProducts()">
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400/80"></i>
+        </div>
+        <!-- সার্চ রেজাল্ট -->
+        <div id="searchResults" class="mt-2 max-h-60 overflow-y-auto absolute bg-white/50 backdrop-blur-sm w-full shadow-lg rounded-lg z-50"></div>
+    </div>
+    <!-- সোশ্যাল মিডিয়া ফ্লোটিং বাটন -->
+    <div class="fixed bottom-4 right-4 z-50">
+        <!-- শেয়ার বাটন -->
+        <button id="shareButton" class="bg-lipstick text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center">
+            <i class="fas fa-user-circle"></i>
+        </button>
+        <!-- সোশ্যাল মিডিয়া আইকনগুলি (লুকানো অবস্থায়) -->
+        <div id="socialIcons" class="hidden space-y-2 mt-2">
+            <a href="https://www.facebook.com/share/1PyLUzGE9P/" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
+                <i class="fab fa-facebook"></i>
+            </a>
+            <a href="https://www.instagram.com/anysbeautycorner/?utm_medium=copy_link" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://www.tiktok.com/@anysbeautycorner" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
+                <i class="fab fa-tiktok"></i>
+            </a>
+            <a href="https://youtube.com/@anysbeautycorner?si=oXGtEuakP_SIPH_Q" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
+                 <i class="fab fa-youtube"></i>
+            </a>
+        </div>
+    </div>
+ </body>
+ <script>
+// মোবাইল সাইডবার খোলার ফাংশন
+function openSidebar() {
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const sidebar = document.getElementById('sidebar');
+    sidebarOverlay.classList.remove('hidden'); // ওভারলে দেখান
+    sidebarOverlay.classList.add('active'); // ওভারলে দেখা যাবে
+    sidebar.classList.remove('-translate-x-full');
+    sidebar.classList.add('slide-in');
+}
+
+// মোবাইল সাইডবার বন্ধ করার ফাংশন
+function closeSidebar() {
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.add('-translate-x-full');
+    sidebarOverlay.classList.remove('active'); // ওভারলে লুকান
+    sidebarOverlay.classList.add('hidden'); // ওভারলে লুকান
+}
+
+// মেনু আইটেম ক্লিক করার ফাংশন
+function handleMenuItemClick() {
+    closeSidebar(); // সাইডবার বন্ধ করুন
+}
+
+// সাবমেনু আইটেম ক্লিক করার ফাংশন
+function handleSubMenuItemClick() {
+    const subMenuMobile = document.getElementById('subMenuMobile');
+    subMenuMobile.classList.remove('open'); // সাবমেনু বন্ধ করুন
+    closeSidebar(); // সাইডবার বন্ধ করুন
+}
+
+// সাবমেনু টগল করার ফাংশন
+function toggleSubMenuMobile(event) {
+    event.stopPropagation();
+    const subMenuMobile = document.getElementById('subMenuMobile');
+    const arrowIcon = document.getElementById('arrowIcon');
+    
+    subMenuMobile.classList.toggle('open'); // সাবমেনু টগল করুন
+    arrowIcon.classList.toggle('rotate-180'); // ডাউন এরো ঘোরানো
+}
+
+// ডেস্কটপ সাবমেনু টগল করার ফাংশন
+function toggleSubMenuDesktop() {
+  const desktopSubMenuBar = document.getElementById('desktopSubMenuBar');
+  desktopSubMenuBar.classList.toggle('hidden');
+  desktopSubMenuBar.classList.toggle('slide-down'); // এনিমেশন যোগ করুন
+}
+
+// ডেস্কটপ সাবমেনু আইটেমগুলিতে ক্লিক ইভেন্ট যোগ করুন
+document.querySelectorAll('#desktopSubMenuBar a').forEach(link => {
+  link.addEventListener('click', (e) => {
+    const category = e.target.getAttribute('href').replace('#', '');
+    filterProducts(category); // প্রোডাক্ট ফিল্টার ফাংশন কল করুন
+  });
+});
+
+// ডকুমেন্টে ক্লিক ইভেন্ট লিসেনার
+document.addEventListener("click", (event) => {
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+  const subMenuMobile = document.getElementById('subMenuMobile');
+  const desktopSubMenuBar = document.getElementById('desktopSubMenuBar');
+  const subMenuButton = document.querySelector('button[onclick="toggleSubMenuDesktop()"]');
+
+  // মোবাইল সাইডবার বন্ধ করুন
+  if (!event.target.closest('#sidebar') && !event.target.closest('button[onclick="openSidebar()"]')) {
+    closeSidebar();
+  }
+
+  // মোবাইল সাবমেনু বন্ধ করুন
+  if (!event.target.closest('#subMenuMobile') && !event.target.closest('button[onclick="toggleSubMenuMobile(event)"]')) {
+    subMenuMobile.classList.add('hidden'); // hidden ক্লাস যোগ করুন
+  }
+
+  // ডেস্কটপ সাবমেনু বন্ধ করুন
+  if (!event.target.closest('#desktopSubMenuBar') && !event.target.closest('button[onclick="toggleSubMenuDesktop()"]')) {
+    desktopSubMenuBar.classList.add('hidden');
+    desktopSubMenuBar.classList.remove('slide-down'); // এনিমেশন সরান
+  }
+});
+
+// মোবাইল সার্চ বার ফোকাস
+function focusMobileSearch() {
+  const mobileSearchBar = document.getElementById('mobileSearchBar');
+  mobileSearchBar.classList.toggle('hidden');
+  mobileSearchBar.classList.toggle('show'); // নতুন ক্লাস যোগ
+  document.getElementById('searchInput').focus();
+}
+
+// সার্চ ফাংশনালিটি (মোবাইল)
+function searchProducts() {
+  const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+  const searchResults = document.getElementById("searchResults");
+
+  if (searchTerm.trim() === "") {
+    searchResults.innerHTML = "";
+    searchResults.classList.add("hidden");
+    return;
+  }
+
+  const filtered = products.filter(product =>
+    product.name.toLowerCase().includes(searchTerm) ||
+    product.tags.toLowerCase().includes(searchTerm)
+  );
+  displaySearchResults(filtered, searchResults);
+}
+
+// সার্চ ফাংশনালিটি (ডেস্কটপ)
+function searchProductsDesktop() {
+  const searchTerm = document.getElementById("searchInputDesktop").value.toLowerCase();
+  const searchResults = document.getElementById("searchResultsDesktop");
+
+  if (searchTerm.trim() === "") {
+    searchResults.innerHTML = "";
+    searchResults.classList.add("hidden");
+    return;
+  }
+
+  const filtered = products.filter(product =>
+    product.name.toLowerCase().includes(searchTerm) ||
+    product.tags.toLowerCase().includes(searchTerm)
+  );
+  displaySearchResults(filtered, searchResults);
+}
+
+// সার্চ রেজাল্ট ডিসপ্লে
+function displaySearchResults(filteredProducts, searchResults) {
+  searchResults.innerHTML = "";
+
+  if (filteredProducts.length === 0) {
+    searchResults.innerHTML = `<div class="p-2 text-gray-600">কোনো প্রোডাক্ট পাওয়া যায়নি</div>`;
+  } else {
+    filteredProducts.forEach(product => {
+      const card = document.createElement("div");
+      card.className = "p-2 hover:bg-gray-100 cursor-pointer";
+      card.onclick = () => showProductDetail(product.id);
+
+      card.innerHTML = `
+        <div class="flex items-center">
+          <img src="${product.image.split(',')[0]}" class="w-12 h-12 object-cover rounded-lg mr-4">
+          <div>
+            <h3 class="text-lg font-bold">${product.name}</h3>
+            <p class="text-lipstick font-bold">দাম: ${product.price} টাকা</p>
+          </div>
+        </div>
+      `;
+      searchResults.appendChild(card);
+    });
+  }
+
+  searchResults.classList.remove("hidden");
+}
+
+// শপিং ব্যাগ আইকনে ক্লিক করলে কার্ট সাইডবার খুলবে
+document.getElementById('cartButton').addEventListener('click', openCartSidebar);
+
+// কার্ট সাইডবার খোলার ফাংশন
+function openCartSidebar() {
+  document.getElementById('cartSidebar').classList.remove('translate-x-full');
+}
+
+// কার্ট সাইডবার বন্ধ করার ফাংশন
+function closeCartSidebar() {
+  document.getElementById('cartSidebar').classList.add('translate-x-full');
+  document.getElementById('sidebarOverlay').classList.add('hidden');
+}
+
+// সাইডবার ওভারলে যোগ করুন
+const sidebarOverlay = document.createElement('div');
+sidebarOverlay.id = 'sidebarOverlay';
+sidebarOverlay.className = 'fixed inset-0 bg-black/50 z-40 hidden';
+sidebarOverlay.onclick = closeCartSidebar;
+document.body.appendChild(sidebarOverlay);
+
+// সাইডবারের ভিতরে ক্লিক করলে ওভারলে ক্লোজ হবে না
+document.getElementById('cartSidebar').addEventListener('click', (e) => {
+  e.stopPropagation();
+});
+// শেয়ার বাটন এবং সোশ্যাল মিডিয়া বাটন ব্যবস্থাপনা
+document.getElementById('shareButton').addEventListener('click', (e) => {
+  e.stopPropagation(); // ইভেন্ট বাবলিং বন্ধ করুন
+  const socialIcons = document.getElementById('socialIcons');
+  const shareButton = document.getElementById('shareButton');
+
+  socialIcons.classList.toggle('hidden'); // সোশ্যাল আইকন টগল করুন
+  shareButton.classList.toggle('hidden'); // শেয়ার বাটন টগল করুন
+});
+
+// স্ক্রিনে অন্য কোথাও ক্লিক করলে সোশ্যাল মিডিয়া বাটন লুকানো এবং শেয়ার বাটন দেখানো
+document.addEventListener('click', (e) => {
+  const socialIcons = document.getElementById('socialIcons');
+  const shareButton = document.getElementById('shareButton');
+
+  // যদি সোশ্যাল আইকন ওপেন থাকে এবং ক্লিক টার্গেট শেয়ার বাটন বা সোশ্যাল আইকন না হয়
+  if (socialIcons && !socialIcons.classList.contains('hidden') && !e.target.closest('#shareButton') && !e.target.closest('#socialIcons')) {
+    socialIcons.classList.add('hidden'); // সোশ্যাল আইকন লুকান
+    shareButton.classList.remove('hidden'); // শেয়ার বাটন দেখান
+  }
+});
+
+// সোশ্যাল মিডিয়া বাটনগুলোর উপর ক্লিক করলে ইভেন্ট বাবলিং বন্ধ করুন
+document.getElementById('socialIcons').addEventListener('click', (e) => {
+  e.stopPropagation();
+});
+
+// স্ক্রল করলে সোশ্যাল আইকন ক্লোজ এবং শেয়ার বাটন দেখানো
+function closeSocialIconsOnScroll() {
+  const socialIcons = document.getElementById('socialIcons');
+  const shareButton = document.getElementById('shareButton');
+
+  // সোশ্যাল আইকন ক্লোজ করুন
+  if (socialIcons && !socialIcons.classList.contains('hidden')) {
+    socialIcons.classList.add('hidden');
+    shareButton.classList.remove('hidden'); // শেয়ার বাটন দেখান
+  }
+}
+
+// স্ক্রল ইভেন্ট লিসেনার
+window.addEventListener('scroll', closeSocialIconsOnScroll);
+ </script>
+</html>
