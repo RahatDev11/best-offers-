@@ -1,643 +1,639 @@
-let products = []; // প্রোডাক্ট ডাটা সরাসরি script.js ফাইলে থাকবে
+// Firebase মডিউল ইম্পোর্ট করুন
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+// Firebase কনফিগারেশন
+const firebaseConfig = {
+    apiKey: "AIzaSyCVSzQS1c7H4BLhsDF_fW8wnqUN4B35LPA",
+    authDomain: "nahid-6714.firebaseapp.com",
+    databaseURL: "https://nahid-6714-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "nahid-6714",
+    storageBucket: "nahid-6714.firebasestorage.app",
+    messagingSenderId: "505741217147",
+    appId: "1:505741217147:web:25ed4e9f0d00e3c4d381de",
+    measurementId: "G-QZ7CTRKHCW"
+};
+
+// Firebase ইনিশিয়ালাইজ করুন
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+const auth = getAuth(app);
+
+let products = [];
 let isAdmin = false;
+let cart = [];
 
-// প্রোডাক্ট ডাটা
-const initialProducts = [
-   {
-        id: "1742051688734",
-        name: "Prem dulhan 6 pcs",
-        price: "190",
-        category: "mehandi",
-        image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1742034017/1742033818555_n0pibz.jpg",
-        tags: "Prem, dulhan, ",
-        description: "প্রেম দুলহান মেহেদি হল একটি জনপ্রিয় ভারতীয় মেহেদি ব্র্যান্ড, যা বিশেষ করে উৎসব এবং বিশেষ অনুষ্ঠানের জন্য ব্যবহার করা হয়। এটি সাধারণত প্রাকৃতিক হেনা দিয়ে তৈরি করা হয় এবং এতে কোনো ক্ষতিকারক রাসায়নিক থাকে না",
-        stockStatus: "in_stock",
-        quantity: "39"
-    },
-  {
-        id: "1742034562001",
-        name: "কাশ্মীরি মেহেদী",
-        price: "35",
-        category: "mehandi",
-        image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1742034019/1742033775697_tovzsu.jpg,https://res.cloudinary.com/dnvm88wfi/image/upload/v1742034015/1742033780107_x2fjnv.jpg",
-        tags: "মেহেন্দি, মেহেদী, mehedi, mehandi",
-        description: " কাশ্মিরি ফাস্টকালার কোন এর গুনগত মান এবং দীর্ঘ সময় রঙ ধরে রাখার জন্য বিখ্যাত। এটি ত্বকের জন্য নিরাপদ। কাশ্মিরি ফাস্টকালার কোন মেহেদি পাতার নির্যাস থেকে তৈরি হয় এবং মেহেদির মতো রঙ হয়।",
-        stockStatus: "in_stock",
-        quantity: "39"
-    },
-  {
-        id: "1741892639007",
-        name: "Milk shake",
-        price: "1350",
-        category: "skincare",
-        image: "https://res.cloudinary.com/dnvm88wfi/image/upload/v1741800877/1741800666769_dwffvp.jpg,https://res.cloudinary.com/dnvm88wfi/image/upload/v1741800880/1741800664520_cbqmfn.jpg,https://res.cloudinary.com/dnvm88wfi/image/upload/v1741800883/1741800668869_auxbid.jpg",
-        tags: "Milk shake, মিল্ক শেক",
-        description: "Milkshake Delivary done🥰🌿ও*জন বাড়ানোর জন্য আপনার পছন্দের সেরা পণ্যটি ডিসকাউন্ট মূল্যে লুফে নিন🥀🌿কোনোরকম এডভান্স করতে হবেনা!  পণ্য হাতে পেয়ে চেক করবেন এবং সবকিছু ঠিকঠাক থাকলে পেমেন্ট করবেন! 🪴১০০% অ*রিজিনাল এবং ১০০% জেনুইন প্রোডাক্ট দেওয়া হবে ইনশাআল্লাহ 💥👉 দাম মাত্র ১৩৫০ টাকা 👈এখনই অর্ডার করুন ",
-        stockStatus: "in_stock",
-        quantity: "39"
+// ইউনিক userId জেনারেট করা বা লোড করা
+function getUserId() {
+    let userId = localStorage.getItem('userId');
+    if (!userId) {
+        userId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('userId', userId);
     }
-];
-
-// প্রোডাক্ট ডাটা লোড করুন
-function loadProductsFromData() {
-  products = initialProducts; // সরাসরি initialProducts অ্যারে থেকে ডাটা লোড করুন
-  localStorage.setItem('products', JSON.stringify(products)); // লোকাল স্টোরেজে সংরক্ষণ করুন
-  loadProducts(); // প্রোডাক্ট লোড করুন
+    return userId;
 }
 
-// মোবাইল সাইডবার খোলার ফাংশন
-function openSidebar() {
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
-    const sidebar = document.getElementById('sidebar');
-    sidebarOverlay.classList.remove('hidden'); // ওভারলে দেখান
-    sidebarOverlay.classList.add('active'); // ওভারলে দেখা যাবে
-    sidebar.classList.remove('-translate-x-full');
-    sidebar.classList.add('slide-in');
+// Firebase থেকে প্রোডাক্ট ডাটা লোড করুন
+function loadProductsFromFirebase() {
+    const productsRef = ref(database, 'products');
+    onValue(productsRef, (snapshot) => {
+        const data = snapshot.val();
+        products = [];
+        if (data) {
+            Object.keys(data).forEach(key => {
+                products.push({ id: key, ...data[key] });
+            });
+        }
+        console.log("Firebase থেকে প্রোডাক্ট লোড হয়েছে:", products); // ডিবাগিংয়ের জন্য
+        loadProducts(); // প্রোডাক্ট লোড করুন
+    }, (error) => {
+        console.error("Firebase থেকে প্রোডাক্ট লোডে সমস্যা: ", error);
+        showToast("প্রোডাক্ট লোড করতে সমস্যা হয়েছে!");
+    });
 }
 
-// মোবাইল সাইডবার বন্ধ করার ফাংশন
-function closeSidebar() {
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
-    const sidebar = document.getElementById('sidebar');
-    sidebar.classList.add('-translate-x-full');
-    sidebarOverlay.classList.remove('active'); // ওভারলে লুকান
-    sidebarOverlay.classList.add('hidden'); // ওভারলে লুকান
+// Firebase থেকে কার্ট ডাটা লোড করুন
+function loadCartFromFirebase() {
+    const userId = getUserId();
+    const cartRef = ref(database, `carts/${userId}`);
+    onValue(cartRef, (snapshot) => {
+        cart = snapshot.val() || [];
+        updateCartUI();
+    }, (error) => {
+        console.error("Firebase থেকে কার্ট লোডে সমস্যা: ", error);
+        showToast("কার্ট লোড করতে সমস্যা হয়েছে!");
+    });
 }
 
-// মেনু আইটেম ক্লিক করার ফাংশন
-function handleMenuItemClick() {
-    closeSidebar(); // সাইডবার বন্ধ করুন
+// Firebase-এ কার্ট ডাটা সেভ করুন
+function saveCartToFirebase() {
+    const userId = getUserId();
+    const cartRef = ref(database, `carts/${userId}`);
+    set(cartRef, cart)
+        .then(() => {
+            console.log("কার্ট Firebase-এ সেভ হয়েছে:", cart);
+        })
+        .catch((error) => {
+            console.error("কার্ট সেভ করতে সমস্যা: ", error);
+            showToast("কার্ট সেভ করতে সমস্যা হয়েছে!");
+        });
 }
 
-// সাবমেনু আইটেম ক্লিক করার ফাংশন
-function handleSubMenuItemClick() {
-    const subMenuMobile = document.getElementById('subMenuMobile');
-    subMenuMobile.classList.remove('open'); // সাবমেনু বন্ধ করুন
-    closeSidebar(); // সাইডবার বন্ধ করুন
-}
+// Gmail দিয়ে লগইন করার ফাংশন
+window.loginWithGmail = () => {
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider)
+        .then((result) => {
+            const user = result.user;
+            const allowedEmail = "mdnahidislam6714@gmail.com"; // তোমার Gmail ঠিকানা এখানে দাও
 
-// সাবমেনু টগল করার ফাংশন
-function toggleSubMenuMobile(event) {
-    event.stopPropagation();
-    const subMenuMobile = document.getElementById('subMenuMobile');
-    const arrowIcon = document.getElementById('arrowIcon');
-    
-    subMenuMobile.classList.toggle('open'); // সাবমেনু টগল করুন
-    arrowIcon.classList.toggle('rotate-180'); // ডাউন এরো ঘোরানো
-}
-//সাব মেনুডাউন অ্যারো যোগ করা
-function toggleSubMenuMobile(event) {
-    event.stopPropagation();
-    const subMenuMobile = document.getElementById('subMenuMobile');
-    const arrowIcon = document.getElementById('arrowIcon');
-    
-    subMenuMobile.classList.toggle('open'); // সাবমেনু টগল করুন
-    arrowIcon.classList.toggle('rotate-180'); // ডাউন এরো ঘোরানো
-}
-
-// ডেস্কটপ সাবমেনু টগল করার ফাংশন
-function toggleSubMenuDesktop() {
-  const desktopSubMenuBar = document.getElementById('desktopSubMenuBar');
-  desktopSubMenuBar.classList.toggle('hidden');
-  desktopSubMenuBar.classList.toggle('slide-down'); // এনিমেশন যোগ করুন
-}
-
-// ডেস্কটপ সাবমেনু আইটেমগুলিতে ক্লিক ইভেন্ট যোগ করুন
-document.querySelectorAll('#desktopSubMenuBar a').forEach(link => {
-  link.addEventListener('click', (e) => {
-    const category = e.target.getAttribute('href').replace('#', '');
-    filterProducts(category); // প্রোডাক্ট ফিল্টার ফাংশন কল করুন
-  });
-});
+            if (user.email === allowedEmail) {
+                // লগইন সফল, এডমিন সেকশন ওপেন করো
+                closeModal('loginModal');
+                const productUpdateSection = document.getElementById('product-update');
+                if (productUpdateSection) productUpdateSection.classList.remove("hidden");
+                isAdmin = true;
+                showToast("লগইন সফল!");
+            } else {
+                // অননুমোদিত Gmail, লগআউট করো
+                signOut(auth);
+                showToast("এই Gmail দিয়ে লগইন করার অনুমতি নেই!");
+            }
+        })
+        .catch((error) => {
+            console.error("Gmail লগইন ত্রুটি: ", error);
+            showToast("লগইন করতে সমস্যা হয়েছে!");
+        });
+};
 
 // প্রোডাক্ট ফিল্টার ফাংশন
-function filterProducts(category) {
-  const filteredProducts = category === 'all' ? products : products.filter(product => product.category === category);
-  loadProducts(filteredProducts); // ফিল্টার করা প্রোডাক্ট লোড করুন
-}
-
-// ডকুমেন্টে ক্লিক ইভেন্ট লিসেনার
-document.addEventListener("click", (event) => {
-  const sidebarOverlay = document.getElementById('sidebarOverlay');
-  const subMenuMobile = document.getElementById('subMenuMobile');
-  const desktopSubMenuBar = document.getElementById('desktopSubMenuBar');
-  const subMenuButton = document.querySelector('button[onclick="toggleSubMenuDesktop()"]');
-
-  // মোবাইল সাইডবার বন্ধ করুন
-  if (!event.target.closest('#sidebar') && !event.target.closest('button[onclick="openSidebar()"]')) {
-    closeSidebar();
-  }
-
-  // মোবাইল সাবমেনু বন্ধ করুন
-  if (!event.target.closest('#subMenuMobile') && !event.target.closest('button[onclick="toggleSubMenuMobile(event)"]')) {
-    subMenuMobile.classList.add('hidden'); // hidden ক্লাস যোগ করুন
-  }
-
-  // ডেস্কটপ সাবমেনু বন্ধ করুন
-  if (!event.target.closest('#desktopSubMenuBar') && !event.target.closest('button[onclick="toggleSubMenuDesktop()"]')) {
-    desktopSubMenuBar.classList.add('hidden');
-    desktopSubMenuBar.classList.remove('slide-down'); // এনিমেশন সরান
-  }
-});
-// মোডাল ব্যবস্থাপনা
-function openModal(modalId) {
-  document.getElementById(modalId).classList.add("active");
-}
-
-function closeModal(modalId) {
-  document.getElementById(modalId).classList.remove("active");
-}
-
-// এডমিন লগইন
-document.getElementById("loginForm").addEventListener("submit", function (e) {
-  e.preventDefault();
-  const number = document.getElementById("loginNumber").value;
-  const password = document.getElementById("loginPassword").value;
-
-  if (number === '01825620497' && password === '3012014') {
-    closeModal('loginModal');
-    document.getElementById('product-update').classList.remove("hidden");
-    isAdmin = true;
-  } else {
-    alert('ভুল লগইন তথ্য!');
-  }
-});
-
-// প্রোডাক্ট ফিল্টার ফাংশন
-function filterProducts(category) {
-    const filteredProducts = category === 'all' ? products : products.filter(product => product.category === category);
+window.filterProducts = (category) => {
+    let filteredProducts;
+    if (category === 'all') {
+        filteredProducts = products;
+    } else {
+        filteredProducts = products.filter(product => product.category === category);
+    }
     loadProducts(filteredProducts);
-}
-
-// মেনু এবং সাবমেনু ক্লিক ইভেন্ট যোগ করুন
-document.querySelectorAll('nav a').forEach(link => {
-    link.addEventListener('click', (e) => {
-        const category = e.target.getAttribute('href').replace('#', '');
-        filterProducts(category);
-    });
-});
-
-document.querySelectorAll('#subMenu a, #subMenuMobile a').forEach(link => {
-    link.addEventListener('click', (e) => {
-        const category = e.target.getAttribute('href').replace('#', '');
-        filterProducts(category);
-    });
-});
+};
 
 // প্রোডাক্ট লোড করুন
 function loadProducts(filteredProducts = products) {
-  const productList = document.getElementById("productList");
-  productList.innerHTML = ""; // প্রথমে সব প্রোডাক্ট ডিলিট করুন
+    const productList = document.getElementById("productList");
+    if (!productList) return;
 
-  filteredProducts.forEach(product => {
-    const card = document.createElement("div");
-    card.className = "bg-white p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow cursor-pointer";
-    card.setAttribute("data-product-id", product.id); // প্রোডাক্ট আইডি যোগ করুন
-    card.onclick = () => showProductDetail(product.id);
+    productList.innerHTML = "";
 
-    const imageLinks = product.image.split(',').map((img, index) =>
-      `ছবি-${index + 1}: ${img.trim()}`).join('\n');
+    filteredProducts.forEach(product => {
+        const card = document.createElement("div");
+        card.className = "bg-white p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow cursor-pointer";
+        card.setAttribute("data-product-id", product.id);
+        card.onclick = () => showProductDetail(product.id);
 
-    const whatsappMessage = encodeURIComponent(`
-প্রোডাক্টের নাম: ${product.name}
-দাম: ${product.price} টাকা
+        const imageLinks = (product.image || '').split(',').map((img, index) =>
+            `ছবি-${index + 1}: ${img.trim()}`).join('\n');
+
+        const whatsappMessage = encodeURIComponent(`
+প্রোডাক্টের নাম: ${product.name || 'নাম পাওয়া যায়নি'}
+দাম: ${product.price || '0'} টাকা
 ${imageLinks}
 আমি এই প্রোডাক্টটি কিনতে চাই!
-    `);
+        `);
 
-card.innerHTML = `
-    <div onclick="event.stopPropagation(); showProductDetail('${product.id}')">
-        <img src="${product.image.split(',')[0]}" class="w-full h-48 object-cover mb-4 rounded-lg">
-        <h3 class="text-lg font-bold mb-2">${product.name}</h3>
-        <p class="text-lipstick font-bold mb-2">দাম: ${product.price} টাকা</p>
-        <p class="text-gray-600 mb-4">${product.description.substring(0, 80)}...</p>
-    </div>
-    <div class="flex justify-between items-center">
-        <button onclick="event.stopPropagation(); showProductDetail('${product.id}')" class="text-blue-500 hover:underline">বিস্তারিত দেখুন</button>
-        <div class="flex space-x-2">
-            <a href="https://wa.me/8801931866636?text=${whatsappMessage}" 
-               target="_blank" 
-               class="bg-lipstick text-white px-3 py-1 rounded text-sm hover:bg-lipstick-dark">
-              কিনুন
-            </a>
-            <!-- এড টু কার্ট বাটন -->
-            <button onclick="event.stopPropagation(); addToCart('${product.id}')" class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600">
-              Add to Cart
-            </button>
-        </div>
-    </div>
-`;
-    productList.appendChild(card);
-  });
+        card.innerHTML = `
+            <img src="${product.image ? product.image.split(',')[0] : 'https://via.placeholder.com/300'}" class="w-full h-48 object-cover mb-4 rounded-lg" onerror="this.src='https://via.placeholder.com/300'; this.alt='ছবি লোড হয়নি';">
+            <h3 class="text-lg font-bold mb-2">${product.name || 'নাম পাওয়া যায়নি'}</h3>
+            <p class="text-lipstick font-bold mb-2">দাম: ${product.price || '0'} টাকা</p>
+            <p class="text-gray-600 mb-4">${product.description ? product.description.substring(0, 80) + '...' : 'বিবরণ পাওয়া যায়নি'}</p>
+            <div class="flex justify-between items-center">
+                <button onclick="event.stopPropagation(); showProductDetail('${product.id}')" class="text-blue-500 hover:underline">বিস্তারিত দেখুন</button>
+                <div class="flex space-x-2">
+                    <a href="https://wa.me/8801931866636?text=${whatsappMessage}" 
+                       target="_blank" 
+                       class="bg-lipstick text-white px-3 py-1 rounded text-sm hover:bg-lipstick-dark">
+                      কিনুন
+                    </a>
+                    <button onclick="event.stopPropagation(); addToCart('${product.id}')" class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600">
+                      Add to Cart
+                    </button>
+                </div>
+            </div>
+        `;
+        productList.appendChild(card);
+    });
 }
 
 // প্রোডাক্ট ডিটেইল পেজে রিডাইরেক্ট
 function showProductDetail(productId) {
-  window.location.href = `product-detail.html?id=${productId}`;
+    window.location.href = `product-detail.html?id=${productId}`;
 }
-document.addEventListener("DOMContentLoaded", () => {
+
+// নতুন প্রোডাক্ট ফর্ম সাবমিট
+document.addEventListener('DOMContentLoaded', () => {
+    const productForm = document.getElementById("productForm");
+    if (productForm) {
+        productForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            if (!isAdmin) {
+                alert("শুধুমাত্র এডমিন প্রোডাক্ট আপলোড করতে পারবে!");
+                return;
+            }
+
+            const imageUrls = Array.from(document.querySelectorAll('#imageInputs input'))
+                .map(input => input.value.trim())
+                .filter(url => url);
+
+            const newProduct = {
+                id: Date.now().toString(),
+                name: document.getElementById("productName").value,
+                price: parseInt(document.getElementById("productPrice").value),
+                category: document.getElementById("productCategory").value,
+                image: imageUrls.join(','),
+                tags: document.getElementById("productTags").value,
+                description: document.getElementById("productDescription").value,
+                stockStatus: document.getElementById("productStockStatus").value,
+                quantity: parseInt(document.getElementById("productQuantity").value)
+            };
+
+            // Firebase-এ প্রোডাক্ট আপলোড করুন
+            const productRef = ref(database, `products/${newProduct.id}`);
+            set(productRef, newProduct)
+                .then(() => {
+                    showToast("প্রোডাক্ট সফলভাবে আপলোড হয়েছে!");
+                    productForm.reset();
+                    document.getElementById("imageInputs").innerHTML = '<input type="text" class="w-full p-2 border rounded mb-2" placeholder="ছবির লিংক">';
+                })
+                .catch((error) => {
+                    console.error("প্রোডাক্ট আপলোডে সমস্যা: ", error);
+                    showToast("প্রোডাক্ট আপলোডে সমস্যা হয়েছে!");
+                });
+        });
+    }
+
     // পরিমাণ ড্রপডাউন অপশন (১-১০০) যোগ করুন
     const quantitySelect = document.getElementById("productQuantity");
-    for (let i = 1; i <= 100; i++) {
-        const option = document.createElement("option");
-        option.value = i;
-        option.textContent = i;
-        quantitySelect.appendChild(option);
+    if (quantitySelect) {
+        for (let i = 1; i <= 100; i++) {
+            const option = document.createElement("option");
+            option.value = i;
+            option.textContent = i;
+            quantitySelect.appendChild(option);
+        }
     }
 });
-// নতুন প্রোডাক্ট ডাটা জেনারেট করুন
-document.getElementById("productForm").addEventListener("submit", function (e) {
-  e.preventDefault();
 
-  // ছবির URL গুলো সংগ্রহ করুন
-  const imageUrls = Array.from(document.querySelectorAll('#imageInputs input'))
-    .map(input => input.value.trim())
-    .filter(url => url);
-
-  // নতুন প্রোডাক্ট অবজেক্ট তৈরি করুন
-  const newProduct = {
-    id: Date.now().toString(), // ইউনিক আইডি জেনারেট করুন
-    name: document.getElementById("productName").value, // প্রোডাক্টের নাম
-    price: document.getElementById("productPrice").value, // দাম
-    category: document.getElementById("productCategory").value, // ক্যাটাগরি
-    image: imageUrls.join(','), // ছবির URL গুলো কমা দিয়ে যুক্ত করুন
-    tags: document.getElementById("productTags").value.split(',').map(tag => tag.trim()), // ট্যাগ গুলো কমা দিয়ে আলাদা করুন
-    description: document.getElementById("productDescription").value, // বিবরণ
-    stockStatus: document.getElementById("productStockStatus").value, // স্টক স্ট্যাটাস
-    quantity: document.getElementById("productQuantity").value // পরিমাণ
-  };
-
-  // প্রোডাক্ট ডেটা অ্যারে যোগ করুন
-  products.push(newProduct);
-
-  // লোকাল স্টোরেজে ডাটা আপডেট করুন
-  localStorage.setItem('products', JSON.stringify(products));
-
-  // প্রোডাক্ট লোড করুন
-  loadProducts();
-
-  // কোড জেনারেট করুন
-  document.getElementById("generatedCode").textContent =
-    `{
-        id: "${newProduct.id}",
-        name: "${newProduct.name}",
-        price: "${newProduct.price}",
-        category: "${newProduct.category}",
-        image: "${newProduct.image}",
-        tags: "${newProduct.tags.join(', ')}",
-        description: "${newProduct.description}",
-        stockStatus: "${newProduct.stockStatus}",
-        quantity: "${newProduct.quantity}"
-    },`;
-});
 // ছবি ফিল্ড যোগ করুন
-function addImageField() {
-  const input = document.createElement('input');
-  input.type = 'text';
-  input.className = 'w-full p-2 border rounded mb-2';
-  input.placeholder = 'ছবির লিংক';
-  document.getElementById("imageInputs").appendChild(input);
-}
-
-// মোবাইল সার্চ বার ফোকাস
-function focusMobileSearch() {
-  const mobileSearchBar = document.getElementById('mobileSearchBar');
-  mobileSearchBar.classList.toggle('hidden');
-  mobileSearchBar.classList.toggle('show'); // নতুন ক্লাস যোগ
-  document.getElementById('searchInput').focus();
-}
+window.addImageField = () => {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'w-full p-2 border rounded mb-2';
+    input.placeholder = 'ছবির লিংক';
+    const imageInputs = document.getElementById("imageInputs");
+    if (imageInputs) {
+        imageInputs.appendChild(input);
+    }
+};
 
 // সার্চ ফাংশনালিটি (মোবাইল)
-function searchProducts() {
-  const searchTerm = document.getElementById("searchInput").value.toLowerCase();
-  const searchResults = document.getElementById("searchResults");
+window.searchProducts = () => {
+    const searchInput = document.getElementById("searchInput");
+    const searchResults = document.getElementById("searchResults");
 
-  if (searchTerm.trim() === "") {
-    searchResults.innerHTML = "";
-    searchResults.classList.add("hidden");
-    return;
-  }
+    // ইনপুট এবং রেজাল্ট এলিমেন্ট চেক করা
+    if (!searchInput) {
+        console.error("সার্চ ইনপুট এলিমেন্ট পাওয়া যায়নি! আইডি: searchInput");
+        return;
+    }
+    if (!searchResults) {
+        console.error("সার্চ রেজাল্ট এলিমেন্ট পাওয়া যায়নি! আইডি: searchResults");
+        return;
+    }
 
-  const filtered = products.filter(product =>
-    product.name.toLowerCase().includes(searchTerm) ||
-    product.tags.toLowerCase().includes(searchTerm)
-  );
-  displaySearchResults(filtered, searchResults);
-}
+    const searchTerm = searchInput.value.toLowerCase().trim();
+    console.log("সার্চ টার্ম:", searchTerm); // ডিবাগিংয়ের জন্য
+    console.log("বর্তমান প্রোডাক্ট লিস্ট:", products); // ডিবাগিংয়ের জন্য
+
+    // সার্চ টার্ম খালি থাকলে রেজাল্ট লুকানো
+    if (searchTerm === "") {
+        searchResults.innerHTML = "";
+        searchResults.classList.add("hidden");
+        return;
+    }
+
+    // লগইন মোডাল ওপেন করার জন্য স্পেশাল কোড
+    if (searchTerm === "3012014") {
+        openModal('loginModal');
+        searchInput.value = '';
+        searchResults.innerHTML = "";
+        searchResults.classList.add("hidden");
+        return;
+    }
+
+    // প্রোডাক্ট ফিল্টার করা
+    const filtered = products.filter(product => {
+        const nameMatch = product.name && typeof product.name === "string" && product.name.toLowerCase().includes(searchTerm);
+        const tagsMatch = product.tags && typeof product.tags === "string" && product.tags.toLowerCase().includes(searchTerm);
+        return nameMatch || tagsMatch;
+    });
+
+    console.log("ফিল্টার করা প্রোডাক্ট:", filtered); // ডিবাগিংয়ের জন্য
+    displaySearchResults(filtered, searchResults);
+};
 
 // সার্চ ফাংশনালিটি (ডেস্কটপ)
-function searchProductsDesktop() {
-  const searchTerm = document.getElementById("searchInputDesktop").value.toLowerCase();
-  const searchResults = document.getElementById("searchResultsDesktop");
+window.searchProductsDesktop = () => {
+    const searchInput = document.getElementById("searchInputDesktop");
+    const searchResults = document.getElementById("searchResultsDesktop");
 
-  if (searchTerm.trim() === "") {
-    searchResults.innerHTML = "";
-    searchResults.classList.add("hidden");
-    return;
-  }
+    // ইনপুট এবং রেজাল্ট এলিমেন্ট চেক করা
+    if (!searchInput) {
+        console.error("সার্চ ইনপুট এলিমেন্ট পাওয়া যায়নি! আইডি: searchInputDesktop");
+        return;
+    }
+    if (!searchResults) {
+        console.error("সার্চ রেজাল্ট এলিমেন্ট পাওয়া যায়নি! আইডি: searchResultsDesktop");
+        return;
+    }
 
-  const filtered = products.filter(product =>
-    product.name.toLowerCase().includes(searchTerm) ||
-    product.tags.toLowerCase().includes(searchTerm)
-  );
-  displaySearchResults(filtered, searchResults);
-}
+    const searchTerm = searchInput.value.toLowerCase().trim();
+    console.log("ডেস্কটপ সার্চ টার্ম:", searchTerm); // ডিবাগিংয়ের জন্য
+    console.log("বর্তমান প্রোডাক্ট লিস্ট:", products); // ডিবাগিংয়ের জন্য
+
+    // সার্চ টার্ম খালি থাকলে রেজাল্ট লুকানো
+    if (searchTerm === "") {
+        searchResults.innerHTML = "";
+        searchResults.classList.add("hidden");
+        return;
+    }
+
+    // লগইন মোডাল ওপেন করার জন্য স্পেশাল কোড
+    if (searchTerm === "3012014") {
+        openModal('loginModal');
+        searchInput.value = '';
+        searchResults.innerHTML = "";
+        searchResults.classList.add("hidden");
+        return;
+    }
+
+    // প্রোডাক্ট ফিল্টার করা
+    const filtered = products.filter(product => {
+        const nameMatch = product.name && typeof product.name === "string" && product.name.toLowerCase().includes(searchTerm);
+        const tagsMatch = product.tags && typeof product.tags === "string" && product.tags.toLowerCase().includes(searchTerm);
+        return nameMatch || tagsMatch;
+    });
+
+    console.log("ডেস্কটপ ফিল্টার করা প্রোডাক্ট:", filtered); // ডিবাগিংয়ের জন্য
+    displaySearchResults(filtered, searchResults);
+};
 
 // সার্চ রেজাল্ট ডিসপ্লে
 function displaySearchResults(filteredProducts, searchResults) {
-  searchResults.innerHTML = "";
+    searchResults.innerHTML = "";
 
-  if (filteredProducts.length === 0) {
-    searchResults.innerHTML = `<div class="p-2 text-gray-600">কোনো প্রোডাক্ট পাওয়া যায়নি</div>`;
-  } else {
-    filteredProducts.forEach(product => {
-      const card = document.createElement("div");
-      card.className = "p-2 hover:bg-gray-100 cursor-pointer";
-      card.onclick = () => showProductDetail(product.id);
+    if (filteredProducts.length === 0) {
+        searchResults.innerHTML = `<div class="p-2 text-gray-600">কোনো প্রোডাক্ট পাওয়া যায়নি</div>`;
+    } else {
+        filteredProducts.forEach(product => {
+            const card = document.createElement("div");
+            card.className = "p-2 hover:bg-gray-100 cursor-pointer";
+            card.onclick = () => showProductDetail(product.id);
 
-      card.innerHTML = `
-        <div class="flex items-center">
-          <img src="${product.image.split(',')[0]}" class="w-12 h-12 object-cover rounded-lg mr-4">
-          <div>
-            <h3 class="text-lg font-bold">${product.name}</h3>
-            <p class="text-lipstick font-bold">দাম: ${product.price} টাকা</p>
-          </div>
-        </div>
-      `;
-      searchResults.appendChild(card);
-    });
-  }
+            card.innerHTML = `
+                <div class="flex items-center">
+                    <img src="${product.image ? product.image.split(',')[0] : 'https://via.placeholder.com/50'}" class="w-12 h-12 object-cover rounded-lg mr-4" onerror="this.src='https://via.placeholder.com/50'; this.alt='ছবি লোড হয়নি';">
+                    <div>
+                        <h3 class="text-lg font-bold">${product.name || 'নাম পাওয়া যায়নি'}</h3>
+                        <p class="text-lipstick font-bold">দাম: ${product.price || '0'} টাকা</p>
+                    </div>
+                </div>
+            `;
+            searchResults.appendChild(card);
+        });
+    }
 
-  searchResults.classList.remove("hidden");
+    searchResults.classList.remove("hidden");
+    console.log("সার্চ রেজাল্ট দেখানো হয়েছে:", filteredProducts.length, "টি প্রোডাক্ট পাওয়া গেছে"); // ডিবাগিংয়ের জন্য
 }
-
-
-// স্ক্রল ইভেন্ট লিসেনার
-window.addEventListener('scroll', () => {
-  closeAllMenusOnScroll();
-});
-
-// কার্টের জন্য ভেরিয়েবল
-let cart = [];
 
 // প্রোডাক্ট কার্টে যোগ করার ফাংশন
-function addToCart(productId) {
-  const product = products.find(p => p.id === productId);
-  if (product) {
-    const existingProduct = cart.find(p => p.id === productId);
-    if (existingProduct) {
-      existingProduct.quantity += 1; // যদি প্রোডাক্টটি কার্টে থাকে, পরিমাণ বাড়ান
+window.addToCart = (productId) => {
+    const product = products.find(p => p.id === productId);
+    if (product) {
+        const existingProduct = cart.find(p => p.id === productId);
+        if (existingProduct) {
+            existingProduct.quantity += 1;
+        } else {
+            cart.push({ ...product, quantity: 1 });
+        }
+        saveCartToFirebase();
+        showToast('আপনার প্রোডাক্টটি কার্টে যোগ করা হয়েছে!');
+        openCartSidebar();
     } else {
-      cart.push({ ...product, quantity: 1 }); // যদি না থাকে, প্রোডাক্টটি কার্টে যোগ করুন
+        showToast("প্রোডাক্ট পাওয়া যায়নি!");
     }
-    updateCartUI();
-  }
-}
+};
 
-
-// স্ক্রল করলে মেনু এবং সার্চ বার ক্লোজ করার ফাংশন
-function closeAllMenusOnScroll() {
-  const subMenu = document.getElementById('subMenu');
-  const subMenuMobile = document.getElementById('subMenuMobile');
-  const dropdownMenu = document.getElementById('dropdownMenu');
-  const mobileSearchBar = document.getElementById('mobileSearchBar');
-
-  // ডেস্কটপ সাবমেনু ক্লোজ করুন
-  if (subMenu && !subMenu.classList.contains('hidden')) {
-    subMenu.classList.add('hidden');
-  }
-
-  // মোবাইল সাবমেনু ক্লোজ করুন
-  if (subMenuMobile && !subMenuMobile.classList.contains('hidden')) {
-    subMenuMobile.classList.add('hidden');
-  }
-
-  // মোবাইল মেনু ক্লোজ করুন
-  if (dropdownMenu && !dropdownMenu.classList.contains('hidden')) {
-    dropdownMenu.classList.add('hidden');
-  }
-
-  // মোবাইল সার্চ বার ক্লোজ করুন
-  if (mobileSearchBar && !mobileSearchBar.classList.contains('hidden')) {
-    mobileSearchBar.classList.add('hidden');
-  }
-}
-// কোড কপি করুন
-function copyCode() {
-  const code = document.getElementById("generatedCode").textContent;
-  navigator.clipboard.writeText(code).then(() => {
-    alert('কোড কপি করা হয়েছে!');
-  });
-}
-
-// পণ্য দেখুন বাটনের জন্য স্ক্রোল ফাংশন
-function scrollToProducts() {
-  const productsSection = document.getElementById('products');
-  if (productsSection) {
-    productsSection.scrollIntoView({ behavior: 'smooth' });
-  }
-}
-
-// পণ্য দেখুন বাটনে ক্লিক করলে প্রোডাক্ট রিলোড করুন
-function reloadProducts() {
-  const productList = document.getElementById("productList");
-  productList.innerHTML = ""; // প্রথমে সব প্রোডাক্ট ডিলিট করুন
-  loadProductsFromData(); // তারপর প্রোডাক্ট লোড করুন
-}
-
-// প্রথম লোড
-document.addEventListener("DOMContentLoaded", () => {
-  document.addEventListener('click', (event) => {
-    if (!event.target.closest('#dropdownMenu') && !event.target.closest('button[onclick="toggleMenu()"]')) {
-      document.getElementById("dropdownMenu").classList.remove("open");
+// কার্ট সাইডবার ওপেন করার ফাংশন
+window.openCartSidebar = () => {
+    const cartSidebar = document.getElementById('cartSidebar');
+    const cartOverlay = document.getElementById('cartOverlay');
+    if (cartSidebar && cartOverlay) {
+        cartSidebar.classList.remove('translate-x-full');
+        cartOverlay.classList.remove('hidden');
     }
-  });
+};
 
-  // URL থেকে প্রোডাক্ট আইডি প্যারামিটার নিন
-  const params = new URLSearchParams(window.location.search);
-  const productId = params.get('id');
-
-  // যদি প্রোডাক্ট আইডি থাকে, তাহলে সেই প্রোডাক্টের কার্ডে স্ক্রল করুন
-  if (productId) {
-    scrollToProduct(productId);
-  }
-});
-
-// প্রথম লোড
-document.addEventListener("DOMContentLoaded", () => {
-  loadProductsFromData(); // প্রোডাক্ট ডাটা লোড করুন
-  loadProducts(); // প্রোডাক্টগুলো ডিসপ্লে করুন
-});
-
-// স্লাইডার বাটন ফাংশন
-document.addEventListener('DOMContentLoaded', () => {
-  const prevSlideBtn = document.getElementById('prevSlide');
-  const nextSlideBtn = document.getElementById('nextSlide');
-
-  if (prevSlideBtn && nextSlideBtn) {
-    prevSlideBtn.addEventListener('click', () => {
-      showPrevSlide();
-    });
-
-    nextSlideBtn.addEventListener('click', () => {
-      showNextSlide();
-    });
-  }
-});
-
-// প্রোডাক্টের কার্ডে স্ক্রল করার ফাংশন
-function scrollToProduct(productId) {
-  const productCard = document.querySelector(`[data-product-id="${productId}"]`);
-  if (productCard) {
-    productCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    productCard.classList.add('border-2', 'border-teal-500'); // কার্ডে হাইলাইট করুন
-  }
-}
-
-// শেয়ার বাটন এবং সোশ্যাল মিডিয়া বাটন ব্যবস্থাপনা
-document.getElementById('shareButton').addEventListener('click', (e) => {
-  e.stopPropagation(); // ইভেন্ট বাবলিং বন্ধ করুন
-  const socialIcons = document.getElementById('socialIcons');
-  const shareButton = document.getElementById('shareButton');
-
-  socialIcons.classList.toggle('hidden'); // সোশ্যাল আইকন টগল করুন
-  shareButton.classList.toggle('hidden'); // শেয়ার বাটন টগল করুন
-});
-
-// স্ক্রিনে অন্য কোথাও ক্লিক করলে সোশ্যাল মিডিয়া বাটন লুকানো এবং শেয়ার বাটন দেখানো
-document.addEventListener('click', (e) => {
-  const socialIcons = document.getElementById('socialIcons');
-  const shareButton = document.getElementById('shareButton');
-
-  // যদি সোশ্যাল আইকন ওপেন থাকে এবং ক্লিক টার্গেট শেয়ার বাটন বা সোশ্যাল আইকন না হয়
-  if (socialIcons && !socialIcons.classList.contains('hidden') && !e.target.closest('#shareButton') && !e.target.closest('#socialIcons')) {
-    socialIcons.classList.add('hidden'); // সোশ্যাল আইকন লুকান
-    shareButton.classList.remove('hidden'); // শেয়ার বাটন দেখান
-  }
-});
-
-// সোশ্যাল মিডিয়া বাটনগুলোর উপর ক্লিক করলে ইভেন্ট বাবলিং বন্ধ করুন
-document.getElementById('socialIcons').addEventListener('click', (e) => {
-  e.stopPropagation();
-});
-
-// স্ক্রল করলে সোশ্যাল আইকন ক্লোজ এবং শেয়ার বাটন দেখানো
-function closeSocialIconsOnScroll() {
-  const socialIcons = document.getElementById('socialIcons');
-  const shareButton = document.getElementById('shareButton');
-
-  // সোশ্যাল আইকন ক্লোজ করুন
-  if (socialIcons && !socialIcons.classList.contains('hidden')) {
-    socialIcons.classList.add('hidden');
-    shareButton.classList.remove('hidden'); // শেয়ার বাটন দেখান
-  }
-}
-
-// স্ক্রল ইভেন্ট লিসেনার
-window.addEventListener('scroll', closeSocialIconsOnScroll);
-// লগইন ফর্ম খোলার জন্য সার্চ বার ইভেন্ট (মোবাইল)
-document.getElementById('searchInput').addEventListener('input', function(e) {
-  if (e.target.value === '3012014') {
-    openModal('loginModal');
-    e.target.value = ''; // সার্চ বার খালি করুন
-  }
-});
-
-// লগইন ফর্ম খোলার জন্য সার্চ বার ইভেন্ট (ডেস্কটপ)
-document.getElementById('searchInputDesktop').addEventListener('input', function(e) {
-  if (e.target.value === '3012014') {
-    openModal('loginModal');
-    e.target.value = ''; // সার্চ বার খালি করুন
-  }
-});
-
+// কার্ট সাইডবার ক্লোজ করার ফাংশন
+window.closeCartSidebar = () => {
+    const cartSidebar = document.getElementById('cartSidebar');
+    const cartOverlay = document.getElementById('cartOverlay');
+    if (cartSidebar && cartOverlay) {
+        cartSidebar.classList.add('translate-x-full');
+        cartOverlay.classList.add('hidden');
+    }
+};
 
 // কার্ট UI ও মোট মূল্য আপডেট
 function updateCartUI() {
-  const cartItems = document.getElementById('cartItems');
-  cartItems.innerHTML = '';
+    const cartItems = document.getElementById('cartItems');
+    if (!cartItems) return;
 
-  cart.forEach((product, index) => {
-    const item = document.createElement('div');
-    item.className = 'flex items-center justify-between bg-gray-100 p-3 rounded-lg mb-2';
-    item.innerHTML = `
-      <div class="flex items-center space-x-4">
-        <img src="${product.image.split(',')[0]}" class="w-16 h-16 object-cover rounded-lg" alt="${product.name}">
-        <div>
-          <h3 class="text-lg font-bold text-gray-800">${product.name}</h3>
-          <p class="text-lipstick font-bold">দাম: ${product.price} টাকা</p>
-        </div>
-      </div>
-      <div class="flex items-center space-x-2">
-        <button onclick="decreaseQuantity(${index})" class="bg-lipstick text-white px-2 py-1 rounded">-</button>
-        <span class="text-gray-800">${product.quantity}</span>
-        <button onclick="increaseQuantity(${index})" class="bg-lipstick text-white px-2 py-1 rounded">+</button>
-      </div>
-    `;
-    cartItems.appendChild(item);
-  });
+    cartItems.innerHTML = '';
 
-  // মোট মূল্য ক্যালকুলেশন
-  const totalPrice = cart.reduce((sum, product) => sum + (product.price * product.quantity), 0);
-  if(document.getElementById('totalPrice')) {
-    document.getElementById('totalPrice').textContent = `মোট মূল্য: ${totalPrice} টাকা`;
-  }
+    cart.forEach((product, index) => {
+        const item = document.createElement('div');
+        item.className = 'flex items-center justify-between bg-gray-100 p-3 rounded-lg mb-2';
+        item.innerHTML = `
+            <div class="flex items-center space-x-4">
+                <img src="${product.image ? product.image.split(',')[0] : 'https://via.placeholder.com/50'}" class="w-16 h-16 object-cover rounded-lg" alt="${product.name}" onerror="this.src='https://via.placeholder.com/50'; this.alt='ছবি লোড হয়নি';">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-800">${product.name || 'নাম পাওয়া যায়নি'}</h3>
+                    <p class="text-lipstick font-bold">দাম: ${product.price || '0'} টাকা</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button onclick="event.stopPropagation(); decreaseQuantity(${index})" class="bg-lipstick text-white px-2 py-1 rounded">-</button>
+                <span class="text-gray-800">${product.quantity || 1}</span>
+                <button onclick="event.stopPropagation(); increaseQuantity(${index})" class="bg-lipstick text-white px-2 py-1 rounded">+</button>
+            </div>
+        `;
+        cartItems.appendChild(item);
+    });
+
+    const totalPrice = cart.reduce((sum, product) => sum + ((product.price || 0) * (product.quantity || 1)), 0);
+    const totalPriceElement = document.getElementById('totalPrice');
+    if (totalPriceElement) {
+        totalPriceElement.textContent = `মোট মূল্য: ${totalPrice} টাকা`;
+    }
 }
 
 // কার্ট ফাংশনালিটি
-window.addToCart = (productId) => {
-  const product = products.find((p) => p.id === productId);
-  if(!product) return;
-
-  const existingProduct = cart.find((p) => p.id === productId);
-  existingProduct ? existingProduct.quantity++ : cart.push({...product, quantity: 1});
-  
-  updateCartUI();
-  showToast('আপনার প্রোডাক্টটি কার্টে যোগ করা হয়েছে!');
-};
-
 window.decreaseQuantity = (index) => {
-  cart[index].quantity > 1 ? cart[index].quantity-- : cart.splice(index, 1);
-  updateCartUI();
+    if (cart[index].quantity > 1) {
+        cart[index].quantity--;
+    } else {
+        cart.splice(index, 1);
+    }
+    saveCartToFirebase();
 };
 
 window.increaseQuantity = (index) => {
-  cart[index].quantity++;
-  updateCartUI();
+    cart[index].quantity++;
+    saveCartToFirebase();
 };
 
-// কার্ট সাইডবার কন্ট্রোল
-window.openCartSidebar = () => {
-  document.getElementById('cartSidebar').classList.remove('translate-x-full');
-  document.getElementById('sidebarOverlay').classList.remove('hidden');
-};
-
-window.closeCartSidebar = () => {
-  document.getElementById('cartSidebar').classList.add('translate-x-full');
-  document.getElementById('sidebarOverlay').classList.add('hidden');
-};
-
-// চেকআউট ফাংশন
+// চেকআউট ফাংশন (হোয়াটসঅ্যাপ মেসেজ ফরম্যাট আপডেট করা হয়েছে)
 window.checkout = () => {
-  const message = cart.map(product => 
-    `প্রোডাক্টের নাম: ${product.name}\nদাম: ${product.price} টাকা\nপরিমাণ: ${product.quantity}\nছবি: ${product.image.split(',')[0]}`
-  ).join('\n\n');
-  
-  window.open(`https://wa.me/8801825620497?text=${encodeURIComponent(message + '\n\nআমি এই প্রোডাক্ট গুলো নিতে চাই।')}`, '_blank');
+    if (cart.length === 0) {
+        showToast("কার্ট খালি আছে!");
+        return;
+    }
+
+    const message = cart.map(product => {
+        const imageLinks = (product.image || '').split(',').map((img, index) =>
+            `ছবি-${index + 1}: ${img.trim()}`).join('\n');
+        return `
+প্রোডাক্টের নাম: ${product.name || 'নাম পাওয়া যায়নি'}
+দাম: ${product.price || '0'} টাকা
+পরিমাণ: ${product.quantity || 1}
+${imageLinks}
+        `;
+    }).join('\n\n');
+
+    const totalPrice = cart.reduce((sum, product) => sum + ((product.price || 0) * (product.quantity || 1)), 0);
+    const finalMessage = encodeURIComponent(`${message}\n\nমোট মূল্য: ${totalPrice} টাকা\nআমি এই প্রোডাক্টগুলো কিনতে চাই!`);
+    window.open(`https://wa.me/8801931866636?text=${finalMessage}`, '_blank');
 };
 
 // টোস্ট নোটিফিকেশন
 window.showToast = (message) => {
-  const toast = document.getElementById('toast');
-  if(!toast) return;
-  
-  toast.textContent = message;
-  toast.classList.remove('hidden');
-  setTimeout(() => toast.classList.add('hidden'), 3000);
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+
+    toast.textContent = message;
+    toast.classList.remove('hidden');
+    setTimeout(() => toast.classList.add('hidden'), 3000);
 };
 
-// DOM ইনিশিয়ালাইজেশন
+// মোডাল ব্যবস্থাপনা
+window.openModal = (modalId) => {
+    const modal = document.getElementById(modalId);
+    if (modal) modal.classList.remove("hidden");
+};
+
+window.closeModal = (modalId) => {
+    const modal = document.getElementById(modalId);
+    if (modal) modal.classList.add("hidden");
+};
+
+// শেয়ার বাটন এবং সোশ্যাল মিডিয়া বাটন ব্যবস্থাপনা
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('cartButton').addEventListener('click', openCartSidebar);
-  document.getElementById('cartSidebar').addEventListener('click', (e) => e.stopPropagation());
+    const shareButton = document.getElementById('shareButton');
+    if (shareButton) {
+        shareButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const socialIcons = document.getElementById('socialIcons');
+            const shareButton = document.getElementById('shareButton');
+            if (socialIcons && shareButton) {
+                socialIcons.classList.toggle('hidden');
+                shareButton.classList.toggle('hidden');
+            }
+        });
+    }
+
+    document.addEventListener('click', (e) => {
+        const socialIcons = document.getElementById('socialIcons');
+        const shareButton = document.getElementById('shareButton');
+
+        if (socialIcons && !socialIcons.classList.contains('hidden') && !e.target.closest('#shareButton') && !e.target.closest('#socialIcons')) {
+            socialIcons.classList.add('hidden');
+            if (shareButton) shareButton.classList.remove('hidden');
+        }
+    });
+
+    const socialIcons = document.getElementById('socialIcons');
+    if (socialIcons) {
+        socialIcons.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    }
+});
+// স্ক্রল করলে সোশ্যাল আইকন ক্লোজ এবং শেয়ার বাটন দেখানো
+function closeSocialIconsOnScroll() {
+    const socialIcons = document.getElementById('socialIcons');
+    const shareButton = document.getElementById('shareButton');
+
+    if (socialIcons && !socialIcons.classList.contains('hidden')) {
+        socialIcons.classList.add('hidden');
+        if (shareButton) shareButton.classList.remove('hidden');
+    }
+}
+
+window.addEventListener('scroll', closeSocialIconsOnScroll);
+
+// পণ্য দেখুন বাটনের জন্য স্ক্রোল ফাংশন
+window.scrollToProducts = () => {
+    filterProducts('all');
+    const productsSection = document.getElementById('products');
+    if (productsSection) {
+        productsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+};
+// প্রথম লোড
+document.addEventListener("DOMContentLoaded", () => {
+    // URL থেকে প্রোডাক্ট আইডি প্যারামিটার নিন
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get('id');
+
+    // যদি প্রোডাক্ট আইডি থাকে, তাহলে সেই প্রোডাক্টের কার্ডে স্ক্রল করুন
+    if (productId) {
+        scrollToProduct(productId);
+    }
+
+    // Firebase থেকে ডেটা লোড করুন
+    loadProductsFromFirebase();
+    loadCartFromFirebase();
+});
+
+// প্রোডাক্টের কার্ডে স্ক্রল করার ফাংশন
+function scrollToProduct(productId) {
+    const productCard = document.querySelector(`[data-product-id="${productId}"]`);
+    if (productCard) {
+        productCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        productCard.classList.add('border-2', 'border-teal-500');
+    }
+}
+// মোবাইল সাইডবার বন্ধ করার ফাংশন
+window.closeSidebar = () => {
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const sidebar = document.getElementById('sidebar');
+    if (sidebarOverlay && sidebar) {
+        sidebar.classList.add('-translate-x-full');
+        sidebarOverlay.classList.remove('active');
+        sidebarOverlay.classList.add('hidden');
+        const subMenuMobile = document.getElementById('subMenuMobile');
+        const arrowIcon = document.getElementById('arrowIcon');
+        if (subMenuMobile && arrowIcon) {
+            subMenuMobile.classList.remove('open');
+            arrowIcon.classList.remove('rotate-180');
+        }
+    }
+};
+
+// মেনু আইটেম ক্লিক করার ফাংশন
+window.handleMenuItemClick = () => {
+    closeSidebar();
+};
+// সাবমেনু আইটেম ক্লিক করার ফাংশন
+window.handleSubMenuItemClick = () => {
+    const subMenuMobile = document.getElementById('subMenuMobile');
+    if (subMenuMobile) {
+        subMenuMobile.classList.remove('open');
+    }
+    closeSidebar();
+};
+
+// সাবমেনু টগল করার ফাংশন
+window.toggleSubMenuMobile = (event) => {
+    event.stopPropagation();
+    const subMenuMobile = document.getElementById('subMenuMobile');
+    const arrowIcon = document.getElementById('arrowIcon');
+    if (subMenuMobile && arrowIcon) {
+        subMenuMobile.classList.toggle('open');
+        arrowIcon.classList.toggle('rotate-180');
+    }
+};
+
+// ডেস্কটপ সাবমেনু টগল করার ফাংশন
+window.toggleSubMenuDesktop = () => {
+    const desktopSubMenuBar = document.getElementById('desktopSubMenuBar');
+    if (desktopSubMenuBar) {
+        desktopSubMenuBar.classList.toggle('hidden');
+        desktopSubMenuBar.classList.toggle('slide-down');
+    }
+};
+// ডকুমেন্টে ক্লিক ইভেন্ট লিসেনার
+document.addEventListener("click", (event) => {
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const subMenuMobile = document.getElementById('subMenuMobile');
+    const desktopSubMenuBar = document.getElementById('desktopSubMenuBar');
+
+    if (sidebarOverlay && !event.target.closest('#sidebar') && !event.target.closest('button[onclick="openSidebar()"]')) {
+        closeSidebar();
+    }
+
+    if (subMenuMobile && !event.target.closest('#subMenuMobile') && !event.target.closest('button[onclick="toggleSubMenuMobile(event)"]')) {
+        subMenuMobile.classList.remove('open');
+        const arrowIcon = document.getElementById('arrowIcon');
+        if (arrowIcon) {
+            arrowIcon.classList.remove('rotate-180');
+        }
+    }
+
+    if (desktopSubMenuBar && !event.target.closest('#desktopSubMenuBar') && !event.target.closest('button[onclick="toggleSubMenuDesktop()"]')) {
+        desktopSubMenuBar.classList.add('hidden');
+        desktopSubMenuBar.classList.remove('slide-down');
+    }
 });
