@@ -6,12 +6,9 @@
     <title>প্রোডাক্ট বিস্তারিত</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
-    <script> 
-        $(function(){
-            $("#header").load("header.html"); 
-            $("#footer").load("footer.html"); 
-        });
-    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script type="module" src="script.js"></script>
+    <link rel="stylesheet" href="styles.css">
     <style>
         .bg-brushstroke { background-color: #F4A7B9; }
         .text-lipstick { color: #A52A2A; }
@@ -22,34 +19,145 @@
         .text-highlight { color: #FFD700; }
         .bg-background { background-color: #FFF5F7; }
 
-        .slide {
-            flex: 0 0 100%;
-            min-width: 100%;
+        /* ইমেজ গ্যালারি স্টাইল */
+        .image-gallery {
             display: flex;
-            align-items: center;
-            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
         }
 
-        .slide img {
-            max-width: 100%;
-            max-height: 80vh;
+        .main-image-container {
+            flex: 1;
+            max-width: 500px;
+        }
+
+        #mainImage {
+            width: 100%;
+            max-height: 400px;
             object-fit: contain;
-            border-radius: 8px;
-            border: 2px solid #A52A2A;
-        }
-
-        .indicator {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            background-color: #ccc;
-            border-radius: 50%;
-            margin: 0 5px;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
             cursor: pointer;
         }
 
-        .indicator.active {
-            background-color: #A52A2A;
+        .thumbnail-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #A52A2A #f1f1f1;
+        }
+
+        .thumbnail-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .thumbnail-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .thumbnail-container::-webkit-scrollbar-thumb {
+            background: #A52A2A;
+            border-radius: 4px;
+        }
+
+        .thumbnail {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .thumbnail.active {
+            border: 2px solid #A52A2A;
+        }
+
+        /* মোবাইল ভিউ */
+        @media (max-width: 768px) {
+            .image-gallery {
+                flex-direction: column;
+            }
+
+            .thumbnail-container {
+                flex-direction: row;
+                overflow-x: auto;
+                max-height: none;
+                padding-bottom: 5px;
+            }
+
+            .thumbnail {
+                width: 60px;
+                height: 60px;
+            }
+        }
+
+        /* ফুল-স্ক্রিন মোডাল স্টাইল */
+        #imageModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #modalImage {
+            max-width: 90%;
+            max-height: 80%;
+            border-radius: 4px;
+        }
+
+        #modalCloseBtn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        #modalPrevBtn, #modalNextBtn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        #modalPrevBtn {
+            left: 20px;
+        }
+
+        #modalNextBtn {
+            right: 20px;
+        }
+
+        /* টোস্ট স্টাইল */
+        #toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            display: none;
+            z-index: 1000;
+            font-size: 14px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: opacity 0.3s ease-in-out;
         }
     </style>
 </head>
@@ -57,210 +165,327 @@
     <div id="header"></div>
     <main class="p-4 pt-20">
         <div class="bg-white p-6 rounded-lg shadow-lg max-w-4xl mx-auto">
-            <div id="imageCarousel" class="relative overflow-hidden w-full mb-6">
-                <div class="slide-track flex transition-transform duration-500 ease-in-out"></div>
-                <div id="indicators" class="flex justify-center mt-4"></div>
+            <!-- ইমেজ গ্যালারি সেকশন -->
+            <div class="image-gallery">
+                <div class="main-image-container">
+                    <img id="mainImage" src="" alt="Main Product Image">
+                </div>
+                <div class="thumbnail-container" id="thumbnailContainer"></div>
             </div>
             <h1 id="productTitle" class="text-2xl font-bold mb-4"></h1>
             <p id="productPrice" class="text-[#A52A2A] text-xl font-bold mb-4"></p>
             <p id="productDescription" class="text-gray-700 mb-6"></p>
-            <a id="whatsappBtn" target="_blank" class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 inline-block">
-                <i class="fab fa-whatsapp mr-2"></i>WhatsApp এ অর্ডার করুন
-            </a>
+            <div class="flex space-x-4">
+                <a id="whatsappBtn" target="_blank" class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 inline-block">
+                    <i class="fab fa-whatsapp mr-2"></i>WhatsApp এ অর্ডার করুন
+                </a>
+                <button onclick="addToCartFromDetail()" class="bg-teal-500 text-white px-6 py-3 rounded-lg hover:bg-teal-600">
+                    <i class="fas fa-cart-plus mr-2"></i>Add to Cart
+                </button>
+            </div>
         </div>
     </main>
     <div id="footer"></div>
-    <script src="script.js"></script>
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-  const params = new URLSearchParams(window.location.search);
-  const productId = params.get('id');
-  const products = JSON.parse(localStorage.getItem('products')) || [];
-  const product = products.find(p => p.id === productId);
-  
-  if (product) {
-    document.getElementById('productTitle').textContent = product.name;
-    document.getElementById('productPrice').textContent = `দাম: ${product.price} টাকা`;
-    document.getElementById('productDescription').textContent = product.description;
-    
-    // স্টক স্ট্যাটাস দেখান
-    const stockElement = document.createElement('p');
-    stockElement.className = "text-gray-700 mb-2";
-    stockElement.innerHTML = `<strong>স্টক:</strong> ${product.stockStatus === 'in_stock' ? 'স্টকে আছে' : 'স্টকে নেই'}`;
-    document.getElementById('productDescription').after(stockElement);
-    
-    // কাউন্টার যোগ করুন
-    const counterHTML = `
-      <div class="flex items-center space-x-4 mb-4">
-        <span class="text-gray-700">পরিমাণ:</span>
-        <div class="flex items-center border rounded-lg overflow-hidden">
-          <button id="decreaseBtn" class="bg-lipstick text-white px-3 py-1 hover:bg-lipstick-dark">-</button>
-          <input type="number" id="quantityInput" value="1" min="1" max="100" class="px-2 py-1 border-0 focus:ring-0 w-16 text-center">
-          <button id="increaseBtn" class="bg-lipstick text-white px-3 py-1 hover:bg-lipstick-dark">+</button>
-        </div>
-      </div>
-    `;
-    document.getElementById('productDescription').insertAdjacentHTML('afterend', counterHTML);
-    
-    // কাউন্টার লজিক
-    const quantityInput = document.getElementById('quantityInput');
-    const decreaseBtn = document.getElementById('decreaseBtn');
-    const increaseBtn = document.getElementById('increaseBtn');
-    
-    decreaseBtn.addEventListener('click', () => {
-      let currentVal = parseInt(quantityInput.value);
-      if (currentVal > 1) quantityInput.value = currentVal - 1;
-    });
-    
-    increaseBtn.addEventListener('click', () => {
-      let currentVal = parseInt(quantityInput.value);
-      if (currentVal < 100) quantityInput.value = currentVal + 1;
-    });
-    
-    quantityInput.addEventListener('input', () => {
-      let value = parseInt(quantityInput.value);
-      if (value < 1) quantityInput.value = 1;
-      if (value > 100) quantityInput.value = 100;
-    });
-    
-    // হোয়াটসঅ্যাপ মেসেজে পরিমাণ যোগ করুন
-    const whatsappBtn = document.getElementById('whatsappBtn');
-    whatsappBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const quantity = quantityInput.value;
-      const imageList = product.image.split(',').map((img, index) =>
-        `ছবি-${index + 1}: ${img.trim()}`).join('\n');
-      
-      const message = `
+
+    <!-- টোস্ট নোটিফিকেশন -->
+    <div id="toast"></div>
+
+    <!-- ফুল-স্ক্রিন মোডাল -->
+    <div id="imageModal">
+        <span id="modalCloseBtn">&times;</span>
+        <span id="modalPrevBtn">&lt;</span>
+        <img id="modalImage" src="" alt="Full Screen Image">
+        <span id="modalNextBtn">&gt;</span>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Firebase SDK ইম্পোর্ট
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        // Firebase কনফিগারেশন
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVSzQS1c7H4BLhsDF_fW8wnqUN4B35LPA",
+            authDomain: "nahid-6714.firebaseapp.com",
+            databaseURL: "https://nahid-6714-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "nahid-6714",
+            storageBucket: "nahid-6714.firebasestorage.app",
+            messagingSenderId: "505741217147",
+            appId: "1:505741217147:web:25ed4e9f0d00e3c4d381de",
+            measurementId: "G-QZ7CTRKHCW"
+        };
+
+        // Firebase ইনিশিয়ালাইজ
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        let currentProduct = null;
+        let images = [];
+        let currentImageIndex = 0;
+
+        // হেডার এবং ফুটার লোড
+        $(function(){
+            $("#header").load("header.html", function() {
+                console.log("header.html লোড সম্পন্ন!");
+                const searchInput = document.getElementById('searchInput');
+                const searchInputDesktop = document.getElementById('searchInputDesktop');
+
+                if (searchInput) {
+                    searchInput.addEventListener('input', function(e) {
+                        window.searchProducts();
+                    });
+                }
+
+                if (searchInputDesktop) {
+                    searchInputDesktop.addEventListener('input', function(e) {
+                        window.searchProductsDesktop();
+                    });
+                }
+            });
+            $("#footer").load("footer.html");
+        });
+
+        // ইউনিক userId জেনারেট করা বা লোড করা
+        function getUserId() {
+            let userId = localStorage.getItem('userId');
+            if (!userId) {
+                userId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('userId', userId);
+            }
+            return userId;
+        }
+
+        // কার্টে প্রোডাক্ট যোগ করা
+        window.addToCartFromDetail = () => {
+            if (!currentProduct) {
+                console.error('কোনো প্রোডাক্ট পাওয়া যায়নি');
+                return;
+            }
+
+            const quantity = parseInt(document.getElementById('quantityInput').value);
+            const userId = getUserId();
+            const cartRef = ref(database, `carts/${userId}`);
+
+            get(cartRef).then((snapshot) => {
+                let cart = snapshot.val() || [];
+                const existingProduct = cart.find((p) => p.id === currentProduct.id);
+
+                if (existingProduct) {
+                    existingProduct.quantity += quantity;
+                } else {
+                    cart.push({ ...currentProduct, quantity });
+                }
+
+                set(cartRef, cart)
+                    .then(() => {
+                        showToast('প্রোডাক্ট কার্টে যোগ করা হয়েছে!');
+                        window.openCartSidebar();
+                    })
+                    .catch((error) => {
+                        console.error("কার্ট আপডেটে সমস্যা: ", error);
+                        showToast("কার্টে প্রোডাক্ট যোগ করতে সমস্যা হয়েছে!");
+                    });
+            }).catch((error) => {
+                console.error("কার্ট লোডে সমস্যা: ", error);
+                showToast("কার্ট লোড করতে সমস্যা হয়েছে!");
+            });
+        };
+
+        // ইমেজ গ্যালারি সেটআপ
+        function setupImageGallery(imageList) {
+            images = imageList;
+            const mainImage = document.getElementById('mainImage');
+            const thumbnailContainer = document.getElementById('thumbnailContainer');
+
+            // প্রথম ইমেজটি প্রধান ইমেজ হিসেবে সেট করুন
+            if (images.length > 0) {
+                mainImage.src = images[0];
+                currentImageIndex = 0;
+            } else {
+                mainImage.src = 'https://via.placeholder.com/300';
+            }
+
+            // থাম্বনেইল তৈরি করুন
+            images.forEach((img, index) => {
+                const thumbnail = document.createElement('img');
+                thumbnail.src = img;
+                thumbnail.className = 'thumbnail';
+                if (index === 0) thumbnail.classList.add('active');
+                thumbnail.addEventListener('click', () => {
+                    mainImage.src = img;
+                    currentImageIndex = index;
+                    document.querySelectorAll('.thumbnail').forEach(thumb => thumb.classList.remove('active'));
+                    thumbnail.classList.add('active');
+                });
+                thumbnailContainer.appendChild(thumbnail);
+            });
+
+            // প্রধান ইমেজে ক্লিক করলে ফুল-স্ক্রিন মোডাল ওপেন করুন
+            mainImage.addEventListener('click', () => {
+                openImageModal();
+            });
+        }
+
+        // ফুল-স্ক্রিন মোডাল ওপেন করুন
+        function openImageModal() {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            modalImage.src = images[currentImageIndex];
+            modal.style.display = 'flex';
+
+            // মোডাল বন্ধ করার লজিক
+            document.getElementById('modalCloseBtn').addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+
+            // পূর্ববর্তী ইমেজ
+            document.getElementById('modalPrevBtn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+                modalImage.src = images[currentImageIndex];
+            });
+
+            // পরবর্তী ইমেজ
+            document.getElementById('modalNextBtn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                currentImageIndex = (currentImageIndex + 1) % images.length;
+                modalImage.src = images[currentImageIndex];
+            });
+
+            // মোডালের বাইরে ক্লিক করলে বন্ধ হবে
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+
+            // সোয়াইপ ফাংশনালিটি
+            let touchStartX = 0;
+            let isSwiping = false;
+
+            modal.addEventListener('touchstart', e => {
+                touchStartX = e.touches[0].clientX;
+                isSwiping = true;
+            });
+
+            modal.addEventListener('touchmove', e => {
+                if (!isSwiping) return;
+                e.preventDefault();
+            });
+
+            modal.addEventListener('touchend', e => {
+                if (!isSwiping) return;
+                const touchEndX = e.changedTouches[0].clientX;
+                const deltaX = touchStartX - touchEndX;
+
+                if (Math.abs(deltaX) > 50) {
+                    if (deltaX > 0) {
+                        currentImageIndex = (currentImageIndex + 1) % images.length;
+                    } else {
+                        currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+                    }
+                    modalImage.src = images[currentImageIndex];
+                }
+                isSwiping = false;
+            });
+        }
+
+        // DOM লোড হওয়ার পর প্রোডাক্ট লোড
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            const productId = params.get('id');
+
+            if (!productId) {
+                alert('প্রোডাক্ট আইডি পাওয়া যায়নি!');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Firebase থেকে প্রোডাক্ট ডেটা লোড
+            const productRef = ref(database, 'products/' + productId);
+            try {
+                const snapshot = await get(productRef);
+                const product = snapshot.val();
+
+                if (product) {
+                    currentProduct = { ...product, id: productId };
+
+                    document.getElementById('productTitle').textContent = product.name;
+                    document.getElementById('productPrice').textContent = `দাম: ${product.price} টাকা`;
+                    document.getElementById('productDescription').textContent = product.description;
+
+                    // স্টক স্ট্যাটাস দেখান
+                    const stockElement = document.createElement('p');
+                    stockElement.className = "text-gray-700 mb-2";
+                    stockElement.innerHTML = `<strong>স্টক:</strong> ${product.stockStatus === 'in_stock' ? 'স্টকে আছে' : 'স্টকে নেই'}`;
+                    document.getElementById('productDescription').after(stockElement);
+
+                    // কাউন্টার যোগ করুন
+                    const counterHTML = `
+                        <div class="flex items-center space-x-4 mb-4">
+                            <span class="text-gray-700">পরিমাণ:</span>
+                            <div class="flex items-center border rounded-lg overflow-hidden">
+                                <button id="decreaseBtn" class="bg-lipstick text-white px-3 py-1 hover:bg-lipstick-dark">-</button>
+                                <input type="number" id="quantityInput" value="1" min="1" max="100" class="px-2 py-1 border-0 focus:ring-0 w-16 text-center">
+                                <button id="increaseBtn" class="bg-lipstick text-white px-3 py-1 hover:bg-lipstick-dark">+</button>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('productDescription').insertAdjacentHTML('afterend', counterHTML);
+
+                    // কাউন্টার লজিক
+                    const quantityInput = document.getElementById('quantityInput');
+                    const decreaseBtn = document.getElementById('decreaseBtn');
+                    const increaseBtn = document.getElementById('increaseBtn');
+
+                    decreaseBtn.addEventListener('click', () => {
+                        let currentVal = parseInt(quantityInput.value);
+                        if (currentVal > 1) quantityInput.value = currentVal - 1;
+                    });
+
+                    increaseBtn.addEventListener('click', () => {
+                        let currentVal = parseInt(quantityInput.value);
+                        if (currentVal < 100) quantityInput.value = currentVal + 1;
+                    });
+
+                    quantityInput.addEventListener('input', () => {
+                        let value = parseInt(quantityInput.value);
+                        if (value < 1) quantityInput.value = 1;
+                        if (value > 100) quantityInput.value = 100;
+                    });
+
+                    // হোয়াটসঅ্যাপ মেসেজে পরিমাণ যোগ করুন
+                    const whatsappBtn = document.getElementById('whatsappBtn');
+                    whatsappBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const quantity = quantityInput.value;
+                        const imageList = product.image.split(',').map((img, index) =>
+                            `ছবি-${index + 1}: ${img.trim()}`).join('\n');
+
+                        const message = `
 প্রোডাক্টের নাম: ${product.name}
 দাম: ${product.price} টাকা
 পরিমাণ: ${quantity} টি
 ${imageList}
 আমি এই প্রোডাক্টটি কিনতে চাই!
-      `;
-      window.open(`https://wa.me/8801931866636?text=${encodeURIComponent(message)}`, '_blank');
-    });
-    
-    // ইমেজ ক্যারousel সেটআপ
-    const carouselTrack = document.querySelector('#imageCarousel .slide-track');
-    const indicatorsContainer = document.getElementById('indicators');
-    product.image.split(',').forEach((img, index) => {
-      const slide = document.createElement('div');
-      slide.className = 'slide';
-      slide.innerHTML = `<img src="${img.trim()}" alt="Product Image">`;
-      carouselTrack.appendChild(slide);
-      
-      const indicator = document.createElement('div');
-      indicator.className = 'indicator';
-      indicator.addEventListener('click', () => showSlide(index));
-      indicatorsContainer.appendChild(indicator);
-    });
-    
-    updateIndicators(0);
-    
-    let touchStartX = 0;
-    let isSwiping = false;
-    
-    const carousel = document.getElementById('imageCarousel');
-    carousel.addEventListener('touchstart', e => {
-      touchStartX = e.touches[0].clientX;
-      isSwiping = true;
-    });
-    
-    carousel.addEventListener('touchmove', e => {
-      if (!isSwiping) return;
-      e.preventDefault();
-    });
-    
-    carousel.addEventListener('touchend', e => {
-      if (!isSwiping) return;
-      const touchEndX = e.changedTouches[0].clientX;
-      const deltaX = touchStartX - touchEndX;
-      
-      if (Math.abs(deltaX) > 50) {
-        deltaX > 0 ? showNextSlide() : showPrevSlide();
-      }
-      isSwiping = false;
-    });
-    
-    carousel.addEventListener('click', (e) => {
-      const rect = carousel.getBoundingClientRect();
-      const clickX = e.clientX - rect.left;
-      const carouselWidth = rect.width;
-      
-      if (clickX > carouselWidth / 2) {
-        showNextSlide();
-      } else {
-        showPrevSlide();
-      }
-    });
-  } else {
-    alert('প্রোডাক্ট পাওয়া যায়নি!');
-    window.location.href = 'index.html';
-  }
-});
+                        `;
+                        window.open(`https://wa.me/8801931866636?text=${encodeURIComponent(message)}`, '_blank');
+                    });
 
-let currentSlide = 0;
-
-function showNextSlide() {
-  const slides = document.querySelectorAll('.slide');
-  currentSlide = (currentSlide + 1) % slides.length;
-  updateSliderPosition();
-  updateIndicators(currentSlide);
-}
-
-function showPrevSlide() {
-  const slides = document.querySelectorAll('.slide');
-  currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-  updateSliderPosition();
-  updateIndicators(currentSlide);
-}
-
-function showSlide(index) {
-  currentSlide = index;
-  updateSliderPosition();
-  updateIndicators(currentSlide);
-}
-
-function updateSliderPosition() {
-  const track = document.querySelector('.slide-track');
-  track.style.transform = `translateX(-${currentSlide * 100}%)`;
-}
-
-function updateIndicators(index) {
-  const indicators = document.querySelectorAll('.indicator');
-  indicators.forEach((indicator, i) => {
-    if (i === index) {
-      indicator.classList.add('active');
-    } else {
-      indicator.classList.remove('active');
-    }
-  });
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  const images = document.querySelectorAll('.slide img');
-  images.forEach(img => {
-    img.addEventListener('click', () => {
-      if (window.innerWidth <= 768) { // শুধুমাত্র মোবাইলে
-        const modal = document.createElement('div');
-        modal.style.position = 'fixed';
-        modal.style.top = '0';
-        modal.style.left = '0';
-        modal.style.width = '100%';
-        modal.style.height = '100%';
-        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-        modal.style.display = 'flex';
-        modal.style.justifyContent = 'center';
-        modal.style.alignItems = 'center';
-        modal.style.zIndex = '1000';
-        modal.innerHTML = `<img src="${img.src}" style="max-width: 90%; max-height: 90%; border-radius: 8px;">`;
-        modal.addEventListener('click', () => modal.remove());
-        document.body.appendChild(modal);
-      }
-    });
-  });
-});
-</script>
+                    // ইমেজ গ্যালারি সেটআপ
+                    const imageList = product.image.split(',').map(img => img.trim());
+                    setupImageGallery(imageList);
+                } else {
+                    alert('প্রোডাক্ট পাওয়া যায়নি!');
+                    window.location.href = 'index.html';
+                }
+            } catch (error) {
+                console.error("Firebase থেকে ডেটা লোড করতে সমস্যা: ", error);
+                alert('ডেটা লোড করতে সমস্যা হয়েছে!');
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
 </body>
 </html>
