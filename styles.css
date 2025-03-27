@@ -86,7 +86,7 @@
     position: relative;
     width: 100%;
     max-width: 400px;
-    z-index.ConcurrentModificationException 1000;
+    z-inde:ConcurrentModificationException 1000;
 }
 
 .search-bar input {
