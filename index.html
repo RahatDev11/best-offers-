@@ -8,23 +8,24 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
-    <!-- Firebase SDK লোড -->
-<script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-<script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
-<script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
-    <script type="module" src="script.js"></script>
     <script>
         // DOM লোড হওয়ার পরে header এবং footer লোড করা
         document.addEventListener("DOMContentLoaded", function() {
             $("#header").load("header.html", function() {
                 console.log("header.html লোড হয়েছে");
-                // header লোড হওয়ার পরে প্রয়োজনীয় ফাংশন কল করা
-                if (typeof loadProductsFromFirebase === "function") {
-                    loadProductsFromFirebase();
-                }
-                if (typeof loadCartFromFirebase === "function") {
-                    loadCartFromFirebase();
-                }
+                // header লোড হওয়ার পরে প্রয়োজনীয় ফাংশন কল করার জন্য ডিলে যোগ করা
+                setTimeout(() => {
+                    if (typeof loadProductsFromFirebase === "function") {
+                        loadProductsFromFirebase();
+                    } else {
+                        console.error("loadProductsFromFirebase ফাংশন পাওয়া যায়নি।");
+                    }
+                    if (typeof loadCartFromFirebase === "function") {
+                        loadCartFromFirebase();
+                    } else {
+                        console.error("loadCartFromFirebase ফাংশন পাওয়া যায়নি।");
+                    }
+                }, 500); // 500ms ডিলে যোগ করা হয়েছে যাতে header.html-এর স্ক্রিপ্ট লোড হওয়ার সময় পায়
             });
             $("#footer").load("footer.html", function() {
                 console.log("footer.html লোড হয়েছে");
@@ -78,14 +79,7 @@
                 return;
             }
 
-            if (searchTerm === '3012014') {
-                openModal('loginModal');
-                document.getElementById("searchInput").value = '';
-                searchResults.innerHTML = "";
-                searchResults.classList.add("hidden");
-                return;
-            }
-
+            // সার্চ বারের মাধ্যমে লগইন সিস্টেম বাদ দেওয়া হয়েছে
             const filtered = products.filter(product =>
                 (product.name && product.name.toLowerCase().includes(searchTerm)) ||
                 (product.tags && product.tags.toLowerCase().includes(searchTerm))
@@ -106,14 +100,7 @@
                 return;
             }
 
-            if (searchTerm === '3012014') {
-                openModal('loginModal');
-                document.getElementById("searchInputDesktop").value = '';
-                searchResults.innerHTML = "";
-                searchResults.classList.add("hidden");
-                return;
-            }
-
+            // সার্চ বারের মাধ্যমে লগইন সিস্টেম বাদ দেওয়া হয়েছে
             const filtered = products.filter(product =>
                 (product.name && product.name.toLowerCase().includes(searchTerm)) ||
                 (product.tags && product.tags.toLowerCase().includes(searchTerm))
@@ -154,31 +141,90 @@
             window.location.href = `product-detail.html?id=${productId}`;
         }
 
-        // এডমিন লগইন ফাংশনালিটি
-        document.addEventListener('DOMContentLoaded', () => {
-            const loginForm = document.getElementById("loginForm");
-            if (loginForm) {
-                loginForm.addEventListener("submit", function (e) {
-                    e.preventDefault();
-                    const number = document.getElementById("loginNumber").value;
-                    const password = document.getElementById("loginPassword").value;
+        // পণ্য সেকশনে স্ক্রল করার ফাংশন
+        function scrollToProducts() {
+            const productsSection = document.getElementById("products");
+            if (productsSection) {
+                productsSection.scrollIntoView({ behavior: "smooth" });
+            }
+        }
 
-                    if (number === '01825620497' && password === '3012014') {
-                        closeModal('loginModal');
-                        const productUpdateSection = document.getElementById('product-update');
-                        if (productUpdateSection) {
-                            productUpdateSection.classList.remove("hidden");
-                        }
-                        isAdmin = true;
-                        showToast("লগইন সফল!");
+        // প্রোডাক্ট আপলোড ফর্ম সাবমিট হ্যান্ডলার
+        document.addEventListener('DOMContentLoaded', () => {
+            const productForm = document.getElementById("productForm");
+            if (productForm) {
+                productForm.addEventListener("submit", function(e) {
+                    e.preventDefault();
+
+                    // ফর্ম থেকে ডাটা সংগ্রহ
+                    const productName = document.getElementById("productName").value;
+                    const productPrice = document.getElementById("productPrice").value;
+                    const productCategory = document.getElementById("productCategory").value;
+                    const productImages = Array.from(document.querySelectorAll("#imageInputs input"))
+                        .map(input => input.value.trim())
+                        .filter(value => value !== "")
+                        .join(",");
+                    const productTags = document.getElementById("productTags").value;
+                    const productDescription = document.getElementById("productDescription").value;
+                    const productStockStatus = document.getElementById("productStockStatus").value;
+                    const productQuantity = document.getElementById("productQuantity").value;
+
+                    // Firebase-এ ডাটা পাঠানো
+                    if (typeof database !== "undefined" && typeof firebaseDatabase !== "undefined") {
+                        const productsRef = firebaseDatabase.ref(database, 'products');
+                        const newProductRef = firebaseDatabase.push(productsRef);
+
+                        firebaseDatabase.set(newProductRef, {
+                            name: productName,
+                            price: productPrice,
+                            category: productCategory,
+                            image: productImages,
+                            tags: productTags,
+                            description: productDescription,
+                            stockStatus: productStockStatus,
+                            quantity: productQuantity
+                        }).then(() => {
+                            showToast("প্রোডাক্ট সফলভাবে আপলোড হয়েছে!");
+                            productForm.reset();
+                            document.querySelectorAll("#imageInputs input:not(:first-child)").forEach(input => input.parentElement.removeChild(input));
+                            if (typeof loadProductsFromFirebase === "function") {
+                                loadProductsFromFirebase();
+                            }
+                        }).catch((error) => {
+                            console.error("প্রোডাক্ট আপলোডে ত্রুটি: ", error.message);
+                            showToast("প্রোডাক্ট আপলোডে ত্রুটি হয়েছে: " + error.message);
+                        });
                     } else {
-                        showToast('ভুল নাম্বার বা পাসওয়ার্ড!');
+                        console.error("Firebase Database লোড হয়নি।");
+                        showToast("Firebase Database লোড হয়নি।");
                     }
                 });
             }
         });
-    </script>
 
+        // ইমেজ ফিল্ড যোগ করার ফাংশন
+        function addImageField() {
+            const imageInputs = document.getElementById("imageInputs");
+            const newInput = document.createElement("input");
+            newInput.type = "text";
+            newInput.className = "w-full p-2 border rounded mb-2";
+            newInput.placeholder = "ছবির লিংক";
+            imageInputs.appendChild(newInput);
+        }
+
+        // কোয়ান্টিটি অপশন জেনারেট করার ফাংশন
+        document.addEventListener('DOMContentLoaded', () => {
+            const quantitySelect = document.getElementById("productQuantity");
+            if (quantitySelect) {
+                for (let i = 1; i <= 100; i++) {
+                    const option = document.createElement("option");
+                    option.value = i;
+                    option.textContent = i;
+                    quantitySelect.appendChild(option);
+                }
+            }
+        });
+    </script>
 </head>
 <body class="bg-background">
     <div id="header"></div>
@@ -213,7 +259,7 @@
             <div id="productList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
         </section>
 
- <!-- আমাদের সম্পর্কে -->
+        <!-- আমাদের সম্পর্কে -->
         <section id="about" class="mb-6">
             <h2 class="text-xl font-bold text-center mb-4 text-lipstick">আমাদের সম্পর্কে</h2>
             <div class="bg-white p-6 rounded-lg shadow-lg">
@@ -246,7 +292,8 @@
                 </div>
                 <div class="mb-4">
                     <label for="productCategory" class="block text-gray-700">ক্যাটাগরি</label>
-                    <select id="productCategory" class="w-full p-2 border rounded">          <option value="health">স্বাস্থ্য</option>
+                    <select id="productCategory" class="w-full p-2 border rounded">
+                        <option value="health">স্বাস্থ্য</option>
                         <option value="cosmetics">মেকআপ</option>
                         <option value="skincare">স্কিনকেয়ার</option>
                         <option value="haircare">হেয়ারকেয়ার</option>
@@ -285,6 +332,7 @@
             </form>
         </section>
     </main>
+
     <!-- সোশ্যাল মিডিয়া ফ্লোটিং বাটন -->
     <div class="fixed bottom-4 right-4 z-50">
         <!-- শেয়ার বাটন -->
@@ -311,17 +359,38 @@
     <!-- ফুটার -->
     <div id="footer"></div>
 
-<!-- লগইন মোডাল -->
-<div id="loginModal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm">
-    <div class="login-modal-content bg-white/20 backdrop-blur-lg rounded-lg p-6 max-w-md mx-auto mt-20 shadow-lg border border-white/20">
-        <span class="close text-gray-600 hover:text-gray-900 cursor-pointer text-2xl absolute top-4 right-4" onclick="closeModal('loginModal')">×</span>
-        <h2 class="text-xl font-bold mb-4 text-lipstick">লগইন</h2>
-        <div class="text-center">
-            <button onclick="loginWithGmail()" class="bg-lipstick text-white px-4 py-2 rounded w-full hover:bg-lipstick-dark transition-colors">
-                Gmail দিয়ে লগইন করুন
-            </button>
+    <!-- লগইন মোডাল -->
+    <div id="loginModal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm">
+        <div class="login-modal-content bg-white/20 backdrop-blur-lg rounded-lg p-6 max-w-md mx-auto mt-20 shadow-lg border border-white/20">
+            <span class="close text-gray-600 hover:text-gray-900 cursor-pointer text-2xl absolute top-4 right-4" onclick="closeModal('loginModal')">×</span>
+            <h2 class="text-xl font-bold mb-4 text-lipstick">লগইন</h2>
+            <div class="text-center">
+                <button onclick="loginWithGmail()" class="bg-lipstick text-white px-4 py-2 rounded w-full hover:bg-lipstick-dark transition-colors">
+                    Gmail দিয়ে লগইন করুন
+                </button>
+            </div>
         </div>
     </div>
-</div>
+
+    <!-- সোশ্যাল মিডিয়া শেয়ার বাটনের জন্য স্ক্রিপ্ট -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const shareButton = document.getElementById('shareButton');
+            const socialIcons = document.getElementById('socialIcons');
+
+            if (shareButton && socialIcons) {
+                shareButton.addEventListener('click', () => {
+                    socialIcons.classList.toggle('hidden');
+                });
+
+                // বাইরে ক্লিক করলে সোশ্যাল আইকন বন্ধ হবে
+                document.addEventListener('click', (event) => {
+                    if (!shareButton.contains(event.target) && !socialIcons.contains(event.target)) {
+                        socialIcons.classList.add('hidden');
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
