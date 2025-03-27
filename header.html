@@ -872,7 +872,129 @@ window.checkout = function() {
         console.log("মেনু আইটেম ক্লিক করা হয়েছে।");
     };
 
-    // সাবমেনু আইটেম ক্লিক করার ফাংশন
+        // সাবমেনু আইটেম ক্লিক করার ফাংশন
     window.handleSubMenuItemClick = function(category) {
         filterProducts(category);
-      
+        const subMenuMobile = document.getElementById('subMenuMobile');
+        if (subMenuMobile) {
+            subMenuMobile.classList.add('hidden');
+        }
+        closeSidebar();
+        console.log("সাবমেনু আইটেম ক্লিক করা হয়েছে। ক্যাটাগরি: ", category);
+    };
+
+    // সাবমেনু টগল করার ফাংশন
+    window.toggleSubMenuMobile = function(event) {
+        event.stopPropagation();
+        const subMenuMobile = document.getElementById('subMenuMobile');
+        const arrowIcon = document.getElementById('arrowIcon');
+        if (subMenuMobile && arrowIcon) {
+            subMenuMobile.classList.toggle('hidden');
+            arrowIcon.classList.toggle('rotate-180');
+            arrowIcon.classList.toggle('fa-chevron-down');
+            arrowIcon.classList.toggle('fa-chevron-up');
+            console.log("মোবাইল সাবমেনু টগল করা হয়েছে।");
+        } else {
+            console.error("মোবাইল সাবমেনু এলিমেন্ট পাওয়া যায়নি।");
+        }
+    };
+
+    // ডেস্কটপ সাবমেনু টগল করার ফাংশন
+    window.toggleSubMenuDesktop = function() {
+        const desktopSubMenuBar = document.getElementById('desktopSubMenuBar');
+        const desktopArrowIcon = document.getElementById('desktopArrowIcon');
+        if (desktopSubMenuBar && desktopArrowIcon) {
+            desktopSubMenuBar.classList.toggle('hidden');
+            desktopSubMenuBar.classList.toggle('slide-down');
+            desktopArrowIcon.classList.toggle('rotate-180');
+            desktopArrowIcon.classList.toggle('fa-chevron-down');
+            desktopArrowIcon.classList.toggle('fa-chevron-up');
+            console.log("ডেস্কটপ সাবমেনু টগল করা হয়েছে।");
+        } else {
+            console.error("ডেস্কটপ সাবমেনু এলিমেন্ট পাওয়া যায়নি।");
+        }
+    };
+
+    // কার্ট সাইডবার কন্ট্রোল
+    window.openCartSidebar = function() {
+        const cartSidebar = document.getElementById('cartSidebar');
+        const cartOverlay = document.getElementById('cartOverlay');
+        if (cartSidebar && cartOverlay) {
+            cartSidebar.classList.remove('translate-x-full');
+            cartOverlay.classList.remove('hidden');
+            console.log("কার্ট সাইডবার খোলা হয়েছে।");
+        } else {
+            console.error("কার্ট সাইডবার এলিমেন্ট পাওয়া যায়নি।");
+        }
+    };
+
+    window.closeCartSidebar = function() {
+        const cartSidebar = document.getElementById('cartSidebar');
+        const cartOverlay = document.getElementById('cartOverlay');
+        if (cartSidebar && cartOverlay) {
+            cartSidebar.classList.add('translate-x-full');
+            cartOverlay.classList.add('hidden');
+            console.log("কার্ট সাইডবার বন্ধ করা হয়েছে।");
+        } else {
+            console.error("কার্ট সাইডবার এলিমেন্ট পাওয়া যায়নি।");
+        }
+    };
+
+    // মোবাইল সার্চ বার ফোকাস
+    window.focusMobileSearch = function() {
+        const mobileSearchBar = document.getElementById('mobileSearchBar');
+        if (mobileSearchBar) {
+            mobileSearchBar.classList.toggle('hidden');
+            mobileSearchBar.classList.toggle('show');
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.focus();
+                console.log("মোবাইল সার্চ বার ফোকাস করা হয়েছে।");
+            }
+        } else {
+            console.error("মোবাইল সার্চ বার এলিমেন্ট পাওয়া যায়নি।");
+        }
+    };
+
+    // ডকুমেন্টে ক্লিক ইভেন্ট লিসেনার
+    document.addEventListener("click", (event) => {
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const subMenuMobile = document.getElementById('subMenuMobile');
+        const desktopSubMenuBar = document.getElementById('desktopSubMenuBar');
+        const cartSidebar = document.getElementById('cartSidebar');
+        const cartButton = document.getElementById('cartButton');
+
+        // মোবাইল সাইডবার বন্ধ করুন
+        if (sidebarOverlay && !event.target.closest('#sidebar') && !event.target.closest('button[onclick="openSidebar()"]')) {
+            closeSidebar();
+        }
+
+        // মোবাইল সাবমেনু বন্ধ করুন
+        if (subMenuMobile && !event.target.closest('#subMenuMobile') && !event.target.closest('button[onclick="toggleSubMenuMobile(event)"]')) {
+            subMenuMobile.classList.add('hidden');
+            const arrowIcon = document.getElementById('arrowIcon');
+            if (arrowIcon) {
+                arrowIcon.classList.remove('rotate-180');
+                arrowIcon.classList.add('fa-chevron-down');
+                arrowIcon.classList.remove('fa-chevron-up');
+            }
+        }
+
+        // ডেস্কটপ সাবমেনু বন্ধ করুন
+        if (desktopSubMenuBar && !event.target.closest('#desktopSubMenuBar') && !event.target.closest('button[onclick="toggleSubMenuDesktop()"]')) {
+            desktopSubMenuBar.classList.add('hidden');
+            desktopSubMenuBar.classList.remove('slide-down');
+            const desktopArrowIcon = document.getElementById('desktopArrowIcon');
+            if (desktopArrowIcon) {
+                desktopArrowIcon.classList.remove('rotate-180');
+                desktopArrowIcon.classList.add('fa-chevron-down');
+                desktopArrowIcon.classList.remove('fa-chevron-up');
+            }
+        }
+
+        // কার্ট সাইডবার বন্ধ করুন
+        if (cartSidebar && !event.target.closest('#cartSidebar') && !event.target.closest('#cartButton')) {
+            closeCartSidebar();
+        }
+    });
+</script>
