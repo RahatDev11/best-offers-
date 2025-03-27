@@ -1,349 +1,878 @@
+<!-- হেডারের জন্য প্রয়োজনীয় CSS এবং JS লিঙ্ক -->
+<link rel="stylesheet" href="https://cdn.tailwindcss.com">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<link rel="stylesheet" href="styles.css">
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+
+<!-- Firebase মডিউলার SDK লিঙ্ক -->
+<script type="module">
+    // Firebase SDK আমদানি
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, onValue, set, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    // Firebase কনফিগারেশন
+    const firebaseConfig = {
+        apiKey: "AIzaSyCVSzQS1c7H4BLhsDF_fW8wnqUN4B35LPA",
+        authDomain: "nahid-6714.firebaseapp.com",
+        databaseURL: "https://nahid-6714-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "nahid-6714",
+        storageBucket: "nahid-6714.firebasestorage.app",
+        messagingSenderId: "505741217147",
+        appId: "1:505741217147:web:25ed4e9f0d00e3c4d381de",
+        measurementId: "G-QZ7CTRKHCW"
+    };
+
+    // Firebase ইনিশিয়ালাইজেশন
+    let app, auth, database, provider;
+    try {
+        app = initializeApp(firebaseConfig);
+        console.log("Firebase App সফলভাবে ইনিশিয়ালাইজ হয়েছে।");
+        auth = getAuth(app);
+        console.log("Firebase Auth সফলভাবে ইনিশিয়ালাইজ হয়েছে।");
+        database = getDatabase(app);
+        console.log("Firebase Database সফলভাবে ইনিশিয়ালাইজ হয়েছে।");
+        provider = new GoogleAuthProvider();
+        console.log("GoogleAuthProvider সফলভাবে লোড হয়েছে।");
+    } catch (error) {
+        console.error("Firebase ইনিশিয়ালাইজেশন ব্যর্থ: ", error.message);
+        showToast("Firebase ইনিশিয়ালাইজেশন ব্যর্থ হয়েছে: " + error.message);
+    }
+
+    // গ্লোবাল ভেরিয়েবল
+    window.auth = auth;
+    window.database = database;
+    window.provider = provider;
+    window.firebaseDatabase = { ref, push, onValue, set }; // Firebase ফাংশনগুলো গ্লোবাল স্কোপে রাখা
+    let cartItems = [];
+    let products = [];
+
+// ইউনিক userId জেনারেট করা বা লোড করা
+window.getUserId = function() {
+    if (auth.currentUser) {
+        return auth.currentUser.uid; // Firebase Authentication থেকে ইউজারের uid ব্যবহার করা
+    } else {
+        // যদি ইউজার লগইন না করে থাকে, তাহলে একটি টেম্পোরারি আইডি জেনারেট করা
+        let userId = localStorage.getItem('tempUserId');
+        if (!userId) {
+            userId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('tempUserId', userId);
+        }
+        return userId;
+    }
+};
+    // লগইন মডাল খোলার ফাংশন
+    window.openLoginModal = function() {
+        const loginModal = document.getElementById('loginModal');
+        if (loginModal) {
+            loginModal.classList.remove('hidden');
+            loginModal.querySelector('.login-modal-content').classList.add('scale-100');
+            console.log("লগইন মডাল খোলা হয়েছে।");
+        } else {
+            console.error("লগইন মডাল পাওয়া যায়নি।");
+            showToast("লগইন মডাল পাওয়া যায়নি।");
+        }
+    };
+
+    // মডাল বন্ধ করার ফাংশন
+    window.closeModal = function(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.querySelector('.login-modal-content').classList.remove('scale-100');
+            console.log("লগইন মডাল বন্ধ করা হয়েছে।");
+        } else {
+            console.error("মডাল পাওয়া যায়নি: ", modalId);
+            showToast("মডাল বন্ধ করতে সমস্যা হয়েছে।");
+        }
+    };
+
+// Google দিয়ে লগইন করার ফাংশন
+window.loginWithGmail = function() {
+    if (!auth || !provider) {
+        console.error("Firebase Auth বা Google প্রোভাইডার লোড হয়নি।");
+        showToast("Firebase Auth বা Google প্রোভাইডার লোড হয়নি।");
+        return;
+    }
+
+    signInWithPopup(auth, provider)
+        .then((result) => {
+            const user = result.user;
+            showToast(`লগইন সফল! স্বাগতম, ${user.displayName}`);
+            closeModal('loginModal');
+            updateLoginButton(user);
+            checkAdminAndShowUploadForm(user);
+            loadCartFromFirebase();
+            saveUserToFirebase(user); // নতুন ইউজারের ডাটা Firebase-এ সেভ করা
+            console.log("ইউজার লগইন সফল: ", user.email);
+        })
+        .catch((error) => {
+            console.error("লগইন ত্রুটি (পপআপ): ", error.message);
+            if (error.code === 'auth/popup-blocked') {
+                showToast("পপআপ ব্লক করা হয়েছে। রিডাইরেক্ট মেথড ব্যবহার করা হচ্ছে...");
+                signInWithRedirect(auth, provider);
+            } else {
+                showToast("লগইন ব্যর্থ হয়েছে: " + error.message);
+            }
+        });
+};
+
+// রিডাইরেক্ট থেকে ফিরে এসে লগইন হ্যান্ডল করা
+if (auth) {
+    getRedirectResult(auth)
+        .then((result) => {
+            if (result && result.user) {
+                const user = result.user;
+                showToast(`লগইন সফল! স্বাগতম, ${user.displayName}`);
+                closeModal('loginModal');
+                updateLoginButton(user);
+                checkAdminAndShowUploadForm(user);
+                loadCartFromFirebase();
+                saveUserToFirebase(user); // নতুন ইউজারের ডাটা Firebase-এ সেভ করা
+                console.log("ইউজার লগইন সফল (রিডাইরেক্ট): ", user.email);
+            }
+        })
+        .catch((error) => {
+            console.error("লগইন ত্রুটি (রিডাইরেক্ট): ", error.message);
+            showToast("লগইন ব্যর্থ হয়েছে: " + error.message);
+        });
+}
+    // লগইন বাটন আপডেট করার ফাংশন
+    window.updateLoginButton = function(user) {
+        const mobileLoginButton = document.getElementById('mobileLoginButton');
+        const desktopLoginButton = document.getElementById('desktopLoginButton');
+        if (user) {
+            const displayName = user.displayName || user.email.split('@')[0];
+            if (mobileLoginButton) {
+                mobileLoginButton.innerHTML = `
+                    <div class="flex flex-col">
+                        <span class="flex items-center"><i class="fas fa-user mr-2"></i>${displayName}</span>
+                        <button onclick="confirmLogout()" class="text-left text-sm text-red-500 hover:text-red-700 mt-1">লগআউট</button>
+                    </div>
+                `;
+            }
+            if (desktopLoginButton) {
+                desktopLoginButton.innerHTML = `
+                    <div class="flex flex-col">
+                        <span class="flex items-center"><i class="fas fa-user mr-2"></i>${displayName}</span>
+                        <button onclick="confirmLogout()" class="text-left text-sm text-red-500 hover:text-red-700 mt-1">লগআউট</button>
+                    </div>
+                `;
+            }
+            console.log("লগইন বাটন আপডেট করা হয়েছে: ", displayName);
+        } else {
+            if (mobileLoginButton) {
+                mobileLoginButton.innerHTML = `
+                    <button class="flex items-center w-full" onclick="openLoginModal()">
+                        <i class="fas fa-sign-in-alt mr-2"></i>
+                        <span>লগইন</span>
+                    </button>
+                `;
+            }
+            if (desktopLoginButton) {
+                desktopLoginButton.innerHTML = `
+                    <button class="flex items-center" onclick="openLoginModal()">
+                        <i class="fas fa-sign-in-alt mr-2"></i>
+                        <span>লগইন</span>
+                    </button>
+                `;
+            }
+            console.log("লগইন বাটন রিসেট করা হয়েছে।");
+        }
+    };
+
+    // লগআউট নিশ্চিতকরণ ফাংশন (নতুন যোগ করা হয়েছে)
+    window.confirmLogout = function() {
+        const confirmed = confirm("আপনি কি সত্যিই লগআউট করতে চান? আপনার কার্টের ডাটা মুছে যেতে পারে।");
+        if (confirmed) {
+            logout();
+        } else {
+            console.log("লগআউট বাতিল করা হয়েছে।");
+        }
+    };
+
+    // লগআউট ফাংশন
+    window.logout = function() {
+        if (!auth) {
+            console.error("Firebase Auth লোড হয়নি।");
+            showToast("Firebase Auth লোড হয়নি।");
+            return;
+        }
+
+        signOut(auth).then(() => {
+            showToast("লগআউট সফল হয়েছে।");
+            updateLoginButton(null);
+            updateOrderTrackButton(false);
+            hideUploadForm();
+            cartItems = [];
+            updateCartUI();
+            console.log("ইউজার লগআউট সফল।");
+        }).catch((error) => {
+            console.error("লগআউট ত্রুটি: ", error.message);
+            showToast("লগআউট ব্যর্থ হয়েছে: " + error.message);
+        });
+    };
+
+    // এডমিন চেক করার এবং প্রোডাক্ট আপলোড ফর্ম দেখানোর ফাংশন
+    window.checkAdminAndShowUploadForm = function(user) {
+        const adminEmail = "mdnahidislam6714@gmail.com";
+        if (user && user.email === adminEmail) {
+            updateOrderTrackButton(true);
+            showUploadForm();
+            console.log("ইউজার এডমিন: ", user.email);
+        } else {
+            updateOrderTrackButton(false);
+            hideUploadForm();
+            console.log("ইউজার এডমিন নয়: ", user ? user.email : "কোনো ইউজার নেই");
+        }
+    };
+
+    // প্রোডাক্ট আপলোড ফর্ম দেখানোর ফাংশন
+    window.showUploadForm = function() {
+        const productUpdateSection = document.getElementById('product-update');
+        if (productUpdateSection) {
+            productUpdateSection.classList.remove('hidden');
+            console.log("প্রোডাক্ট আপলোড ফর্ম দেখানো হয়েছে।");
+        } else {
+            console.error("প্রোডাক্ট আপলোড ফর্ম পাওয়া যায়নি।");
+            showToast("প্রোডাক্ট আপলোড ফর্ম পাওয়া যায়নি।");
+        }
+    };
+
+    // প্রোডাক্ট আপলোড ফর্ম লুকানোর ফাংশন
+    window.hideUploadForm = function() {
+        const productUpdateSection = document.getElementById('product-update');
+        if (productUpdateSection) {
+            productUpdateSection.classList.add('hidden');
+            console.log("প্রোডাক্ট আপলোড ফর্ম লুকানো হয়েছে।");
+        } else {
+            console.error("প্রোডাক্ট আপলোড ফর্ম পাওয়া যায়নি।");
+        }
+    };
+
+    // অর্ডার ট্র্যাক বাটন আপডেট করার ফাংশন
+    window.updateOrderTrackButton = function(isAdmin) {
+        const mobileOrderTrackButton = document.getElementById('mobileOrderTrackButton');
+        const desktopOrderTrackButton = document.getElementById('desktopOrderTrackButton');
+        if (isAdmin) {
+            if (mobileOrderTrackButton) {
+                mobileOrderTrackButton.href = "order-list.html";
+            }
+            if (desktopOrderTrackButton) {
+                desktopOrderTrackButton.href = "order-list.html";
+            }
+            console.log("অর্ডার ট্র্যাক বাটন এডমিন মোডে আপডেট করা হয়েছে।");
+        } else {
+            if (mobileOrderTrackButton) {
+                mobileOrderTrackButton.href = "order-track.html";
+            }
+            if (desktopOrderTrackButton) {
+                desktopOrderTrackButton.href = "order-track.html";
+            }
+            console.log("অর্ডার ট্র্যাক বাটন ইউজার মোডে আপডেট করা হয়েছে।");
+        }
+    };
+
+    // অর্ডার ট্র্যাক বাটন ক্লিক হ্যান্ডলার
+    window.handleOrderTrackClick = function(event) {
+        event.preventDefault();
+        const mobileOrderTrackButton = document.getElementById('mobileOrderTrackButton');
+        const desktopOrderTrackButton = document.getElementById('desktopOrderTrackButton');
+        const href = mobileOrderTrackButton ? mobileOrderTrackButton.href : desktopOrderTrackButton.href;
+        window.location.href = href;
+        closeSidebar();
+        console.log("অর্ডার ট্র্যাক বাটনে ক্লিক করা হয়েছে: ", href);
+    };
+
+    // টোস্ট নোটিফিকেশন দেখানোর ফাংশন
+    window.showToast = function(message) {
+        const toast = document.getElementById('toast');
+        if (toast) {
+            toast.textContent = message;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+            console.log("টোস্ট মেসেজ দেখানো হয়েছে: ", message);
+        } else {
+            console.error("টোস্ট এলিমেন্ট পাওয়া যায়নি।");
+            console.log("টোস্ট মেসেজ: ", message);
+        }
+    };
+// নতুন ইউজারের ডাটা Firebase-এ সেভ করার ফাংশন
+window.saveUserToFirebase = function(user) {
+    if (!database) {
+        console.error("Firebase Database লোড হয়নি।");
+        showToast("Firebase Database লোড হয়নি।");
+        return;
+    }
+
+    const userRef = ref(database, `users/${user.uid}`);
+    onValue(userRef, (snapshot) => {
+        if (!snapshot.exists()) {
+            // ইউজার যদি নতুন হয়, তাহলে ডাটা সেভ করা হবে
+            set(userRef, {
+                name: user.displayName || "নাম পাওয়া যায়নি",
+                email: user.email,
+                createdAt: new Date().toISOString()
+            })
+            .then(() => {
+                console.log("ইউজারের ডাটা Firebase-এ সেভ হয়েছে: ", user.email);
+            })
+            .catch((error) => {
+                console.error("ইউজারের ডাটা সেভ করতে ত্রুটি: ", error.message);
+                showToast("ইউজারের ডাটা সেভ করতে ত্রুটি হয়েছে: " + error.message);
+            });
+        } else {
+            console.log("ইউজার ইতিমধ্যে ডাটাবেসে আছে: ", user.email);
+        }
+    }, { onlyOnce: true });
+};
+    // কার্টে আইটেম যোগ করার ফাংশন
+    window.addToCart = function(productId) {
+        const product = products.find(p => p.id === productId);
+        if (product) {
+            const existingProduct = cartItems.find(p => p.id === productId);
+            if (existingProduct) {
+                existingProduct.quantity += 1;
+            } else {
+                cartItems.push({ ...product, quantity: 1 });
+            }
+            updateCartUI();
+            saveCartToFirebase();
+            showToast("প্রোডাক্ট কার্টে যোগ করা হয়েছে!");
+            openCartSidebar();
+            console.log("কার্টে আইটেম যোগ করা হয়েছে: ", product);
+        } else {
+            console.error("প্রোডাক্ট পাওয়া যায়নি: ", productId);
+            showToast("প্রোডাক্ট পাওয়া যায়নি!");
+        }
+    };
+
+// কার্ট UI আপডেট করার ফাংশন
+window.updateCartUI = function() {
+  const cartItemsContainer = document.getElementById('cartItems');
+  const totalPriceElement = document.getElementById('totalPrice');
+  const cartCountElement = document.getElementById('cartCount');
+  
+  if (!cartItemsContainer || !totalPriceElement || !cartCountElement) {
+    console.error("কার্ট UI এলিমেন্ট পাওয়া যায়নি।");
+    showToast("কার্ট UI আপডেট করতে সমস্যা হয়েছে।");
+    return;
+  }
+  
+  cartItemsContainer.innerHTML = '';
+  let totalPrice = 0;
+  
+  cartItems.forEach((item, index) => {
+    totalPrice += (parseFloat(item.price) || 0) * (item.quantity || 1);
+    const cartItem = document.createElement('div');
+    cartItem.className = 'flex items-center justify-between bg-gray-100 p-3 rounded-lg mb-2';
+    cartItem.innerHTML = `
+            <div class="flex items-center space-x-4">
+                <img src="${item.image ? item.image.split(',')[0] : 'https://via.placeholder.com/50'}" class="w-16 h-16 object-cover rounded-lg" alt="${item.name}" onerror="this.src='https://via.placeholder.com/50'; this.alt='ছবি লোড হয়নি';">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-800">${item.name || 'নাম পাওয়া যায়নি'}</h3>
+                    <p class="text-lipstick font-bold">দাম: ${(parseFloat(item.price) || 0) * (item.quantity || 1)} টাকা</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button onclick="decreaseQuantity(${index}, event)" class="bg-lipstick text-white px-2 py-1 rounded">-</button>
+                <span class="text-gray-800">${item.quantity || 1}</span>
+                <button onclick="increaseQuantity(${index}, event)" class="bg-lipstick text-white px-2 py-1 rounded">+</button>
+                <button onclick="removeFromCart(${index}, event)" class="text-red-500 hover:text-red-700">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+    cartItemsContainer.appendChild(cartItem);
+  });
+  
+  totalPriceElement.textContent = `মোট মূল্য: ${totalPrice} টাকা`;
+  cartCountElement.textContent = cartItems.length;
+  console.log("কার্ট UI আপডেট করা হয়েছে। মোট আইটেম: ", cartItems.length, "মোট মূল্য: ", totalPrice);
+};
+// কার্ট থেকে আইটেম রিমুভ করার ফাংশন
+window.removeFromCart = function(index, event) {
+    if (event) {
+        event.stopPropagation(); // ইভেন্ট বাবলিং বন্ধ করা
+    }
+    cartItems.splice(index, 1);
+    updateCartUI();
+    saveCartToFirebase();
+    showToast("প্রোডাক্ট কার্ট থেকে সরানো হয়েছে!");
+    console.log("প্রোডাক্ট কার্ট থেকে সরানো হয়েছে। ইনডেক্স: ", index);
+};
+// কার্ট থেকে পরিমাণ কমানোর ফাংশন
+window.decreaseQuantity = function(index, event) {
+    if (event) {
+        event.stopPropagation(); // ইভেন্ট বাবলিং বন্ধ করা
+    }
+    if (cartItems[index].quantity > 1) {
+        cartItems[index].quantity--;
+    } else {
+        cartItems.splice(index, 1);
+    }
+    updateCartUI();
+    saveCartToFirebase();
+    console.log("পরিমাণ কমানো হয়েছে। ইনডেক্স: ", index);
+};
+
+// কার্টে পরিমাণ বাড়ানোর ফাংশন
+window.increaseQuantity = function(index, event) {
+    if (event) {
+        event.stopPropagation(); // ইভেন্ট বাবলিং বন্ধ করা
+    }
+    cartItems[index].quantity++;
+    updateCartUI();
+    saveCartToFirebase();
+    console.log("পরিমাণ বাড়ানো হয়েছে। ইনডেক্স: ", index);
+};
+    // Firebase-এ কার্ট সেভ করার ফাংশন
+    window.saveCartToFirebase = function() {
+        if (!database) {
+            console.error("Firebase Database লোড হয়নি।");
+            showToast("Firebase Database লোড হয়নি।");
+            return;
+        }
+
+        const userId = getUserId();
+        const cartRef = ref(database, `carts/${userId}`);
+        set(cartRef, cartItems)
+            .then(() => {
+                console.log("কার্ট Firebase-এ সেভ হয়েছে।");
+            })
+            .catch((error) => {
+                console.error("কার্ট সেভ করতে ত্রুটি: ", error.message);
+                showToast("কার্ট সেভ করতে ত্রুটি হয়েছে: " + error.message);
+            });
+    };
+
+    // Firebase থেকে কার্ট লোড করার ফাংশন
+    window.loadCartFromFirebase = function() {
+        if (!database) {
+            console.error("Firebase Database লোড হয়নি।");
+            showToast("Firebase Database লোড হয়নি।");
+            return;
+        }
+
+        const userId = getUserId();
+        const cartRef = ref(database, `carts/${userId}`);
+        onValue(cartRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                cartItems = data;
+            } else {
+                cartItems = [];
+            }
+            updateCartUI();
+            console.log("কার্ট Firebase থেকে লোড হয়েছে। আইটেম সংখ্যা: ", cartItems.length);
+        }, (error) => {
+            console.error("কার্ট লোড করতে ত্রুটি: ", error.message);
+            showToast("কার্ট লোড করতে ত্রুটি হয়েছে: " + error.message);
+        });
+    };
+
+        // Firebase থেকে প্রোডাক্ট লোড করার ফাংশন
+    window.loadProductsFromFirebase = function() {
+        if (!database) {
+            console.error("Firebase Database লোড হয়নি।");
+            showToast("Firebase Database লোড হয়নি।");
+            return;
+        }
+
+        const productList = document.getElementById('productList');
+        if (!productList) {
+            console.error("প্রোডাক্ট লিস্ট এলিমেন্ট পাওয়া যায়নি।");
+            showToast("প্রোডাক্ট লিস্ট এলিমেন্ট পাওয়া যায়নি।");
+            return;
+        }
+
+        productList.innerHTML = '<p class="text-center text-gray-600">প্রোডাক্ট লোড হচ্ছে...</p>';
+
+        const productsRef = ref(database, 'products');
+        onValue(productsRef, (snapshot) => {
+            products = [];
+            productList.innerHTML = '';
+
+            const data = snapshot.val();
+            if (data) {
+                Object.keys(data).forEach(key => {
+                    products.push({ id: key, ...data[key] });
+                });
+            }
+
+            if (products.length === 0) {
+                productList.innerHTML = '<p class="text-center text-gray-600">কোনো প্রোডাক্ট পাওয়া যায়নি।</p>';
+            } else {
+                loadProducts(products);
+            }
+            console.log("প্রোডাক্ট লোড হয়েছে। মোট প্রোডাক্ট: ", products.length);
+        }, (error) => {
+            console.error("প্রোডাক্ট লোড করতে ত্রুটি: ", error.message);
+            productList.innerHTML = '<p class="text-center text-red-600">প্রোডাক্ট লোড করতে ত্রুটি হয়েছে: ' + error.message + '</p>';
+            showToast("প্রোডাক্ট লোড করতে ত্রুটি হয়েছে: " + error.message);
+        });
+    };
+
+    // প্রোডাক্ট লোড করার ফাংশন
+    window.loadProducts = function(filteredProducts = products) {
+        const productList = document.getElementById("productList");
+        if (!productList) {
+            console.error("প্রোডাক্ট লিস্ট এলিমেন্ট পাওয়া যায়নি।");
+            return;
+        }
+
+        productList.innerHTML = "";
+
+        filteredProducts.forEach(product => {
+            const card = document.createElement("div");
+            card.className = "bg-white p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow cursor-pointer";
+            card.setAttribute("data-product-id", product.id);
+            card.onclick = () => showProductDetail(product.id);
+
+            const imageLinks = (product.image || '').split(',').map((img, index) =>
+                `ছবি-${index + 1}: ${img.trim()}`).join('\n');
+
+            const whatsappMessage = encodeURIComponent(`
+প্রোডাক্টের নাম: ${product.name || 'নাম পাওয়া যায়নি'}
+দাম: ${product.price || '0'} টাকা
+${imageLinks}
+আমি এই প্রোডাক্টটি কিনতে চাই!
+            `);
+
+            card.innerHTML = `
+                <img src="${product.image ? product.image.split(',')[0] : 'https://via.placeholder.com/300'}" class="w-full h-48 object-cover mb-4 rounded-lg" onerror="this.src='https://via.placeholder.com/300'; this.alt='ছবি লোড হয়নি';">
+                <h3 class="text-lg font-bold mb-2">${product.name || 'নাম পাওয়া যায়নি'}</h3>
+                <p class="text-lipstick font-bold mb-2">দাম: ${product.price || '0'} টাকা</p>
+                <p class="text-gray-600 mb-4">${product.description ? product.description.substring(0, 80) + '...' : 'বিবরণ পাওয়া যায়নি'}</p>
+                <div class="flex justify-between items-center">
+                    <button onclick="event.stopPropagation(); showProductDetail('${product.id}')" class="text-blue-500 hover:underline">বিস্তারিত দেখুন</button>
+                    <div class="flex space-x-2">
+                        <a href="https://wa.me/8801931866636?text=${whatsappMessage}" 
+                           target="_blank" 
+                           class="bg-lipstick text-white px-3 py-1 rounded text-sm hover:bg-lipstick-dark">
+                          কিনুন
+                        </a>
+                        <button onclick="event.stopPropagation(); addToCart('${product.id}')" class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600">
+                          Add to Cart
+                        </button>
+                    </div>
+                </div>
+            `;
+            productList.appendChild(card);
+        });
+        console.log("প্রোডাক্ট লোড করা হয়েছে। ফিল্টার করা প্রোডাক্ট: ", filteredProducts.length);
+    };
+
+    // প্রোডাক্ট ডিটেইল পেজে রিডাইরেক্ট
+    window.showProductDetail = function(productId) {
+        console.log("প্রোডাক্ট ডিটেইল পেজে যাচ্ছে: ", productId);
+        window.location.href = `product-detail.html?id=${productId}`;
+    };
+
+    // প্রোডাক্ট ফিল্টার ফাংশন
+    window.filterProducts = function(category) {
+        let filteredProducts;
+        if (category === 'all') {
+            filteredProducts = products;
+        } else {
+            filteredProducts = products.filter(product => product.category === category);
+        }
+        loadProducts(filteredProducts);
+        console.log("প্রোডাক্ট ফিল্টার করা হয়েছে। ক্যাটাগরি: ", category, "ফিল্টার করা প্রোডাক্ট: ", filteredProducts.length);
+    };
+
+    // সার্চ ফাংশনালিটি (মোবাইল)
+    window.searchProducts = function() {
+        const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+        const searchResults = document.getElementById("searchResults");
+
+        if (!searchResults) {
+            console.error("সার্চ রেজাল্ট এলিমেন্ট পাওয়া যায়নি।");
+            return;
+        }
+
+        if (searchTerm.trim() === "") {
+            searchResults.innerHTML = "";
+            searchResults.classList.add("hidden");
+            return;
+        }
+
+        const filtered = products.filter(product =>
+            (product.name && product.name.toLowerCase().includes(searchTerm)) ||
+            (product.tags && product.tags.toLowerCase().includes(searchTerm))
+        );
+        displaySearchResults(filtered, searchResults);
+        console.log("মোবাইল সার্চ করা হয়েছে। ফিল্টার করা প্রোডাক্ট: ", filtered.length);
+    };
+
+    // সার্চ ফাংশনালিটি (ডেস্কটপ)
+    window.searchProductsDesktop = function() {
+        const searchTerm = document.getElementById("searchInputDesktop").value.toLowerCase();
+        const searchResults = document.getElementById("searchResultsDesktop");
+
+        if (!searchResults) {
+            console.error("ডেস্কটপ সার্চ রেজাল্ট এলিমেন্ট পাওয়া যায়নি।");
+            return;
+        }
+
+        if (searchTerm.trim() === "") {
+            searchResults.innerHTML = "";
+            searchResults.classList.add("hidden");
+            return;
+        }
+
+        const filtered = products.filter(product =>
+            (product.name && product.name.toLowerCase().includes(searchTerm)) ||
+            (product.tags && product.tags.toLowerCase().includes(searchTerm))
+        );
+        displaySearchResults(filtered, searchResults);
+        console.log("ডেস্কটপ সার্চ করা হয়েছে। ফিল্টার করা প্রোডাক্ট: ", filtered.length);
+    };
+
+    // সার্চ রেজাল্ট ডিসপ্লে ফাংশন
+    window.displaySearchResults = function(filteredProducts, searchResults) {
+        searchResults.innerHTML = "";
+
+        if (filteredProducts.length === 0) {
+            searchResults.innerHTML = `<div class="p-2 text-gray-600">কোনো প্রোডাক্ট পাওয়া যায়নি</div>`;
+        } else {
+            filteredProducts.forEach(product => {
+                const card = document.createElement("div");
+                card.className = "p-2 hover:bg-gray-100 cursor-pointer";
+                card.onclick = () => showProductDetail(product.id);
+
+                card.innerHTML = `
+                    <div class="flex items-center">
+                        <img src="${product.image ? product.image.split(',')[0] : 'https://via.placeholder.com/50'}" class="w-12 h-12 object-cover rounded-lg mr-4" onerror="this.src='https://via.placeholder.com/50'; this.alt='ছবি লোড হয়নি';">
+                        <div>
+                            <h3 class="text-lg font-bold">${product.name || 'নাম পাওয়া যায়নি'}</h3>
+                            <p class="text-lipstick font-bold">দাম: ${product.price || '0'} টাকা</p>
+                        </div>
+                    </div>
+                `;
+                searchResults.appendChild(card);
+            });
+        }
+
+        searchResults.classList.remove("hidden");
+        console.log("সার্চ রেজাল্ট দেখানো হয়েছে। ফিল্টার করা প্রোডাক্ট: ", filteredProducts.length);
+    };
+
+// চেকআউট ফাংশন (অর্ডার ফর্মে রিডাইরেক্ট এবং প্রোডাক্ট পাঠানো)
+window.checkout = function() {
+    if (cartItems.length === 0) {
+        showToast("কার্ট খালি আছে!");
+        return;
+    }
+
+    // কার্ট আইটেমগুলো লোকাল স্টোরেজে সেভ করা
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+    window.location.href = 'order-form.html?source=cart'; // সঠিক URL-এ রিডাইরেক্ট
+    console.log("চেকআউট করা হয়েছে। অর্ডার ফর্মে রিডাইরেক্ট করা হয়েছে।");
+};
+    // ইউজারের অথেনটিকেশন স্টেট পরিবর্তন হলে
+    if (auth) {
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                updateLoginButton(user);
+                checkAdminAndShowUploadForm(user);
+                loadCartFromFirebase();
+                console.log("ইউজার লগইন অবস্থা: লগইন করা আছে।", user.email);
+            } else {
+                updateLoginButton(null);
+                checkAdminAndShowUploadForm(null);
+                cartItems = [];
+                updateCartUI();
+                console.log("ইউজার লগইন অবস্থা: লগইন করা নেই।");
+            }
+        });
+    }
+</script>
+
 <!-- হেডার -->
 <header class="bg-brushstroke text-white p-4 flex justify-between items-center fixed top-0 left-0 w-full z-50">
-  <!-- লোগো -->
-  <a class="flex items-center" href="index.html">
-    <div class="flex items-center">
-      <img alt="Any's Beauty Corner লোগো" class="h-10 w-10 rounded-full mr-2 border-2 border-lipstick" height="40" src="img.jpg" width="40" onerror="this.src='https://via.placeholder.com/40'; this.alt='লোগো লোড হয়নি';">
-      <span class="text-lg font-bold">
-        Any's Beauty Corner
-      </span>
+    <!-- লোগো -->
+    <a class="flex items-center" href="index.html">
+        <div class="flex items-center">
+            <img alt="Any's Beauty Corner লোগো" class="h-10 w-10 rounded-full mr-2 border-2 border-lipstick" height="40" src="img.jpg" width="40" onerror="this.src='https://via.placeholder.com/40'; this.alt='লোগো লোড হয়নি';">
+            <span class="text-lg font-bold">Any's Beauty Corner</span>
+        </div>
+    </a>
+
+    <!-- ডেস্কটপ সার্চ বার -->
+    <div class="hidden md:block p-2 w-80 mx-auto relative">
+        <div class="relative">
+            <input class="w-full p-2 pl-10 border-0 rounded-full text-gray-800 focus:outline-none focus:ring-2 focus:ring-lipstick bg-white/50 backdrop-blur-sm placeholder:text-gray-400/80" id="searchInputDesktop" oninput="searchProductsDesktop()" placeholder="প্রোডাক্ট সার্চ করুন..." type="text" />
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400/80"></i>
+        </div>
+        <!-- সার্চ রেজাল্ট -->
+        <div class="mt-2 max-h-60 overflow-y-auto absolute bg-white/90 backdrop-blur-sm w-full shadow-lg rounded-lg z-50" id="searchResultsDesktop"></div>
     </div>
-  </a>
-  <!-- ডেস্কটপ সার্চ বার -->
-  <div class="hidden md:block p-2 w-80 mx-auto relative">
-    <div class="relative">
-      <input class="w-full p-2 pl-10 border-0 rounded-full text-gray-800 focus:outline-none focus:ring-2 focus:ring-lipstick bg-white/50 backdrop-blur-sm placeholder:text-gray-400/80" id="searchInputDesktop" oninput="searchProductsDesktop()" placeholder="প্রোডাক্ট সার্চ করুন..." type="text" />
-      <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400/80"></i>
+
+    <!-- মোবাইল সার্চ আইকন -->
+    <div class="md:hidden cursor-pointer" onclick="focusMobileSearch()">
+        <i class="fas fa-search text-white text-xl"></i>
     </div>
-    <!-- সার্চ রেজাল্ট -->
-    <div class="mt-2 max-h-60 overflow-y-auto absolute bg-white/90 backdrop-blur-sm w-full shadow-lg rounded-lg z-50" id="searchResultsDesktop"></div>
-  </div>
-  <!-- মোবাইল সার্চ আইকন -->
-  <div class="md:hidden cursor-pointer" onclick="focusMobileSearch()">
-    <i class="fas fa-search text-white text-xl"></i>
-  </div>
-  <!-- শপিং ব্যাগ আইকন -->
-  <button id="cartButton" class="bg-lipstick text-white w-10 h-10 mr-4 rounded-full shadow-lg flex items-center justify-center">
-    <i class="fas fa-shopping-bag"></i>
-  </button>
-  
-  <!-- কার্ট সাইডবার -->
-  <div id="cartSidebar" class="fixed top-0 right-0 h-full w-80 bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out z-50">
-    <div class="p-4">
-      <!-- কার্ট বন্ধ করার বাটন -->
-      <button onclick="closeCartSidebar()" class="text-gray-600 hover:text-gray-900">
-        <i class="fas fa-times"></i>
-      </button>
-      <!-- কার্ট হেডিং -->
-      <h2 class="text-xl text-black font-bold mb-4">কার্ট</h2>
-      <!-- কার্ট আইটেমগুলি -->
-      <div id="cartItems" class="space-y-4">
-        <!-- কার্ট আইটেমগুলি এখানে যোগ হবে -->
-      </div>
-      <!-- চেকআউট বাটন -->
-      <div class="cart-footer">
-        <p id="totalPrice">মোট মূল্য: 0 টাকা</p>
-        <button onclick="checkout()" class="checkout-btn">চেকআউট</button>
-      </div>
-    </div>
-  </div>
-  
-  <!-- কার্ট ওভারলে -->
-  <div id="cartOverlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="closeCartSidebar()"></div>
-  <!-- টোস্ট নোটিফিকেশন -->
-  <div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg hidden">
-    আপনার প্রোডাক্টটি কার্টে যোগ করা হয়েছে!
-  </div>
-  <!-- মোবাইল মেনু বাটন -->
-  <button class="bg-white text-lipstick px-4 py-2 rounded md:hidden" onclick="openSidebar()">
-    ☰
-  </button>
-  <!-- মোবাইল সাইডবার ওভারলে -->
-  <div class="fixed inset-0 z-40 hidden" id="sidebarOverlay">
-    <div class="fixed top-0 left-0 h-full w-4/5 bg-white/5 backdrop-blur-lg shadow-lg transform -translate-x-full transition-transform duration-500 ease-in-out" id="sidebar">
-      <div class="p-4">
-        <button class="text-gray-600 hover:text-gray-900" onclick="closeSidebar()">
-          <i class="fas fa-times"></i>
-        </button>
-        <ul class="mt-4">
-          <li>
-            <a class="block py-2 text-gray-800 hover:bg-gray-100" href="index.html#home" onclick="handleMenuItemClick()">
-              হোম
-            </a>
-          </li>
-          <li>
-            <a class="block py-2 text-gray-800 hover:bg-gray-100" href="index.html#about" onclick="handleMenuItemClick()">
-              আমাদের সম্পর্কে
-            </a>
-          </li>
-          <li>
-            <button class="flex items-center justify-between w-full text-left text-gray-800 hover:bg-gray-100" onclick="toggleSubMenuMobile(event)">
-              <span>পণ্য সমূহ</span>
-              <i class="fas fa-chevron-down ml-2 transition-transform duration-300" id="arrowIcon"></i>
+
+    <!-- শপিং ব্যাগ আইকন -->
+    <button id="cartButton" class="bg-lipstick text-white w-10 h-10 mr-4 rounded-full shadow-lg flex items-center justify-center relative" onclick="openCartSidebar()">
+        <i class="fas fa-shopping-bag"></i>
+        <span id="cartCount" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+    </button>
+
+    <!-- কার্ট সাইডবার -->
+    <div id="cartSidebar" class="fixed top-0 right-0 h-full w-80 bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out z-50">
+        <div class="p-4 h-full flex flex-col">
+            <!-- কার্ট বন্ধ করার বাটন -->
+            <button onclick="closeCartSidebar()" class="text-gray-600 hover:text-gray-900">
+                <i class="fas fa-times"></i>
             </button>
-            <div class="hidden bg-white/5 backdrop-blur-sm rounded-lg mt-1 ml-4" id="subMenuMobile">
-              <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200" href="#all" onclick="handleSubMenuItemClick('all')">
-                সকল প্রোডাক্ট
-              </a>
-               <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200" href="#health" onclick="handleSubMenuItemClick('health')">
-                স্বাস্থ্য
-              </a>             
-              <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200" href="#cosmetics" onclick="handleSubMenuItemClick('cosmetics')">
-                মেকআপ
-              </a>
-              <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200" href="#skincare" onclick="handleSubMenuItemClick('skincare')">
-                স্কিনকেয়ার
-              </a>
-              <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200" href="#haircare" onclick="handleSubMenuItemClick('haircare')">
-                হেয়ারকেয়ার
-              </a>
-              <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200" href="#mehandi" onclick="handleSubMenuItemClick('mehandi')">
-                মেহেদী
-              </a>
+            <!-- কার্ট হেডিং -->
+            <h2 class="text-xl text-black font-bold mb-4">কার্ট</h2>
+            <!-- কার্ট আইটেমগুলি -->
+            <div id="cartItems" class="space-y-4 flex-1 overflow-y-auto"></div>
+            <!-- চেকআউট বাটন -->
+            <div class="cart-footer mt-4">
+                <p id="totalPrice" class="text-lg font-bold">মোট মূল্য: 0 টাকা</p>
+                <button onclick="checkout()" class="bg-lipstick text-white px-4 py-2 rounded w-full mt-2 hover:bg-lipstick-dark">চেকআউট</button>
             </div>
-          </li>
-        </ul>
-      </div>
+        </div>
     </div>
-    <div class="fixed top-0 right-0 h-full w-1/5" id="blankArea" onclick="closeSidebar()"></div>
-  </div>
-  <!-- ডেস্কটপ মেনু -->
-  <nav class="hidden md:flex space-x-4 items-center mr-20">
-    <a class="text-gray-800 hover:text-highlight" href="index.html#home">
-      হোম
-    </a>
-    <a class="text-gray-800 hover:text-highlight" href="index.html#about">
-      আমাদের সম্পর্কে
-    </a>
-    <div class="relative">
-      <button class="text-gray-800 hover:text-highlight" onclick="toggleSubMenuDesktop()">
-        পণ্য সমূহ
-        <i class="fas fa-chevron-down ml-2 transition-transform duration-300" id="desktopArrowIcon"></i>
-      </button>
+
+    <!-- কার্ট ওভারলে -->
+    <div id="cartOverlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="closeCartSidebar()"></div>
+
+    <!-- টোস্ট নোটিফিকেশন -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg hidden z-50"></div>
+
+    <!-- মোবাইল মেনু বাটন -->
+    <button class="bg-white text-lipstick px-4 py-2 rounded md:hidden" onclick="openSidebar()">☰</button>
+
+    <!-- মোবাইল সাইডবার ওভারলে -->
+    <div class="fixed inset-0 z-40 hidden" id="sidebarOverlay">
+        <div class="fixed top-0 left-0 h-full w-4/5 bg-white/5 backdrop-blur-lg shadow-lg transform -translate-x-full transition-transform duration-500 ease-in-out" id="sidebar">
+            <div class="p-4 h-full flex flex-col">
+                <button class="text-gray-600 hover:text-gray-900" onclick="closeSidebar()">
+                    <i class="fas fa-times"></i>
+                </button>
+                <ul class="mt-4 flex-1 overflow-y-auto">
+                    <li id="mobileLoginButton">
+                        <button class="flex items-center w-full" onclick="openLoginModal()">
+                            <i class="fas fa-sign-in-alt mr-2"></i>
+                            <span>লগইন</span>
+                        </button>
+                    </li>
+                    <li>
+                        <a class="block py-2 text-gray-800 hover:bg-gray-100" href="index.html#home" onclick="handleMenuItemClick()">হোম</a>
+                    </li>
+                    <li>
+                        <a class="block py-2 text-gray-800 hover:bg-gray-100" href="index.html#about" onclick="handleMenuItemClick()">আমাদের সম্পর্কে</a>
+                    </li>
+                    <li>
+                        <button class="flex items-center justify-between w-full text-left text-gray-800 hover:bg-gray-100" onclick="toggleSubMenuMobile(event)">
+                            <span>পণ্য সমূহ</span>
+                            <i class="fas fa-chevron-down ml-2 transition-transform duration-300" id="arrowIcon"></i>
+                        </button>
+                        <div class="hidden bg-white/5 backdrop-blur-sm rounded-lg mt-1 ml-4" id="subMenuMobile">
+                            <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200" href="#all" onclick="handleSubMenuItemClick('all')">সকল প্রোডাক্ট</a>
+                            <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200" href="#health" onclick="handleSubMenuItemClick('health')">স্বাস্থ্য</a>
+                            <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200" href="#cosmetics" onclick="handleSubMenuItemClick('cosmetics')">মেকআপ</a>
+                            <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200" href="#skincare" onclick="handleSubMenuItemClick('skincare')">স্কিনকেয়ার</a>
+                            <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200" href="#haircare" onclick="handleSubMenuItemClick('haircare')">হেয়ারকেয়ার</a>
+                            <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200" href="#mehandi" onclick="handleSubMenuItemClick('mehandi')">মেহেদী</a>
+                        </div>
+                    </li>
+                    <li>
+                        <a id="mobileOrderTrackButton" class="block py-2 text-gray-800 hover:bg-gray-100" href="order-track.html" onclick="handleOrderTrackClick(event)">অর্ডার ট্র্যাক</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="fixed top-0 right-0 h-full w-1/5" id="blankArea" onclick="closeSidebar()"></div>
     </div>
-  </nav>
-  <!-- ডেস্কটপ টপ বার (সাবমেনু) -->
-  <div class="hidden absolute top-full left-0 w-full bg-white shadow-lg z-40" id="desktopSubMenuBar">
-    <div class="container mx-auto p-4">
-      <div class="grid grid-cols-4 gap-4">
-        <a class="block p-2 text-gray-800 hover:bg-gray-100" href="#all" onclick="filterProducts('all')">
-          সকল প্রোডাক্ট
-        </a>
-               <a class="block px-4 py-2 text-gray-800 hover:bg-gray-200" href="#health" onclick="handleSubMenuItemClick('health')">
-                 স্বাস্থ্য
-               </a>        
-        <a class="block p-2 text-gray-800 hover:bg-gray-100" href="#cosmetics" onclick="filterProducts('cosmetics')">
-          মেকআপ
-        </a>
-        <a class="block p-2 text-gray-800 hover:bg-gray-100" href="#skincare" onclick="filterProducts('skincare')">
-          স্কিনকেয়ার
-        </a>
-        <a class="block p-2 text-gray-800 hover:bg-gray-100" href="#haircare" onclick="filterProducts('haircare')">
-          হেয়ারকেয়ার
-        </a>
-        <a class="block p-2 text-gray-800 hover:bg-gray-100" href="#mehandi" onclick="filterProducts('mehandi')">
-          মেহেদী
-        </a>
-      </div>
+
+    <!-- ডেস্কটপ মেনু -->
+    <nav class="hidden md:flex space-x-4 items-center mr-20">
+        <div id="desktopLoginButton">
+            <button class="flex items-center" onclick="openLoginModal()">
+                <i class="fas fa-sign-in-alt mr-2"></i>
+                <span>লগইন</span>
+            </button>
+        </div>
+        <a class="text-gray-800 hover:text-highlight" href="index.html#home">হোম</a>
+        <a class="text-gray-800 hover:text-highlight" href="index.html#about">আমাদের সম্পর্কে</a>
+        <div class="relative">
+            <button class="text-gray-800 hover:text-highlight" onclick="toggleSubMenuDesktop()">
+                পণ্য সমূহ
+                <i class="fas fa-chevron-down ml-2 transition-transform duration-300" id="desktopArrowIcon"></i>
+            </button>
+        </div>
+        <a id="desktopOrderTrackButton" class="text-gray-800 hover:text-highlight" href="order-track.html" onclick="handleOrderTrackClick(event)">অর্ডার ট্র্যাক</a>
+    </nav>
+
+    <!-- ডেস্কটপ টপ বার (সাবমেনু) -->
+    <div class="hidden absolute top-full left-0 w-full bg-white shadow-lg z-40" id="desktopSubMenuBar">
+        <div class="container mx-auto p-4">
+            <div class="grid grid-cols-4 gap-4">
+                <a class="block p-2 text-gray-800 hover:bg-gray-100" href="#all" onclick="filterProducts('all')">সকল প্রোডাক্ট</a>
+                <a class="block p-2 text-gray-800 hover:bg-gray-100" href="#health" onclick="filterProducts('health')">স্বাস্থ্য</a>
+                <a class="block p-2 text-gray-800 hover:bg-gray-100" href="#cosmetics" onclick="filterProducts('cosmetics')">মেকআপ</a>
+                <a class="block p-2 text-gray-800 hover:bg-gray-100" href="#skincare" onclick="filterProducts('skincare')">স্কিনকেয়ার</a>
+                <a class="block p-2 text-gray-800 hover:bg-gray-100" href="#haircare" onclick="filterProducts('haircare')">হেয়ারকেয়ার</a>
+                <a class="block p-2 text-gray-800 hover:bg-gray-100" href="#mehandi" onclick="filterProducts('mehandi')">মেহেদী</a>
+            </div>
+        </div>
     </div>
-  </div>
 </header>
 
 <!-- হেডারের জাভাস্ক্রিপ্ট -->
 <script>
-// মোবাইল সাইডবার খোলার ফাংশন
-function openSidebar() {
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
-    const sidebar = document.getElementById('sidebar');
-    if (sidebarOverlay && sidebar) {
-        sidebarOverlay.classList.remove('hidden');
-        sidebarOverlay.classList.add('active');
-        sidebar.classList.remove('-translate-x-full');
-        sidebar.classList.add('slide-in');
-    }
-}
-
-// মোবাইল সাইডবার বন্ধ করার ফাংশন
-function closeSidebar() {
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
-    const sidebar = document.getElementById('sidebar');
-    if (sidebarOverlay && sidebar) {
-        sidebar.classList.add('-translate-x-full');
-        sidebarOverlay.classList.remove('active');
-        sidebarOverlay.classList.add('hidden');
-        const subMenuMobile = document.getElementById('subMenuMobile');
-        const arrowIcon = document.getElementById('arrowIcon');
-        if (subMenuMobile && arrowIcon) {
-            subMenuMobile.classList.add('hidden');
-            arrowIcon.classList.remove('rotate-180');
-            arrowIcon.classList.add('fa-chevron-down');
-            arrowIcon.classList.remove('fa-chevron-up');
+    // মোবাইল সাইডবার খোলার ফাংশন
+    window.openSidebar = function() {
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const sidebar = document.getElementById('sidebar');
+        if (sidebarOverlay && sidebar) {
+            sidebarOverlay.classList.remove('hidden');
+            sidebarOverlay.classList.add('active');
+            sidebar.classList.remove('-translate-x-full');
+            sidebar.classList.add('slide-in');
+            console.log("মোবাইল সাইডবার খোলা হয়েছে।");
+        } else {
+            console.error("সাইডবার এলিমেন্ট পাওয়া যায়নি।");
         }
-    }
-}
+    };
 
-// মেনু আইটেম ক্লিক করার ফাংশন
-function handleMenuItemClick() {
-    closeSidebar();
-}
-
-// সাবমেনু আইটেম ক্লিক করার ফাংশন
-function handleSubMenuItemClick(category) {
-    filterProducts(category);
-    const subMenuMobile = document.getElementById('subMenuMobile');
-    if (subMenuMobile) {
-        subMenuMobile.classList.add('hidden');
-    }
-    closeSidebar();
-}
-
-// সাবমেনু টগল করার ফাংশন
-function toggleSubMenuMobile(event) {
-    event.stopPropagation();
-    const subMenuMobile = document.getElementById('subMenuMobile');
-    const arrowIcon = document.getElementById('arrowIcon');
-    if (subMenuMobile && arrowIcon) {
-        subMenuMobile.classList.toggle('hidden');
-        arrowIcon.classList.toggle('rotate-180');
-        arrowIcon.classList.toggle('fa-chevron-down');
-        arrowIcon.classList.toggle('fa-chevron-up');
-    }
-}
-
-// ডেস্কটপ সাবমেনু টগল করার ফাংশন
-function toggleSubMenuDesktop() {
-    const desktopSubMenuBar = document.getElementById('desktopSubMenuBar');
-    const desktopArrowIcon = document.getElementById('desktopArrowIcon');
-    if (desktopSubMenuBar && desktopArrowIcon) {
-        desktopSubMenuBar.classList.toggle('hidden');
-        desktopSubMenuBar.classList.toggle('slide-down');
-        desktopArrowIcon.classList.toggle('rotate-180');
-        desktopArrowIcon.classList.toggle('fa-chevron-down');
-        desktopArrowIcon.classList.toggle('fa-chevron-up');
-    }
-}
-
-// কার্ট সাইডবার কন্ট্রোল
-function openCartSidebar() {
-    const cartSidebar = document.getElementById('cartSidebar');
-    const cartOverlay = document.getElementById('cartOverlay');
-    if (cartSidebar && cartOverlay) {
-        cartSidebar.classList.remove('translate-x-full');
-        cartOverlay.classList.remove('hidden');
-    }
-}
-
-function closeCartSidebar() {
-    const cartSidebar = document.getElementById('cartSidebar');
-    const cartOverlay = document.getElementById('cartOverlay');
-    if (cartSidebar && cartOverlay) {
-        cartSidebar.classList.add('translate-x-full');
-        cartOverlay.classList.add('hidden');
-    }
-}
-
-// মোবাইল সার্চ বার ফোকাস
-function focusMobileSearch() {
-    const mobileSearchBar = document.getElementById('mobileSearchBar');
-    if (mobileSearchBar) {
-        mobileSearchBar.classList.toggle('hidden');
-        mobileSearchBar.classList.toggle('show');
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-            searchInput.focus();
+    // মোবাইল সাইডবার বন্ধ করার ফাংশন
+    window.closeSidebar = function() {
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const sidebar = document.getElementById('sidebar');
+        if (sidebarOverlay && sidebar) {
+            sidebar.classList.add('-translate-x-full');
+            sidebarOverlay.classList.remove('active');
+            sidebarOverlay.classList.add('hidden');
+            const subMenuMobile = document.getElementById('subMenuMobile');
+            const arrowIcon = document.getElementById('arrowIcon');
+            if (subMenuMobile && arrowIcon) {
+                subMenuMobile.classList.add('hidden');
+                arrowIcon.classList.remove('rotate-180');
+                arrowIcon.classList.add('fa-chevron-down');
+                arrowIcon.classList.remove('fa-chevron-up');
+            }
+            console.log("মোবাইল সাইডবার বন্ধ করা হয়েছে।");
+        } else {
+            console.error("সাইডবার এলিমেন্ট পাওয়া যায়নি।");
         }
-    }
-}
+    };
 
-// ডকুমেন্টে ক্লিক ইভেন্ট লিসেনার
-document.addEventListener("click", (event) => {
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
-    const subMenuMobile = document.getElementById('subMenuMobile');
-    const desktopSubMenuBar = document.getElementById('desktopSubMenuBar');
-
-    // মোবাইল সাইডবার বন্ধ করুন
-    if (sidebarOverlay && !event.target.closest('#sidebar') && !event.target.closest('button[onclick="openSidebar()"]')) {
+    // মেনু আইটেম ক্লিক করার ফাংশন
+    window.handleMenuItemClick = function() {
         closeSidebar();
-    }
+        console.log("মেনু আইটেম ক্লিক করা হয়েছে।");
+    };
 
-    // মোবাইল সাবমেনু বন্ধ করুন
-    if (subMenuMobile && !event.target.closest('#subMenuMobile') && !event.target.closest('button[onclick="toggleSubMenuMobile(event)"]')) {
-        subMenuMobile.classList.add('hidden');
-        const arrowIcon = document.getElementById('arrowIcon');
-        if (arrowIcon) {
-            arrowIcon.classList.remove('rotate-180');
-            arrowIcon.classList.add('fa-chevron-down');
-            arrowIcon.classList.remove('fa-chevron-up');
-        }
-    }
-
-    // ডেস্কটপ সাবমেনু বন্ধ করুন
-    if (desktopSubMenuBar && !event.target.closest('#desktopSubMenuBar') && !event.target.closest('button[onclick="toggleSubMenuDesktop()"]')) {
-        desktopSubMenuBar.classList.add('hidden');
-        desktopSubMenuBar.classList.remove('slide-down');
-        const desktopArrowIcon = document.getElementById('desktopArrowIcon');
-        if (desktopArrowIcon) {
-            desktopArrowIcon.classList.remove('rotate-180');
-            desktopArrowIcon.classList.add('fa-chevron-down');
-            desktopArrowIcon.classList.remove('fa-chevron-up');
-        }
-    }
-
-    // কার্ট সাইডবার বন্ধ করুন
-    const cartSidebar = document.getElementById('cartSidebar');
-    if (cartSidebar && !event.target.closest('#cartSidebar') && !event.target.closest('#cartButton')) {
-        closeCartSidebar();
-    }
-});
-
-// স্ক্রল করলে মেনু এবং সার্চ বার ক্লোজ করার ফাংশন
-window.addEventListener('scroll', () => {
-    const subMenuMobile = document.getElementById('subMenuMobile');
-    const desktopSubMenuBar = document.getElementById('desktopSubMenuBar');
-    const mobileSearchBar = document.getElementById('mobileSearchBar');
-
-    if (subMenuMobile && !subMenuMobile.classList.contains('hidden')) {
-        subMenuMobile.classList.add('hidden');
-        const arrowIcon = document.getElementById('arrowIcon');
-        if (arrowIcon) {
-            arrowIcon.classList.remove('rotate-180');
-            arrowIcon.classList.add('fa-chevron-down');
-            arrowIcon.classList.remove('fa-chevron-up');
-        }
-    }
-
-    if (desktopSubMenuBar && !desktopSubMenuBar.classList.contains('hidden')) {
-        desktopSubMenuBar.classList.add('hidden');
-        desktopSubMenuBar.classList.remove('slide-down');
-        const desktopArrowIcon = document.getElementById('desktopArrowIcon');
-        if (desktopArrowIcon) {
-            desktopArrowIcon.classList.remove('rotate-180');
-            desktopArrowIcon.classList.add('fa-chevron-down');
-            desktopArrowIcon.classList.remove('fa-chevron-up');
-        }
-    }
-
-    if (window.innerWidth < 768 && mobileSearchBar && !mobileSearchBar.classList.contains('hidden')) {
-        mobileSearchBar.classList.add('hidden');
-    }
-});
-
-// হেডার লোড হওয়ার পর ইভেন্ট লিসেনার যোগ করার ফাংশন
-function initializeHeaderEvents() {
-    const cartButton = document.getElementById('cartButton');
-    const cartSidebar = document.getElementById('cartSidebar');
-
-    if (cartButton) {
-        cartButton.addEventListener('click', () => {
-            openCartSidebar(); // শুধুমাত্র সাইডবার ওপেন করবে, কোনো প্রোডাক্ট যোগ হবে না
-        });
-    }
-
-    if (cartSidebar) {
-        cartSidebar.addEventListener('click', (e) => e.stopPropagation());
-    }
-}
-
-// হেডার লোড হওয়ার পর ইভেন্ট লিসেনার যোগ করুন
-setTimeout(initializeHeaderEvents, 0);
-</script>
+    // সাবমেনু আইটেম ক্লিক করার ফাংশন
+    window.handleSubMenuItemClick = function(category) {
+        filterProducts(category);
+      
