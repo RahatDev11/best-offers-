@@ -532,7 +532,6 @@ function closeSocialIconsOnScroll() {
 }
 
 window.addEventListener('scroll', closeSocialIconsOnScroll);
-
 // পণ্য দেখুন বাটনের জন্য স্ক্রোল ফাংশন
 window.scrollToProducts = () => {
     filterProducts('all');
