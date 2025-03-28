@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- jQuery CDN -->
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <!-- html2canvas লাইব্রেরি লোড করা -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <!-- বাহিরের স্টাইলশীট লোড করা -->
     <link rel="stylesheet" href="styles.css">
     <!-- script.js লোড করা -->
@@ -107,6 +109,14 @@
             color: #A52A2A;
         }
 
+        /* ক্যাপচার সেকশনের জন্য স্টাইল */
+        #captureSection {
+            padding: 20px; /* ক্যাপচার করা অংশে প্যাডিং */
+            background: #ffffff; /* ব্যাকগ্রাউন্ড সাদা */
+            border-radius: 8px; /* কোণগুলো গোলাকার */
+            margin-bottom: 1rem; /* নিচে মার্জিন */
+        }
+
         /* কার্ট আইটেম স্টাইল */
         .cart-items {
             margin-bottom: 1.5rem;
@@ -184,6 +194,22 @@
 
         .update-btn:hover {
             background: #8B1A1A;
+        }
+
+        /* সেভ বাটন স্টাইল */
+        .save-btn {
+            background: #16A34A;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .save-btn:hover {
+            background: #13863C;
         }
 
         /* টাইমলাইন স্টাইল */
@@ -268,7 +294,8 @@
             }
 
             .status-select,
-            .update-btn {
+            .update-btn,
+            .save-btn {
                 font-size: 0.85rem;
                 padding: 0.4rem;
             }
@@ -295,7 +322,8 @@
             }
 
             .status-select,
-            .update-btn {
+            .update-btn,
+            .save-btn {
                 font-size: 0.8rem;
                 padding: 0.3rem;
             }
@@ -324,7 +352,7 @@
             </button>
             <!-- সার্চ এবং ফিল্টার -->
             <div class="flex flex-wrap gap-4 mb-4">
-                <input type="text" id="searchInput" placeholder="কাস্টমারের নাম বা ফোন নম্বর দিয়ে সার্চ করুন" class="border border-gray-300 rounded-lg p-2 w-full md:w-1/3">
+                <input type="text" id="searchInput" placeholder="কাস্টমারের নাম দিয়ে সার্চ করুন" class="border border-gray-300 rounded-lg p-2 w-full md:w-1/3">
                 <select id="statusFilter" class="border border-gray-300 rounded-lg p-2">
                     <option value="">সব স্ট্যাটাস</option>
                     <option value="processing">প্রসেসিং</option>
@@ -347,7 +375,6 @@
                     <tr>
                         <th>ক্রমিক</th>
                         <th>কাস্টমারের নাম</th>
-                        <th>ফোন নম্বর</th>
                         <th>প্রোডাক্টের নাম</th>
                         <th>অর্ডার স্ট্যাটাস</th>
                     </tr>
@@ -362,12 +389,14 @@
 
     <!-- মডাল -->
     <div id="orderModal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content" id="modalContentWrapper">
             <span id="modalClose" class="modal-close">×</span>
             <h3 class="text-lg font-bold mb-4 text-lipstick">অর্ডারের বিস্তারিত</h3>
             <div id="modalContent">
                 <!-- কাস্টমারের তথ্য এবং প্রোডাক্ট এখানে ডায়নামিকভাবে লোড হবে -->
             </div>
+            <!-- সেভ বাটন -->
+            <button id="saveModalBtn" class="save-btn">সেভ করুন</button>
         </div>
     </div>
 
@@ -375,7 +404,7 @@
     <script type="module">
         // Firebase SDK ইম্পোর্ট
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         // Firebase কনফিগারেশন
@@ -394,6 +423,9 @@
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
         const auth = getAuth(app);
+
+        // FCM Server Key
+        const FCM_SERVER_KEY = 'BG07gtUq0oYXoUHPvOQNxs5-fri-4TsCCkvcK2QdWFpXk_OYVs4uv3IguNNcxSHi-pjSgR03ULlup5IHkJzgCso';
 
         // গ্লোবাল অর্ডার ডাটা স্টোর করার জন্য
         let allOrders = [];
@@ -441,10 +473,12 @@
         });
 
         // টোস্ট নোটিফিকেশন ফাংশন
-        function showToast(message) {
+        function showToast(message, type = 'success') {
             const toast = document.createElement('div');
             toast.id = 'toast';
-            toast.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-lipstick text-white px-4 py-2 rounded-lg shadow-lg z-50';
+            toast.className = `fixed bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 ${
+                type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+            }`;
             toast.textContent = message;
             document.body.appendChild(toast);
 
@@ -452,6 +486,56 @@
                 toast.classList.add('hidden');
                 toast.remove();
             }, 3000);
+        }
+
+        // FCM নোটিফিকেশন পাঠানোর ফাংশন
+        async function sendNotificationToCustomer(userId, title, body) {
+            try {
+                // ইউজারের FCM টোকেন পাওয়া
+                const userRef = ref(database, `users/${userId}`);
+                const snapshot = await get(userRef);
+                const userData = snapshot.val();
+
+                if (!userData || !userData.fcmToken) {
+                    console.error("ইউজারের FCM টোকেন পাওয়া যায়নি।");
+                    showToast("কাস্টমারের নোটিফিকেশন টোকেন পাওয়া যায়নি।", 'error');
+                    return;
+                }
+
+                const fcmToken = userData.fcmToken;
+
+                // FCM API কল করা
+                const response = await fetch('https://fcm.googleapis.com/fcm/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `key=${FCM_SERVER_KEY}`
+                    },
+                    body: JSON.stringify({
+                        to: fcmToken,
+                        notification: {
+                            title: title,
+                            body: body,
+                            icon: '/path/to/icon.png' // আপনার আইকনের পাথ (অপশনাল)
+                        },
+                        data: {
+                            click_action: window.location.origin + '/order-list.html' // নোটিফিকেশনে ক্লিক করলে কোথায় যাবে
+                        }
+                    })
+                });
+
+                if (response.ok) {
+                    console.log("নোটিফিকেশন সফলভাবে পাঠানো হয়েছে।");
+                    showToast("কাস্টমারকে নোটিফিকেশন পাঠানো হয়েছে।", 'success');
+                } else {
+                    const errorData = await response.json();
+                    console.error("নোটিফিকেশন পাঠাতে সমস্যা হয়েছে:", errorData);
+                    showToast("নোটিফিকেশন পাঠাতে সমস্যা হয়েছে।", 'error');
+                }
+            } catch (error) {
+                console.error("নোটিফিকেশন পাঠাতে ত্রুটি:", error);
+                showToast("নোটিফিকেশন পাঠাতে ত্রুটি হয়েছে।", 'error');
+            }
         }
 
         // ইউজারের অথেন্টিকেশন স্টেট চেক করা
@@ -466,7 +550,7 @@
                         mainContent.classList.remove('hidden');
                         loadOrders(); // অর্ডার লোড করা
                     } else {
-                        showToast('এই পেজে শুধুমাত্র এডমিন অ্যাক্সেস করতে পারবে।');
+                        showToast('এই পেজে শুধুমাত্র এডমিন অ্যাক্সেস করতে পারবে।', 'error');
                         signOut(auth);
                     }
                 } else {
@@ -480,15 +564,15 @@
         document.getElementById('logoutBtn').addEventListener('click', () => {
             signOut(auth)
                 .then(() => {
-                    showToast('লগআউট সফল হয়েছে!');
+                    showToast('লগআউট সফল হয়েছে!', 'success');
                 })
                 .catch((error) => {
                     console.error("লগআউট করতে সমস্যা হয়েছে: ", error);
-                    showToast(`লগআউট করতে সমস্যা হয়েছে: ${error.message}`);
+                    showToast(`লগআউট করতে সমস্যা হয়েছে: ${error.message}`, 'error');
                 });
         });
 
-        // Firebase থেকে অর্ডার লোড করা
+                // Firebase থেকে অর্ডার লোড করা
         function loadOrders() {
             const ordersRef = ref(database, 'orders');
             const loadingSpinner = document.getElementById('loadingSpinner');
@@ -515,7 +599,7 @@
                 orderTable.classList.remove('hidden');
             }, (error) => {
                 console.error("অর্ডার লোড করতে সমস্যা হয়েছে: ", error);
-                showToast("অর্ডার লোড করতে সমস্যা হয়েছে।");
+                showToast("অর্ডার লোড করতে সমস্যা হয়েছে।", 'error');
                 loadingSpinner.style.display = 'none';
             });
         }
@@ -526,7 +610,7 @@
             orderList.innerHTML = '';
 
             if (orders.length === 0) {
-                orderList.innerHTML = '<tr><td colspan="5" class="text-center text-gray-700">কোনো অর্ডার পাওয়া যায়নি।</td></tr>';
+                orderList.innerHTML = '<tr><td colspan="4" class="text-center text-gray-700">কোনো অর্ডার পাওয়া যায়নি।</td></tr>';
                 return;
             }
 
@@ -538,7 +622,6 @@
                 row.innerHTML = `
                     <td>${index + 1}</td>
                     <td><span class="customer-name" data-order-id="${order.key}">${order.customerName}</span></td>
-                    <td>${order.phoneNumber}</td>
                     <td>${productNames}</td>
                     <td class="status-${currentStatus}">${getStatusText(currentStatus)}</td>
                 `;
@@ -547,11 +630,15 @@
 
             // কাস্টমার নামে ক্লিক করার ইভেন্ট লিসেনার যোগ করা
             document.querySelectorAll('.customer-name').forEach(name => {
-                name.addEventListener('click', (e) => {
-                    const orderId = e.target.getAttribute('data-order-id');
-                    showOrderDetails(orderId);
-                });
+                name.removeEventListener('click', handleCustomerNameClick); // পুরানো লিসেনার সরানো
+                name.addEventListener('click', handleCustomerNameClick);
             });
+        }
+
+        // কাস্টমার নামে ক্লিক করার হ্যান্ডলার ফাংশন
+        function handleCustomerNameClick(e) {
+            const orderId = e.target.getAttribute('data-order-id');
+            showOrderDetails(orderId);
         }
 
         // সার্চ এবং ফিল্টার ফাংশন
@@ -563,7 +650,7 @@
             const statusFilter = document.getElementById('statusFilter').value;
 
             const filteredOrders = allOrders.filter(order => {
-                const matchesSearch = order.customerName.toLowerCase().includes(searchTerm) || order.phoneNumber.includes(searchTerm);
+                const matchesSearch = order.customerName.toLowerCase().includes(searchTerm);
                 const matchesStatus = statusFilter ? (order.status || 'processing') === statusFilter : true;
                 return matchesSearch && matchesStatus;
             });
@@ -571,42 +658,70 @@
             displayOrders(filteredOrders);
         }
 
-                // অর্ডার স্ট্যাটাস আপডেট করার ফাংশন
-        function updateOrderStatus(orderId) {
+        // অর্ডার স্ট্যাটাস আপডেট করার ফাংশন
+        async function updateOrderStatus(orderId) {
+            console.log("আপডেট বাটনে ক্লিক করা হয়েছে", orderId); // ডিবাগিংয়ের জন্য
+
             const selectElement = document.querySelector(`#statusSelect-${orderId}`);
+            if (!selectElement) {
+                console.error(`স্ট্যাটাস সিলেক্ট এলিমেন্ট পাওয়া যায়নি: #statusSelect-${orderId}`);
+                showToast("স্ট্যাটাস সিলেক্ট করতে সমস্যা হয়েছে।", 'error');
+                return;
+            }
+
             const newStatus = selectElement.value;
+            if (!newStatus) {
+                showToast("দয়া করে একটি স্ট্যাটাস সিলেক্ট করুন।", 'error');
+                return;
+            }
 
             const orderRef = ref(database, `orders/${orderId}`);
             const currentOrder = allOrders.find(order => order.key === orderId);
-            const statusHistory = currentOrder.statusHistory || [];
+            if (!currentOrder) {
+                showToast("অর্ডারটি পাওয়া যায়নি।", 'error');
+                return;
+            }
 
-            // নতুন স্ট্যাটাস হিস্টোরি এন্ট্রি
+            const statusHistory = currentOrder.statusHistory || [];
             statusHistory.push({
                 status: newStatus,
                 updatedAt: new Date().toISOString()
             });
 
-            update(orderRef, { 
-                status: newStatus,
-                statusHistory: statusHistory
-            })
-                .then(() => {
-                    showToast('অর্ডার স্ট্যাটাস সফলভাবে আপডেট হয়েছে!');
-                    showOrderDetails(orderId); // মডাল রিফ্রেশ
-                })
-                .catch((error) => {
-                    console.error("অর্ডার স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে: ", error);
-                    showToast("অর্ডার স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে।");
+            try {
+                // Firebase এ স্ট্যাটাস আপডেট করা
+                await update(orderRef, { 
+                    status: newStatus,
+                    statusHistory: statusHistory
                 });
+
+                showToast('আপনার স্ট্যাটাসটি আপডেট হয়েছে।', 'success');
+                showOrderDetails(orderId); // মডাল রিফ্রেশ
+
+                // কাস্টমারকে নোটিফিকেশন পাঠানো
+                const userId = currentOrder.userId;
+                if (userId) {
+                    const notificationTitle = "অর্ডার স্ট্যাটাস আপডেট";
+                    const notificationBody = `আপনার অর্ডার (আইডি: ${currentOrder.orderId}) এর স্ট্যাটাস আপডেট হয়েছে: ${getStatusText(newStatus)}`;
+                    await sendNotificationToCustomer(userId, notificationTitle, notificationBody);
+                } else {
+                    showToast("কাস্টমারের ইউজার আইডি পাওয়া যায়নি। নোটিফিকেশন পাঠানো যায়নি।", 'error');
+                }
+            } catch (error) {
+                console.error("অর্ডার স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে: ", error);
+                showToast(`অর্ডার স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে: ${error.message}`, 'error');
+            }
         }
 
         // নোট যোগ করার ফাংশন
         function addAdminNote(orderId) {
+            console.log("নোট যোগ করার বাটনে ক্লিক করা হয়েছে", orderId); // ডিবাগিংয়ের জন্য
+
             const noteInput = document.querySelector(`#adminNote-${orderId}`);
             const newNote = noteInput.value.trim();
 
             if (!newNote) {
-                showToast("নোট খালি রাখা যাবে না।");
+                showToast("নোট খালি রাখা যাবে না।", 'error');
                 return;
             }
 
@@ -621,46 +736,62 @@
 
             update(orderRef, { adminNotes: adminNotes })
                 .then(() => {
-                    showToast('নোট সফলভাবে যোগ করা হয়েছে!');
+                    showToast('নোট সফলভাবে যোগ করা হয়েছে!', 'success');
                     noteInput.value = ''; // ইনপুট ক্লিয়ার
                     showOrderDetails(orderId); // মডাল রিফ্রেশ
                 })
                 .catch((error) => {
                     console.error("নোট যোগ করতে সমস্যা হয়েছে: ", error);
-                    showToast("নোট যোগ করতে সমস্যা হয়েছে।");
+                    showToast("নোট যোগ করতে সমস্যা হয়েছে।", 'error');
                 });
         }
 
         // অর্ডারের বিস্তারিত মডালে দেখানো
         function showOrderDetails(orderId) {
             const orderRef = ref(database, `orders/${orderId}`);
+            const modal = document.getElementById('orderModal');
+            const modalContent = document.getElementById('modalContent');
+            const modalClose = document.getElementById('modalClose');
+            const saveModalBtn = document.getElementById('saveModalBtn');
+
+            // পুরানো ইভেন্ট লিসেনার সরানো
+            const newModalClose = modalClose.cloneNode(true);
+            modalClose.parentNode.replaceChild(newModalClose, modalClose);
+
+            // পুরানো সেভ বাটনের ইভেন্ট লিসেনার সরানো
+            const newSaveModalBtn = saveModalBtn.cloneNode(true);
+            saveModalBtn.parentNode.replaceChild(newSaveModalBtn, saveModalBtn);
+
             onValue(orderRef, (snapshot) => {
                 const order = snapshot.val();
                 if (order) {
-                    const modal = document.getElementById('orderModal');
-                    const modalContent = document.getElementById('modalContent');
-
-                    // কাস্টমারের তথ্য দেখানো
-                    let detailsHTML = `
-                        <p><strong>নাম:</strong> ${order.customerName}</p>
-                        <p><strong>ফোন নম্বর:</strong> ${order.phoneNumber}</p>
-                        <p><strong>ঠিকানা:</strong> ${order.address}</p>
-                        <p><strong>ডেলিভারি লোকেশন:</strong> ${order.deliveryLocation === 'insideDhaka' ? 'ঢাকার ভেতরে' : 'ঢাকার বাইরে'}</p>
-                        ${order.outsideDhakaLocation ? `<p><strong>ঢাকার বাইরে লোকেশন:</strong> ${order.outsideDhakaLocation}</p>` : ''}
-                        ${order.deliveryNote ? `<p><strong>ডেলিভারি নোট:</strong> ${order.deliveryNote}</p>` : ''}
-                        <p><strong>প্রোডাক্টের পেমেন্ট মেথড:</strong> ${order.productPaymentMethod === 'cod' ? 'ক্যাশ অন ডেলিভারি' : order.productPaymentMethod}</p>
-                        ${order.deliveryPaymentMethod && order.deliveryLocation === 'outsideDhaka' ? `<p><strong>ডেলিভারি চার্জের পেমেন্ট মেথড:</strong> ${order.deliveryPaymentMethod}</p>` : ''}
-                        ${order.paymentNumber && order.deliveryLocation === 'outsideDhaka' ? `<p><strong>ডেলিভারি চার্জের পেমেন্ট নাম্বার:</strong> ${order.paymentNumber}</p>` : ''}
-                        <p><strong>ডেলিভারি ফি:</strong> ${order.deliveryFee} টাকা</p>
-                        <p><strong>মোট মূল্য:</strong> ${order.totalAmount} টাকা</p>
-                        <p><strong>অর্ডার আইডি:</strong> ${order.orderId}</p>
-                        <p><strong>অর্ডারের তারিখ:</strong> ${new Date(order.orderDate).toLocaleString('bn-BD')}</p>
-                        <p><strong>অর্ডার স্ট্যাটাস:</strong> <span class="status-${order.status || 'processing'}">${getStatusText(order.status || 'processing')}</span></p>
+                    // কাস্টমারের তথ্য দেখানো (এই অংশটি ক্যাপচার করা হবে)
+                    let captureHTML = `
+                        <div id="captureSection">
+                            <p><strong>নাম:</strong> ${order.customerName}</p>
+                            <p><strong>ইমেইল:</strong> ${order.userEmail || 'ইমেইল পাওয়া যায়নি'}</p>
+                            <p><strong>ফোন নম্বর:</strong> ${order.phoneNumber}</p>
+                            <p><strong>ঠিকানা:</strong> ${order.address}</p>
+                            <p><strong>ডেলিভারি লোকেশন:</strong> ${order.deliveryLocation === 'insideDhaka' ? 'ঢাকার ভেতরে' : 'ঢাকার বাইরে'}</p>
+                            ${order.outsideDhakaLocation ? `<p><strong>ঢাকার বাইরে লোকেশন:</strong> ${order.outsideDhakaLocation}</p>` : ''}
+                            ${order.deliveryNote ? `<p><strong>ডেলিভারি নোট:</strong> ${order.deliveryNote}</p>` : ''}
+                            <p><strong>প্রোডাক্টের পেমেন্ট মেথড:</strong> ${order.productPaymentMethod === 'cod' ? 'ক্যাশ অন ডেলিভারি' : order.productPaymentMethod}</p>
+                            ${order.deliveryPaymentMethod && order.deliveryLocation === 'outsideDhaka' ? `<p><strong>ডেলিভারি চার্জের পেমেন্ট মেথড:</strong> ${order.deliveryPaymentMethod}</p>` : ''}
+                            ${order.paymentNumber && order.deliveryLocation === 'outsideDhaka' ? `<p><strong>ডেলিভারি চার্জের পেমেন্ট নাম্বার:</strong> ${order.paymentNumber}</p>` : ''}
+                            <p><strong>ডেলিভারি ফি:</strong> ${order.deliveryFee} টাকা</p>
+                            <p><strong>মোট মূল্য:</strong> ${order.totalAmount} টাকা</p>
+                            <p><strong>অর্ডার আইডি:</strong> ${order.orderId}</p>
+                            <p><strong>অর্ডারের তারিখ:</strong> ${new Date(order.orderDate).toLocaleString('bn-BD')}</p>
+                            <p><strong>অর্ডার স্ট্যাটাস:</strong> <span class="status-${order.status || 'processing'}">${getStatusText(order.status || 'processing')}</span></p>
+                        </div>
                     `;
+
+                    // বাকি অংশ (এই অংশটি ক্যাপচার করা হবে না)
+                    let nonCaptureHTML = '';
 
                     // স্ট্যাটাস আপডেট করার ড্রপডাউন এবং বাটন
                     const currentStatus = order.status || 'processing';
-                    detailsHTML += `
+                    nonCaptureHTML += `
                         <div class="mt-4">
                             <h4 class="text-md font-semibold mb-2 text-lipstick">অর্ডার স্ট্যাটাস আপডেট করুন</h4>
                             <select id="statusSelect-${orderId}" class="status-select">
@@ -672,19 +803,19 @@
                                 <option value="failed" ${currentStatus === 'failed' ? 'selected' : ''}>ডেলিভারি ব্যর্থ</option>
                                 <option value="cancelled" ${currentStatus === 'cancelled' ? 'selected' : ''}>ক্যানসেলড</option>
                             </select>
-                            <button class="update-btn mt-2" onclick="updateOrderStatus('${orderId}')">আপডেট</button>
+                            <button class="update-btn mt-2" data-order-id="${orderId}">আপডেট</button>
                         </div>
                     `;
 
                     // স্ট্যাটাস টাইমলাইন দেখানো
                     if (order.statusHistory && order.statusHistory.length > 0) {
-                        detailsHTML += `
+                        nonCaptureHTML += `
                             <div class="mt-4">
                                 <h4 class="text-md font-semibold mb-2 text-lipstick">স্ট্যাটাস টাইমলাইন</h4>
                                 <div class="timeline">
                         `;
                         order.statusHistory.forEach(history => {
-                            detailsHTML += `
+                            nonCaptureHTML += `
                                 <div class="timeline-item">
                                     <div class="timeline-dot"></div>
                                     <div class="timeline-content">
@@ -694,27 +825,27 @@
                                 </div>
                             `;
                         });
-                        detailsHTML += '</div></div>';
+                        nonCaptureHTML += '</div></div>';
                     }
 
                     // এডমিন নোট যোগ করার সেকশন
-                    detailsHTML += `
+                    nonCaptureHTML += `
                         <div class="mt-4">
                             <h4 class="text-md font-semibold mb-2 text-lipstick">এডমিন নোট যোগ করুন</h4>
                             <textarea id="adminNote-${orderId}" class="border border-gray-300 rounded-lg p-2 w-full" placeholder="এখানে নোট লিখুন..."></textarea>
-                            <button class="update-btn mt-2" onclick="addAdminNote('${orderId}')">নোট যোগ করুন</button>
+                            <button class="update-btn mt-2" data-order-id="${orderId}" data-action="add-note">নোট যোগ করুন</button>
                         </div>
                     `;
 
                     // এডমিন নোট দেখানো
                     if (order.adminNotes && order.adminNotes.length > 0) {
-                        detailsHTML += `
+                        nonCaptureHTML += `
                             <div class="mt-4">
                                 <h4 class="text-md font-semibold mb-2 text-lipstick">এডমিন নোটসমূহ</h4>
                                 <div class="timeline">
                         `;
                         order.adminNotes.forEach(note => {
-                            detailsHTML += `
+                            nonCaptureHTML += `
                                 <div class="timeline-item">
                                     <div class="timeline-dot"></div>
                                     <div class="timeline-content">
@@ -724,16 +855,17 @@
                                 </div>
                             `;
                         });
-                        detailsHTML += '</div></div>';
+                        nonCaptureHTML += '</div></div>';
                     }
 
-                    // প্রোডাক্টগুলো দেখানো
-                    detailsHTML += '<h4 class="text-md font-semibold mt-4 mb-2 text-lipstick">অর্ডার করা প্রোডাক্ট</h4>';
-                    detailsHTML += '<div class="cart-items">';
+                    // প্রোডাক্টগুলো17.এই অংশটি ক্যাপচার করা হবে না
+                    nonCaptureHTML += '<h4 class="text-md font-semibold mt-4 mb-2 text-lipstick">অর্ডার করা প্রোডাক্ট</h4>';
+                    nonCaptureHTML += '<div class="cart-items">';
                     order.cartItems.forEach(item => {
-                        detailsHTML += `
+                        const imageUrl = item.image ? item.image.split(',')[0].trim() : 'https://via.placeholder.com/50';
+                        nonCaptureHTML += `
                             <div class="cart-item">
-                                <img src="${item.image}" alt="${item.name}">
+                                <img src="${imageUrl}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/50'; this.alt='ছবি লোড হয়নি';">
                                 <div class="cart-item-details">
                                     <p>${item.name}</p>
                                     <p>মূল্য: ${item.price} টাকা</p>
@@ -742,13 +874,14 @@
                             </div>
                         `;
                     });
-                    detailsHTML += '</div>';
+                    nonCaptureHTML += '</div>';
 
-                    modalContent.innerHTML = detailsHTML;
+                    // সম্পূর্ণ HTML একত্রিত করা
+                    modalContent.innerHTML = captureHTML + nonCaptureHTML;
                     modal.style.display = 'flex';
 
                     // মডাল বন্ধ করার লজিক
-                    document.getElementById('modalClose').addEventListener('click', () => {
+                    newModalClose.addEventListener('click', () => {
                         modal.style.display = 'none';
                     });
 
@@ -758,16 +891,68 @@
                             modal.style.display = 'none';
                         }
                     });
+
+                    // ইভেন্ট ডেলিগেশন ব্যবহার করে আপডেট এবং নোট যোগ করার বাটনের ইভেন্ট হ্যান্ডল করা
+                    modalContent.querySelectorAll('.update-btn').forEach(button => {
+                        button.removeEventListener('click', handleModalButtonClick); // পুরানো লিসেনার সরানো
+                        button.addEventListener('click', handleModalButtonClick);
+                    });
+
+                    // সেভ বাটনে ক্লিক করলে শুধুমাত্র captureSection ক্যাপচার এবং ডাউনলোড করা
+                    newSaveModalBtn.addEventListener('click', () => {
+                        const captureSection = document.getElementById('captureSection');
+                        html2canvas(captureSection, {
+                            scale: 2, // উচ্চ রেজোলিউশনের জন্য
+                            useCORS: true, // ক্রস-অরিজিন ইমেজ লোড করার জন্য
+                            backgroundColor: '#ffffff' // ব্যাকগ্রাউন্ড সাদা করা
+                        }).then(canvas => {
+                            // নতুন ক্যানভাস তৈরি করে মার্জিন যোগ করা
+                            const margin = 40; // চারপাশে 40px মার্জিন
+                            const newCanvas = document.createElement('canvas');
+                            newCanvas.width = canvas.width + margin * 2;
+                            newCanvas.height = canvas.height + margin * 2;
+                            const ctx = newCanvas.getContext('2d');
+
+                            // ব্যাকগ্রাউন্ড সাদা করা
+                            ctx.fillStyle = '#ffffff';
+                            ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
+
+                            // মূল ক্যানভাসটি নতুন ক্যানভাসের মাঝে রাখা
+                            ctx.drawImage(canvas, margin, margin);
+
+                            // ডাউনলোড লিঙ্ক তৈরি
+                            const link = document.createElement('a');
+                            link.download = `order-details-${order.orderId}.png`;
+                            link.href = newCanvas.toDataURL('image/png');
+                            link.click();
+                            showToast('তথ্য সফলভাবে ডাউনলোড হয়েছে!', 'success');
+                        }).catch(error => {
+                            console.error("তথ্য ক্যাপচার করতে সমস্যা হয়েছে: ", error);
+                            showToast('তথ্য ডাউনলোড করতে সমস্যা হয়েছে।', 'error');
+                        });
+                    });
                 } else {
-                    showToast("অর্ডারের বিস্তারিত পাওয়া যায়নি।");
+                    showToast("অর্ডারের বিস্তারিত পাওয়া যায়নি।", 'error');
                 }
             }, (error) => {
                 console.error("অর্ডারের বিস্তারিত লোড করতে সমস্যা হয়েছে: ", error);
-                showToast("অর্ডারের বিস্তারিত লোড করতে সমস্যা হয়েছে।");
+                showToast("অর্ডারের বিস্তারিত লোড করতে সমস্যা হয়েছে।", 'error');
             });
         }
 
-        // স্ট্যাটাস টেক্সট ফরম্যাট করার ফাংশন
+        // মডালের বাটন ক্লিক হ্যান্ডল করার ফাংশন
+        function handleModalButtonClick(e) {
+            const orderId = e.target.getAttribute('data-order-id');
+            const action = e.target.getAttribute('data-action');
+
+            if (action === 'add-note') {
+                addAdminNote(orderId);
+            } else {
+                updateOrderStatus(orderId);
+            }
+        }
+
+                // স্ট্যাটাস টেক্সট ফরম্যাট করার ফাংশন
         function getStatusText(status) {
             switch (status) {
                 case 'processing':
