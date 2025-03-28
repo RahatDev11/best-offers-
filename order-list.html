@@ -580,7 +580,7 @@
                 });
         });
 
-// Firebase থেকে অর্ডার লোড করা
+                // Firebase থেকে অর্ডার লোড করা
         function loadOrders() {
             const ordersRef = ref(database, 'orders');
             const loadingSpinner = document.getElementById('loadingSpinner');
@@ -609,6 +609,7 @@
                 console.error("অর্ডার লোড করতে সমস্যা হয়েছে: ", error);
                 showToast("অর্ডার লোড করতে সমস্যা হয়েছে।", 'error');
                 loadingSpinner.style.display = 'none';
+                orderTable.classList.remove('hidden');
             });
         }
 
@@ -623,7 +624,10 @@
             }
 
             orders.forEach((order, index) => {
-                const productNames = order.cartItems.map(item => item.name).join(', ');
+                // cartItems খালি থাকলে ডিফল্ট মেসেজ দেখানো
+                const productNames = (order.cartItems && order.cartItems.length > 0) 
+                    ? order.cartItems.map(item => item.name).join(', ') 
+                    : 'কোনো প্রোডাক্ট সিলেক্ট করা হয়নি';
                 const currentStatus = order.status || 'processing';
 
                 const row = document.createElement('tr');
@@ -635,6 +639,7 @@
                 `;
                 orderList.appendChild(row);
             });
+
             // কাস্টমার নামে ক্লিক করার ইভেন্ট লিসেনার যোগ করা
             document.querySelectorAll('.customer-name').forEach(name => {
                 name.removeEventListener('click', handleCustomerNameClick); // পুরানো লিসেনার সরানো
@@ -701,6 +706,10 @@
                     status: newStatus,
                     statusHistory: statusHistory
                 });
+
+                showToast('আপনার স্ট্যাটাসটি আপডেট হয়েছে।', 'success');
+                showOrderDetails(orderId); // মডাল রিফ্রেশ
+
                 // কাস্টমারকে নোটিফিকেশন পাঠানো
                 const userId = currentOrder.userId;
                 if (userId) {
@@ -770,7 +779,7 @@
             onValue(orderRef, (snapshot) => {
                 const order = snapshot.val();
                 if (order) {
-// কাস্টমারের তথ্য দেখানো (এই অংশটি ক্যাপচার করা হবে)
+                    // কাস্টমারের তথ্য দেখানো (এই অংশটি ক্যাপচার করা হবে)
                     let captureHTML = `
                         <div id="captureSection">
                             <p><strong>নাম:</strong> ${order.customerName}</p>
@@ -862,22 +871,27 @@
                         });
                         nonCaptureHTML += '</div></div>';
                     }
-                    // প্রোডাক্টগুলো দেখানো
+
+                    // প্রোডাক্টগুলো দেখানো (cartItems খালি থাকলে মেসেজ দেখানো)
                     nonCaptureHTML += '<h4 class="text-md font-semibold mt-4 mb-2 text-lipstick">অর্ডার করা প্রোডাক্ট</h4>';
                     nonCaptureHTML += '<div class="cart-items">';
-                    order.cartItems.forEach(item => {
-                        const imageUrl = item.image ? item.image.split(',')[0].trim() : 'https://via.placeholder.com/50';
-                        nonCaptureHTML += `
-                            <div class="cart-item">
-                                <img src="${imageUrl}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/50'; this.alt='ছবি লোড হয়নি';">
-                                <div class="cart-item-details">
-                                    <p>${item.name}</p>
-                                    <p>মূল্য: ${item.price} টাকা</p>
-                                    <p>পরিমাণ: ${item.quantity}</p>
+                    if (order.cartItems && order.cartItems.length > 0) {
+                        order.cartItems.forEach(item => {
+                            const imageUrl = item.image ? item.image.split(',')[0].trim() : 'https://via.placeholder.com/50';
+                            nonCaptureHTML += `
+                                <div class="cart-item">
+                                    <img src="${imageUrl}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/50'; this.alt='ছবি লোড হয়নি';">
+                                    <div class="cart-item-details">
+                                        <p>${item.name}</p>
+                                        <p>মূল্য: ${item.price} টাকা</p>
+                                        <p>পরিমাণ: ${item.quantity}</p>
+                                    </div>
                                 </div>
-                            </div>
-                        `;
-                    });
+                            `;
+                        });
+                    } else {
+                        nonCaptureHTML += '<p class="text-gray-700">কোনো প্রোডাক্ট সিলেক্ট করা হয়নি।</p>';
+                    }
                     nonCaptureHTML += '</div>';
 
                     // সম্পূর্ণ HTML একত্রিত করা
@@ -901,7 +915,8 @@
                         button.removeEventListener('click', handleModalButtonClick); // পুরানো লিসেনার সরানো
                         button.addEventListener('click', handleModalButtonClick);
                     });
-                    // সেভ বাটনে ক্লিক করলে শুধুমাত্র captureSection ক্যাপচার এবং ডাউনলোড করা
+
+                                        // সেভ বাটনে ক্লিক করলে শুধুমাত্র captureSection ক্যাপচার এবং ডাউনলোড করা
                     newSaveModalBtn.addEventListener('click', () => {
                         const captureSection = document.getElementById('captureSection');
                         html2canvas(captureSection, {
@@ -939,7 +954,7 @@
                 }
             }, (error) => {
                 console.error("অর্ডারের বিস্তারিত লোড করতে সমস্যা হয়েছে: ", error);
-                                showToast("অর্ডারের বিস্তারিত লোড করতে সমস্যা হয়েছে।", 'error');
+                showToast("অর্ডারের বিস্তারিত লোড করতে সমস্যা হয়েছে।", 'error');
             });
         }
 
@@ -958,4 +973,24 @@
         // স্ট্যাটাস টেক্সট ফরম্যাট করার ফাংশন
         function getStatusText(status) {
             switch (status) {
-   
+                case 'processing':
+                    return 'প্রসেসিং';
+                case 'confirmed':
+                    return 'অর্ডার কনফার্মড';
+                case 'packaging':
+                    return 'প্যাকেজিং';
+                case 'shipped':
+                    return 'ডেলিভারি দেওয়া হয়েছে';
+                case 'delivered':
+                    return 'ডেলিভারি সম্পন্ন হয়েছে';
+                case 'failed':
+                    return 'ডেলিভারি ব্যর্থ';
+                case 'cancelled':
+                    return 'ক্যানসেলড';
+                default:
+                    return 'প্রসেসিং';
+            }
+        }
+    </script>
+</body>
+</html>
