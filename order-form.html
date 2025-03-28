@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout Form - Any's Beauty Corner</title>
+    <title>অর্ডার ফর্ম - Any's Beauty Corner</title>
     <!-- Tailwind CSS লোড করা -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- ফন্ট অসাম আইকন -->
@@ -12,8 +12,6 @@
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
     <!-- বাহিরের স্টাইলশীট লোড করা -->
     <link rel="stylesheet" href="styles.css">
-    <!-- script.js লোড করা -->
-    <script type="module" src="script.js"></script>
     <style>
         /* কাস্টম কালার */
         .bg-lipstick { background-color: #A52A2A; }
@@ -252,7 +250,7 @@
         <!-- ফর্ম কন্টেইনার -->
         <div class="bg-white/20 backdrop-blur-md border border-white/30 rounded-lg shadow-lg p-6">
             <h2 class="text-xl font-bold text-center mb-4 text-lipstick">অর্ডার ফর্ম</h2>
-            <form id="buyForm" onsubmit="handleBuyFormSubmit(event)">
+            <form id="orderForm">
                 <!-- কার্ট আইটেম শো করার জন্য -->
                 <div class="checkout-items" id="checkoutItems">
                     <!-- প্রোডাক্ট এখানে ডায়নামিকভাবে লোড হবে -->
@@ -281,7 +279,7 @@
                     <label>ডেলিভারি লোকেশন</label>
                     <div class="radio-group">
                         <label>
-                            <input type="radio" name="deliveryLocation" value="insideDhaka" required>
+                            <input type="radio" name="deliveryLocation" value="insideDhaka" required checked>
                             ঢাকার ভেতরে
                         </label>
                         <label>
@@ -389,32 +387,11 @@
         </div>
     </div>
 
-    <!-- Firebase Messaging SDK যোগ করা -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js"></script>
-
-    <!-- টোস্ট নোটিফিকেশন -->
-    <script>
-        // টোস্ট নোটিফিকেশন ফাংশন
-        function showToast(message, type = 'success') {
-            const toast = document.createElement('div');
-            toast.id = 'toast';
-            toast.className = `fixed bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 ${
-                type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-            }`;
-            toast.textContent = message;
-            document.body.appendChild(toast);
-
-            setTimeout(() => {
-                toast.classList.add('hidden');
-                toast.remove();
-            }, 3000);
-        }
-    </script>
-
+    <!-- Firebase SDK এবং স্ক্রিপ্ট -->
     <script type="module">
         // Firebase SDK ইম্পোর্ট
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
@@ -436,40 +413,48 @@
         const auth = getAuth(app);
         const messaging = getMessaging(app);
 
+        // VAPID Key
+        const VAPID_KEY = 'YJmRy7RwHDamT_Wq9GSpJQm3Iexnkq1K9zvRFu3H_oI';
+
         // এই পেজের জন্য আলাদা কার্ট ভেরিয়েবল
         let checkoutCart = [];
 
+        // টোস্ট নোটিফিকেশন ফাংশন
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 ${
+                type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+            }`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('hidden');
+                toast.remove();
+            }, 3000);
+        }
+
         // FCM টোকেন সংগ্রহ করা
-        function requestNotificationPermission() {
-            Notification.requestPermission().then(permission => {
+        async function requestNotificationPermissionAndGetToken(userId) {
+            try {
+                const permission = await Notification.requestPermission();
                 if (permission === 'granted') {
                     console.log('নোটিফিকেশন পারমিশন দেওয়া হয়েছে।');
-                    getToken(messaging, { vapidKey: 'YJmRy7RwHDamT_Wq9GSpJQm3Iexnkq1K9zvRFu3H_oI' }).then((currentToken) => {
-                        if (currentToken) {
-                            console.log('FCM টোকেন:', currentToken);
-                            // ইউজার লগইন থাকলে টোকেন সংরক্ষণ করা
-                            onAuthStateChanged(auth, (user) => {
-                                if (user) {
-                                    const userId = user.uid;
-                                    set(ref(database, `users/${userId}/fcmToken`), currentToken)
-                                        .then(() => {
-                                            console.log('FCM টোকেন সংরক্ষণ করা হয়েছে।');
-                                        })
-                                        .catch((error) => {
-                                            console.error('FCM টোকেন সংরক্ষণ করতে সমস্যা হয়েছে:', error);
-                                        });
-                                }
-                            });
-                        } else {
-                            console.log('কোনো FCM টোকেন পাওয়া যায়নি।');
-                        }
-                    }).catch((error) => {
-                        console.error('FCM টোকেন পেতে সমস্যা হয়েছে:', error);
-                    });
+                    const token = await getToken(messaging, { vapidKey: VAPID_KEY });
+                    if (token) {
+                        console.log('FCM টোকেন পাওয়া গেছে:', token);
+                        const userRef = ref(database, `users/${userId}/fcmToken`);
+                        await set(userRef, token);
+                        console.log('FCM টোকেন সফলভাবে সংরক্ষণ করা হয়েছে।');
+                    } else {
+                        console.error('FCM টোকেন পাওয়া যায়নি।');
+                    }
                 } else {
-                    console.log('নোটিফিকেশন পারমিশন দেওয়া হয়নি।');
+                    console.error('নোটিফিকেশন পারমিশন দেওয়া হয়নি।');
                 }
-            });
+            } catch (error) {
+                console.error('FCM টোকেন সংগ্রহ করতে সমস্যা হয়েছে:', error);
+            }
         }
 
         // ফোরগ্রাউন্ডে নোটিফিকেশন হ্যান্ডল করা
@@ -483,12 +468,24 @@
             new Notification(notificationTitle, notificationOptions);
         });
 
-        // হেডার এবং ফুটার লোড করা
+        // ইউজার লগইন করার পর FCM টোকেন সংগ্রহ করা
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const userId = user.uid;
+                console.log('ইউজার লগইন করেছে। userId:', userId);
+                requestNotificationPermissionAndGetToken(userId);
+            } else {
+                console.log('ইউজার লগইন করেনি।');
+                showToast('অর্ডার দিতে লগইন করুন।', 'error');
+                window.location.href = 'login.html'; // লগইন পেজে রিডাইরেক্ট
+            }
+        });
+
+                // হেডার এবং ফুটার লোড করা
         document.addEventListener("DOMContentLoaded", function() {
             $("#header").load("header.html", function(response, status, xhr) {
                 if (status === "success") {
                     console.log("header.html লোড হয়েছে");
-                                       // সার্চ ফাংশনালিটি যোগ করা
                     const searchInput = document.getElementById('searchInput');
                     const searchInputDesktop = document.getElementById('searchInputDesktop');
 
@@ -522,29 +519,146 @@
                 }
             });
 
-            // URL থেকে চেক করা যে কোথা থেকে এসেছে (কার্ট সাইডবার থেকে নাকি প্রোডাক্ট ডিটেইলস থেকে)
-            const urlParams = new URLSearchParams(window.location.search);
-            const source = urlParams.get('source');
-            const productId = urlParams.get('id');
-            const quantity = parseInt(urlParams.get('quantity')) || 1;
+            // কার্ট আইটেম লোড করা
+            loadCartItemsForCheckout();
 
-            if (source === 'cart') {
-                // কার্ট সাইডবার থেকে এসেছে
-                loadCartItemsForCheckout();
-            } else if (productId) {
-                // প্রোডাক্ট ডিটেইলস পেজ থেকে এসেছে
-                loadProductFromFirebase(productId, quantity);
-            } else {
-                const checkoutItemsContainer = document.getElementById('checkoutItems');
-                checkoutItemsContainer.innerHTML = '<p class="text-gray-700">কোনো প্রোডাক্ট নির্বাচন করা হয়নি।</p>';
-                updateCartTotal();
-            }
+            // ডেলিভারি লোকেশন পরিবর্তনের সময় আপডেট করা
+            document.querySelectorAll('input[name="deliveryLocation"]').forEach((radio) => {
+                radio.addEventListener('change', () => {
+                    const deliveryLocation = document.querySelector('input[name="deliveryLocation"]:checked').value;
+                    updateDeliveryPaymentFields(deliveryLocation);
+                });
+            });
 
-            // নোটিফিকেশন পারমিশন চাওয়া
-            requestNotificationPermission();
+            // ডেলিভারি পেমেন্ট মেথড সিলেক্ট করলে নাম্বার ফিল্ড আপডেট
+            document.getElementById('deliveryPaymentMethod').addEventListener('change', (event) => {
+                const paymentNumberGroup = document.getElementById('paymentNumberGroup');
+                const transactionIdGroup = document.getElementById('transactionIdGroup');
+                const paymentNumberInput = document.getElementById('paymentNumber');
+                const transactionIdInput = document.getElementById('transactionId');
+                const selectedMethod = event.target.value;
+
+                if (selectedMethod === 'bkash' || selectedMethod === 'rocket') {
+                    paymentNumberGroup.classList.remove('hidden');
+                    transactionIdGroup.classList.remove('hidden');
+                    paymentNumberInput.setAttribute('required', 'true');
+                    transactionIdInput.setAttribute('required', 'true');
+                } else {
+                    paymentNumberGroup.classList.add('hidden');
+                    transactionIdGroup.classList.add('hidden');
+                    paymentNumberInput.removeAttribute('required');
+                    transactionIdInput.removeAttribute('required');
+                }
+            });
+
+            // ফর্ম সাবমিট হ্যান্ডল করা
+            document.getElementById('orderForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                // কার্ট আইটেম চেক করা
+                if (checkoutCart.length === 0) {
+                    showToast('দয়া করে কমপক্ষে একটি প্রোডাক্ট সিলেক্ট করুন।', 'error');
+                    return;
+                }
+
+                const user = auth.currentUser;
+                if (!user) {
+                    showToast('অর্ডার দিতে লগইন করুন।', 'error');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // ফর্ম ডাটা সংগ্রহ করা
+                const customerName = document.getElementById('customerName').value;
+                const phoneNumber = document.getElementById('phoneNumber').value;
+                const address = document.getElementById('address').value;
+                const deliveryLocation = document.querySelector('input[name="deliveryLocation"]:checked').value;
+                const outsideDhakaLocation = deliveryLocation === 'outsideDhaka' ? document.getElementById('outsideDhakaLocation').value : null;
+                const deliveryNote = document.getElementById('deliveryNote').value;
+                const deliveryPaymentMethod = document.getElementById('deliveryPaymentMethod').value;
+                const paymentNumber = document.getElementById('paymentNumber').value;
+                const transactionId = document.getElementById('transactionId').value;
+                const productPaymentMethod = document.getElementById('productPaymentMethod').value;
+
+                // ফোন নম্বর ভ্যালিডেশন
+                if (!/^[0-9]{11}$/.test(phoneNumber)) {
+                    showToast('অনুগ্রহ করে সঠিক ফোন নম্বর দিন (১১ ডিজিট)।', 'error');
+                    return;
+                }
+
+                // ঢাকার বাইরে হলে পেমেন্ট নাম্বার এবং ট্রানজাকশন আইডি ভ্যালিডেশন
+                if (deliveryLocation === 'outsideDhaka') {
+                    if (!deliveryPaymentMethod) {
+                        showToast('অনুগ্রহ করে ডেলিভারি চার্জের পেমেন্ট মেথড নির্বাচন করুন।', 'error');
+                        return;
+                    }
+                    if (!paymentNumber || !/^[0-9]{11}$/.test(paymentNumber)) {
+                        showToast('অনুগ্রহ করে সঠিক বিকাশ/রকেট নাম্বার দিন (১১ ডিজিট)।', 'error');
+                        return;
+                    }
+                    if (!transactionId) {
+                        showToast('অনুগ্রহ করে ট্রানজাকশন আইডি দিন।', 'error');
+                        return;
+                    }
+                }
+
+                // ডেলিভারি ফি ক্যালকুলেশন
+                const deliveryFee = deliveryLocation === 'insideDhaka' ? 70 : 160;
+                const cartTotal = checkoutCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const totalAmount = cartTotal + deliveryFee;
+
+                // অর্ডার ডাটা তৈরি
+                const orderData = {
+                    customerName,
+                    userEmail: user.email,
+                    phoneNumber,
+                    address,
+                    deliveryLocation,
+                    outsideDhakaLocation,
+                    deliveryNote,
+                    deliveryPaymentMethod: deliveryLocation === 'outsideDhaka' ? deliveryPaymentMethod : 'cod',
+                    paymentNumber: deliveryLocation === 'outsideDhaka' ? paymentNumber : null,
+                    transactionId: deliveryLocation === 'outsideDhaka' ? transactionId : null,
+                    productPaymentMethod,
+                    cartItems: checkoutCart,
+                    deliveryFee,
+                    totalAmount,
+                    orderId: Date.now(),
+                    orderDate: new Date().toISOString(),
+                    advancePayment: deliveryLocation === 'outsideDhaka' ? deliveryFee : 0,
+                    status: 'pending',
+                    userId: user.uid // userId সংরক্ষণ করা
+                };
+
+                try {
+                    // অর্ডার সংরক্ষণ করা
+                    const orderRef = ref(database, `orders/${orderData.orderId}`);
+                    await set(orderRef, orderData);
+
+                    // টোস্ট নোটিফিকেশন দেখানো
+                    if (deliveryLocation === 'outsideDhaka') {
+                        showToast(`অর্ডার সফলভাবে প্লেস করা হয়েছে! ডেলিভারি চার্জ (${deliveryFee} টাকা) পেমেন্ট করা হয়েছে। অর্ডার আইডি: ${orderData.orderId}`, 'success');
+                    } else {
+                        showToast(`অর্ডার সফলভাবে প্লেস করা হয়েছে! অর্ডার আইডি: ${orderData.orderId}`, 'success');
+                    }
+
+                    // কার্ট ক্লিয়ার করা
+                    localStorage.removeItem('cartItems');
+                    checkoutCart = [];
+                    document.getElementById('checkoutItems').innerHTML = '<p class="text-gray-700">কোনো প্রোডাক্ট নির্বাচন করা হয়নি।</p>';
+                    updateCartTotal();
+                    updateDeliveryPaymentFields('insideDhaka'); // ফিল্ড রিসেট করা
+
+                    // ফর্ম রিসেট করা
+                    document.getElementById('orderForm').reset();
+                } catch (error) {
+                    console.error('অর্ডার সাবমিট করতে সমস্যা হয়েছে:', error);
+                    showToast('অর্ডার সাবমিট করতে সমস্যা হয়েছে।', 'error');
+                }
+            });
         });
 
-        // কার্ট সাইডবার থেকে আইটেম লোড করা
+        // কার্ট আইটেম লোড করা
         function loadCartItemsForCheckout() {
             const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
             const checkoutItemsContainer = document.getElementById('checkoutItems');
@@ -553,7 +667,6 @@
             if (cartItems.length > 0) {
                 checkoutCart = cartItems; // কার্ট আইটেমগুলো এই পেজের জন্য সেভ করা
                 cartItems.forEach(item => {
-                    // ছবির URL পার্স করা (কমা দিয়ে আলাদা করা প্রথম ছবি নেওয়া)
                     const imageUrl = item.image ? item.image.split(',')[0].trim() : 'https://via.placeholder.com/50';
 
                     const checkoutItem = document.createElement('div');
@@ -574,54 +687,6 @@
             updateCartTotal();
         }
 
-        // Firebase থেকে প্রোডাক্ট লোড করা (প্রোডাক্ট ডিটেইলস পেজ থেকে)
-        async function loadProductFromFirebase(productId, quantity) {
-            try {
-                const productRef = ref(database, `products/${productId}`);
-                const snapshot = await get(productRef);
-                const product = snapshot.val();
-
-                const checkoutItemsContainer = document.getElementById('checkoutItems');
-                checkoutItemsContainer.innerHTML = ''; // পুরানো আইটেম ক্লিয়ার করা
-
-                if (product) {
-                    const cartItemData = {
-                        id: productId,
-                        name: product.name,
-                        price: product.price,
-                        image: product.image ? product.image.split(',')[0].trim() : 'https://via.placeholder.com/50',
-                        quantity: quantity
-                    };
-                    checkoutCart = [cartItemData]; // এই পেজের জন্য আলাদা কার্টে স্টোর করা
-
-                    // কার্ট আইটেম HTML তৈরি করা
-                    const checkoutItem = document.createElement('div');
-                    checkoutItem.classList.add('checkout-item');
-                    checkoutItem.innerHTML = `
-                        <img src="${cartItemData.image}" alt="${cartItemData.name}">
-                        <div class="checkout-item-details">
-                            <p>${cartItemData.name}</p>
-                            <p>মূল্য: ${cartItemData.price} টাকা</p>
-                            <p>পরিমাণ: ${cartItemData.quantity}</p>
-                        </div>
-                    `;
-                    checkoutItemsContainer.appendChild(checkoutItem);
-
-                    // কার্ট টোটাল আপডেট করা
-                    updateCartTotal();
-                } else {
-                    checkoutItemsContainer.innerHTML = '<p class="text-gray-700">প্রোডাক্ট পাওয়া যায়নি।</p>';
-                    updateCartTotal();
-                }
-            } catch (error) {
-                console.error("প্রোডাক্ট লোড করতে সমস্যা হয়েছে: ", error);
-                showToast("প্রোডাক্ট লোড করতে সমস্যা হয়েছে।", 'error');
-                const checkoutItemsContainer = document.getElementById('checkoutItems');
-                checkoutItemsContainer.innerHTML = '<p class="text-gray-700">প্রোডাক্ট লোড করতে সমস্যা হয়েছে।</p>';
-                updateCartTotal();
-            }
-        }
-
         // কার্ট টোটাল আপডেট করার ফাংশন
         function updateCartTotal() {
             const deliveryLocation = document.querySelector('input[name="deliveryLocation"]:checked')?.value || 'insideDhaka';
@@ -632,120 +697,6 @@
             document.getElementById('deliveryFeeDisplay').textContent = `ডেলিভারি ফি: ${deliveryFee} টাকা`;
             document.getElementById('totalAmountDisplay').textContent = `মোট মূল্য: ${totalAmount} টাকা`;
         }
-
-        // ফর্ম সাবমিশন হ্যান্ডল করার ফাংশন
-        window.handleBuyFormSubmit = async (event) => {
-            event.preventDefault();
-
-            // লগইন চেক করা
-            if (!auth.currentUser) {
-                showToast("অর্ডার প্লেস করতে লগইন করুন!", 'error');
-                return;
-            }
-
-            const customerName = document.getElementById('customerName').value;
-            const phoneNumber = document.getElementById('phoneNumber').value;
-            const address = document.getElementById('address').value;
-            const deliveryLocation = document.querySelector('input[name="deliveryLocation"]:checked').value;
-            const outsideDhakaLocation = deliveryLocation === 'outsideDhaka' ? document.getElementById('outsideDhakaLocation').value : null;
-            const deliveryNote = document.getElementById('deliveryNote').value;
-            const deliveryPaymentMethod = document.getElementById('deliveryPaymentMethod').value;
-            const paymentNumber = document.getElementById('paymentNumber').value;
-            const transactionId = document.getElementById('transactionId').value;
-            const productPaymentMethod = document.getElementById('productPaymentMethod').value;
-
-            // ফোন নম্বর ভ্যালিডেশন
-            if (!/^[0-9]{11}$/.test(phoneNumber)) {
-                showToast('অনুগ্রহ করে সঠিক ফোন নম্বর দিন (১১ ডিজিট)।', 'error');
-                return;
-            }
-
-            // ঢাকার বাইরে হলে পেমেন্ট নাম্বার এবং ট্রানজাকশন আইডি ভ্যালিডেশন
-            if (deliveryLocation === 'outsideDhaka') {
-                if (!deliveryPaymentMethod) {
-                    showToast('অনুগ্রহ করে ডেলিভারি চার্জের পেমেন্ট মেথড নির্বাচন করুন।', 'error');
-                    return;
-                }
-                if (!paymentNumber || !/^[0-9]{11}$/.test(paymentNumber)) {
-                    showToast('অনুগ্রহ করে সঠিক বিকাশ/রকেট নাম্বার দিন (১১ ডিজিট)।', 'error');
-                    return;
-                }
-                if (!transactionId) {
-                    showToast('অনুগ্রহ করে ট্রানজাকশন আইডি দিন।', 'error');
-                    return;
-                }
-            }
-
-            // ডেলিভারি ফি ক্যালকুলেশন
-            const deliveryFee = deliveryLocation === 'insideDhaka' ? 70 : 160;
-            const cartTotal = checkoutCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const totalAmount = cartTotal + deliveryFee;
-
-            // কাস্টমারের ইমেইল এবং ইউজার আইডি পাওয়া
-            const userEmail = auth.currentUser.email;
-            const userId = auth.currentUser.uid;
-
-            // অর্ডার ডাটা তৈরি
-            const orderData = {
-                customerName,
-                phoneNumber,
-                address,
-                deliveryLocation,
-                outsideDhakaLocation,
-                deliveryNote,
-                deliveryPaymentMethod: deliveryLocation === 'outsideDhaka' ? deliveryPaymentMethod : 'cod',
-                paymentNumber: deliveryLocation === 'outsideDhaka' ? paymentNumber : null,
-                transactionId: deliveryLocation === 'outsideDhaka' ? transactionId : null,
-                productPaymentMethod,
-                cartItems: checkoutCart, // এই পেজের আলাদা কার্ট ব্যবহার করা
-                deliveryFee,
-                totalAmount,
-                orderId: Date.now(),
-                orderDate: new Date().toISOString(),
-                advancePayment: deliveryLocation === 'outsideDhaka' ? deliveryFee : 0,
-                userEmail: userEmail || 'ইমেইল পাওয়া যায়নি', // ইউজারের ইমেইল সেভ করা
-                userId: userId, // ইউজার আইডি সেভ করা (নোটিফিকেশনের জন্য)
-                status: "pending"
-            };
-
-            try {
-                // Firebase Realtime Database এ ডাটা সেভ করা
-                const orderRef = ref(database, `orders/${orderData.orderId}`);
-                await set(orderRef, orderData);
-
-                // টোস্ট নোটিফিকেশন দেখানো
-                if (deliveryLocation === 'outsideDhaka') {
-                    showToast(`অর্ডার সফলভাবে প্লেস করা হয়েছে! ডেলিভারি চার্জ (${deliveryFee} টাকা) পেমেন্ট করা হয়েছে। অর্ডার আইডি: ${orderData.orderId}`, 'success');
-                } else {
-                    showToast(`অর্ডার সফলভাবে প্লেস করা হয়েছে! অর্ডার আইডি: ${orderData.orderId}`, 'success');
-                }
-
-                // কার্ট ক্লিয়ার করা (যদি কার্ট সাইডবার থেকে এসে থাকে)
-                const urlParams = new URLSearchParams(window.location.search);
-                const source = urlParams.get('source');
-                if (source === 'cart') {
-                    localStorage.removeItem('cartItems');
-                }
-
-                // ফর্ম রিসেট করা
-                document.getElementById('buyForm').reset();
-                document.getElementById('checkoutItems').innerHTML = '<p class="text-gray-700">কোনো প্রোডাক্ট নির্বাচন করা হয়নি।</p>';
-                checkoutCart = [];
-                updateCartTotal();
-                updateDeliveryPaymentFields('insideDhaka'); // ফিল্ড রিসেট করা
-            } catch (error) {
-                console.error("অর্ডার সেভ করতে সমস্যা হয়েছে: ", error);
-                showToast(`অর্ডার সেভ করতে একটি সমস্যা হয়েছে: ${error.message}`, 'error');
-            }
-        };
-
-        // ডেলিভারি লোকেশন পরিবর্তনের সময় আপডেট করা
-        document.querySelectorAll('input[name="deliveryLocation"]').forEach((radio) => {
-            radio.addEventListener('change', () => {
-                const deliveryLocation = document.querySelector('input[name="deliveryLocation"]:checked').value;
-                updateDeliveryPaymentFields(deliveryLocation);
-            });
-        });
 
         // ডেলিভারি চার্জের পেমেন্ট ফিল্ড আপডেট করার ফাংশন
         function updateDeliveryPaymentFields(deliveryLocation) {
@@ -783,59 +734,10 @@
             updateCartTotal();
         }
 
-        // ডেলিভারি পেমেন্ট মেথড সিলেক্ট করলে নাম্বার ফিল্ড আপডেট
-        document.getElementById('deliveryPaymentMethod').addEventListener('change', (event) => {
-            const paymentNumberGroup = document.getElementById('paymentNumberGroup');
-            const transactionIdGroup = document.getElementById('transactionIdGroup');
-            const paymentNumberInput = document.getElementById('paymentNumber');
-            const transactionIdInput = document.getElementById('transactionId');
-            const selectedMethod = event.target.value;
-
-            if (selectedMethod === 'bkash' || selectedMethod === 'rocket') {
-                paymentNumberGroup.classList.remove('hidden');
-                transactionIdGroup.classList.remove('hidden');
-                paymentNumberInput.setAttribute('required', 'true');
-                transactionIdInput.setAttribute('required', 'true');
-            } else {
-                paymentNumberGroup.classList.add('hidden');
-                transactionIdGroup.classList.add('hidden');
-                paymentNumberInput.removeAttribute('required');
-                transactionIdInput.removeAttribute('required');
-            }
-        });
-
-        // URL থেকে প্রোডাক্ট ডাটা পড়া এবং ফর্মে প্রি-ফিল করা
-        document.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const productData = urlParams.get('product');
-
-            if (productData) {
-                const product = JSON.parse(decodeURIComponent(productData));
-
-                // প্রোডাক্ট ডাটা ফর্মে প্রি-ফিল করা
-                const productNameField = document.getElementById('productName');
-                const productPriceField = document.getElementById('productPrice');
-                const productImageField = document.getElementById('productImage');
-
-                if (productNameField) productNameField.value = product.name || 'নাম পাওয়া যায়নি';
-                if (productPriceField) productPriceField.value = product.price || '0';
-                if (productImageField) {
-                    productImageField.src = product.image ? product.image.split(',')[0] : 'https://via.placeholder.com/300';
-                }
-
-                // প্রোডাক্ট ডাটা কার্টে যোগ করা (যদি প্রয়োজন হয়)
-                const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-                const existingProduct = cartItems.find(p => p.id === product.id);
-                if (!existingProduct) {
-                    cartItems.push({ ...product, quantity: 1 });
-                    localStorage.setItem('cartItems', JSON.stringify(cartItems));
-                }
-
-                // কার্ট আইটেম লোড করা
-                if (typeof loadCartItemsForCheckout === 'function') {
-                    loadCartItemsForCheckout();
-                }
-            }
+        // শেয়ার বাটন টগল করা
+        document.getElementById('shareButton').addEventListener('click', () => {
+            const socialIcons = document.getElementById('socialIcons');
+            socialIcons.classList.toggle('hidden');
         });
     </script>
 </body>
