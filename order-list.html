@@ -491,18 +491,26 @@
         // FCM নোটিফিকেশন পাঠানোর ফাংশন
         async function sendNotificationToCustomer(userId, title, body) {
             try {
+                console.log(`ইউজার আইডি দিয়ে FCM টোকেন খুঁজছি: ${userId}`);
                 // ইউজারের FCM টোকেন পাওয়া
                 const userRef = ref(database, `users/${userId}`);
                 const snapshot = await get(userRef);
                 const userData = snapshot.val();
 
-                if (!userData || !userData.fcmToken) {
-                    console.error("ইউজারের FCM টোকেন পাওয়া যায়নি।");
+                if (!userData) {
+                    console.error(`ইউজার ডাটা পাওয়া যায়নি। পাথ: users/${userId}`);
+                    showToast("কাস্টমারের ডাটা পাওয়া যায়নি।", 'error');
+                    return;
+                }
+
+                if (!userData.fcmToken) {
+                    console.error(`ইউজারের FCM টোকেন পাওয়া যায়নি। ইউজার ডাটা: `, userData);
                     showToast("কাস্টমারের নোটিফিকেশন টোকেন পাওয়া যায়নি।", 'error');
                     return;
                 }
 
                 const fcmToken = userData.fcmToken;
+                console.log(`FCM টোকেন পাওয়া গেছে: ${fcmToken}`);
 
                 // FCM API কল করা
                 const response = await fetch('https://fcm.googleapis.com/fcm/send', {
@@ -572,7 +580,7 @@
                 });
         });
 
-                // Firebase থেকে অর্ডার লোড করা
+// Firebase থেকে অর্ডার লোড করা
         function loadOrders() {
             const ordersRef = ref(database, 'orders');
             const loadingSpinner = document.getElementById('loadingSpinner');
@@ -627,7 +635,6 @@
                 `;
                 orderList.appendChild(row);
             });
-
             // কাস্টমার নামে ক্লিক করার ইভেন্ট লিসেনার যোগ করা
             document.querySelectorAll('.customer-name').forEach(name => {
                 name.removeEventListener('click', handleCustomerNameClick); // পুরানো লিসেনার সরানো
@@ -694,17 +701,15 @@
                     status: newStatus,
                     statusHistory: statusHistory
                 });
-
-                showToast('আপনার স্ট্যাটাসটি আপডেট হয়েছে।', 'success');
-                showOrderDetails(orderId); // মডাল রিফ্রেশ
-
                 // কাস্টমারকে নোটিফিকেশন পাঠানো
                 const userId = currentOrder.userId;
                 if (userId) {
+                    console.log(`কাস্টমারের userId পাওয়া গেছে: ${userId}`);
                     const notificationTitle = "অর্ডার স্ট্যাটাস আপডেট";
                     const notificationBody = `আপনার অর্ডার (আইডি: ${currentOrder.orderId}) এর স্ট্যাটাস আপডেট হয়েছে: ${getStatusText(newStatus)}`;
                     await sendNotificationToCustomer(userId, notificationTitle, notificationBody);
                 } else {
+                    console.error("কাস্টমারের userId পাওয়া যায়নি। অর্ডার ডাটা:", currentOrder);
                     showToast("কাস্টমারের ইউজার আইডি পাওয়া যায়নি। নোটিফিকেশন পাঠানো যায়নি।", 'error');
                 }
             } catch (error) {
@@ -765,7 +770,7 @@
             onValue(orderRef, (snapshot) => {
                 const order = snapshot.val();
                 if (order) {
-                    // কাস্টমারের তথ্য দেখানো (এই অংশটি ক্যাপচার করা হবে)
+// কাস্টমারের তথ্য দেখানো (এই অংশটি ক্যাপচার করা হবে)
                     let captureHTML = `
                         <div id="captureSection">
                             <p><strong>নাম:</strong> ${order.customerName}</p>
@@ -857,8 +862,7 @@
                         });
                         nonCaptureHTML += '</div></div>';
                     }
-
-                    // প্রোডাক্টগুলো17.এই অংশটি ক্যাপচার করা হবে না
+                    // প্রোডাক্টগুলো দেখানো
                     nonCaptureHTML += '<h4 class="text-md font-semibold mt-4 mb-2 text-lipstick">অর্ডার করা প্রোডাক্ট</h4>';
                     nonCaptureHTML += '<div class="cart-items">';
                     order.cartItems.forEach(item => {
@@ -897,7 +901,6 @@
                         button.removeEventListener('click', handleModalButtonClick); // পুরানো লিসেনার সরানো
                         button.addEventListener('click', handleModalButtonClick);
                     });
-
                     // সেভ বাটনে ক্লিক করলে শুধুমাত্র captureSection ক্যাপচার এবং ডাউনলোড করা
                     newSaveModalBtn.addEventListener('click', () => {
                         const captureSection = document.getElementById('captureSection');
@@ -936,7 +939,7 @@
                 }
             }, (error) => {
                 console.error("অর্ডারের বিস্তারিত লোড করতে সমস্যা হয়েছে: ", error);
-                showToast("অর্ডারের বিস্তারিত লোড করতে সমস্যা হয়েছে।", 'error');
+                                showToast("অর্ডারের বিস্তারিত লোড করতে সমস্যা হয়েছে।", 'error');
             });
         }
 
@@ -952,27 +955,7 @@
             }
         }
 
-                // স্ট্যাটাস টেক্সট ফরম্যাট করার ফাংশন
+        // স্ট্যাটাস টেক্সট ফরম্যাট করার ফাংশন
         function getStatusText(status) {
             switch (status) {
-                case 'processing':
-                    return 'প্রসেসিং';
-                case 'confirmed':
-                    return 'অর্ডার কনফার্মড';
-                case 'packaging':
-                    return 'প্যাকেজিং';
-                case 'shipped':
-                    return 'ডেলিভারি দেওয়া হয়েছে';
-                case 'delivered':
-                    return 'ডেলিভারি সম্পন্ন হয়েছে';
-                case 'failed':
-                    return 'ডেলিভারি ব্যর্থ';
-                case 'cancelled':
-                    return 'ক্যানসেলড';
-                default:
-                    return 'প্রসেসিং';
-            }
-        }
-    </script>
-</body>
-</html>
+   
