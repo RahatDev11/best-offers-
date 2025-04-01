@@ -4,15 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>অর্ডার ফর্ম - Any's Beauty Corner</title>
-    <!-- Tailwind CSS লোড করা -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- ফন্ট অসাম আইকন -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <!-- jQuery CDN -->
-    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
-    <!-- বাহিরের স্টাইলশীট লোড করা -->
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> <!-- Updated Font Awesome -->
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Updated jQuery -->
+    <!-- External Stylesheet -->
     <link rel="stylesheet" href="styles.css">
     <style>
+        /* আপনার আগের CSS কোড এখানে পেস্ট করুন */
         /* কাস্টম কালার */
         .bg-lipstick { background-color: #A52A2A; }
         .text-lipstick { color: #A52A2A; }
@@ -21,724 +22,998 @@
         .bg-background { background-color: #FFF5F7; }
 
         /* ফর্ম ফিল্ড স্টাইল */
-        .form-group {
-            margin-bottom: 1.5rem;
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; font-size: 0.95rem; font-weight: 500; color: #4a5568; margin-bottom: 0.5rem; }
+        .form-group label .required-star { color: #ef4444; /* red-500 */ margin-left: 2px; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 0.5rem; font-size: 1rem; color: #333; background: #fafafa; transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
-
-        .form-group label {
-            display: block;
-            font-size: 0.95rem;
-            font-weight: 500;
-            color: #4a5568;
-            margin-bottom: 0.5rem;
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            border-color: #A52A2A; box-shadow: 0 0 0 3px rgba(165, 42, 42, 0.1); outline: none;
         }
-
-        .form-group input,
-        .form-group textarea,
+        .form-group textarea { resize: vertical; }
         .form-group select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
-            font-size: 1rem;
-            color: #333;
-            background: #fafafa;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            border-color: #A52A2A;
-            box-shadow: 0 0 0 3px rgba(165, 42, 42, 0.1);
-            outline: none;
-        }
-
-        .form-group textarea {
-            resize: vertical;
-        }
-
-        /* ড্রপডাউন এরো লুকানো */
-        .form-group select {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
+            -webkit-appearance: none; -moz-appearance: none; appearance: none;
             background: url('data:image/svg+xml;utf8,<svg fill="gray" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center;
-            background-size: 20px;
+            background-size: 20px; background-color: #fafafa;
         }
+        .form-group input[disabled], .form-group select[disabled], .form-group input[readonly] { background-color: #f3f4f6; cursor: not-allowed; opacity: 0.7; }
 
         /* রেডিও বাটন স্টাইল */
-        .radio-group {
-            display: flex;
-            gap: 1.25rem;
-            flex-wrap: wrap;
-        }
-
-        .radio-group label {
-            display: flex;
-            align-items: center;
-            font-size: 0.95rem;
-            color: #4a5568;
-        }
-
-        .radio-group input[type="radio"] {
-            accent-color: #A52A2A;
-            margin-right: 0.5rem;
-        }
+        .radio-group { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+        .radio-group label { display: flex; align-items: center; font-size: 0.95rem; color: #4a5568; margin-bottom: 0; cursor:pointer; }
+        .radio-group input[type="radio"] { accent-color: #A52A2A; margin-right: 0.5rem; }
 
         /* পেমেন্ট নোটিশ */
-        .payment-notice {
-            background: #fef2f2;
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            font-size: 0.9rem;
-            color: #dc2626;
-            margin-bottom: 1.5rem;
-            display: none;
-        }
+        .payment-notice { background: #fef2f2; padding: 0.75rem; border-radius: 0.5rem; font-size: 0.9rem; color: #dc2626; margin-bottom: 1.5rem; display: none; border: 1px solid #fecaca; }
 
         /* কার্ট আইটেম স্টাইল */
-        .checkout-items {
-            margin-bottom: 1.5rem;
-        }
+        .checkout-items { margin-bottom: 1.5rem; }
+        .checkout-item { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 0.625rem; }
+        .checkout-item:last-child { border-bottom: none; margin-bottom: 0; }
+        .checkout-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 5px; background-color: #eee; } /* Added background for loading */
+        .checkout-item-details { flex: 1; margin-left: 0.9375rem; }
+        .checkout-item-details p { font-size: 0.95rem; color: #4a5568; margin-bottom: 0.3125rem; line-height: 1.4; }
+        .checkout-item-details p.item-name { font-weight: 600; color: #1f2937; } /* Make name bold */
 
-        .checkout-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem;
-            border-bottom: 1px solid #e2e8f0;
-            margin-bottom: 0.625rem;
-        }
-
-        .checkout-item img {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 5px;
-        }
-
-        .checkout-item-details {
-            flex: 1;
-            margin-left: 0.9375rem;
-        }
-
-        .checkout-item-details p {
-            font-size: 0.95rem;
-            color: #4a5568;
-            margin-bottom: 0.3125rem;
-        }
-
-        .checkout-item-details p:last-child {
-            font-weight: 700;
-            color: #1f2937;
-        }
 
         /* ডেলিভারি ফি এবং মোট মূল্য */
-        .price-summary {
-            background: #f9fafb;
-            padding: 0.9375rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .price-summary p {
-            font-size: 0.95rem;
-            color: #4a5568;
-            margin-bottom: 0.5rem;
-        }
-
-        .price-summary p:last-child {
-            font-weight: 700;
-            color: #1f2937;
-        }
+        .price-summary { background: #f9fafb; padding: 0.9375rem; border-radius: 0.5rem; margin-bottom: 1.5rem; border: 1px solid #e5e7eb; }
+        .price-summary p { font-size: 0.95rem; color: #4a5568; margin-bottom: 0.5rem; display: flex; justify-content: space-between; }
+        .price-summary p span:last-child { font-weight: 500; color: #374151; }
+        .price-summary p.total-row { font-weight: 700; color: #1f2937; border-top: 1px solid #e2e8f0; padding-top: 0.75rem; margin-top: 0.5rem; margin-bottom: 0; font-size: 1.05rem; }
+        .price-summary p.total-row span:last-child { font-weight: 700; color: #A52A2A; } /* Highlight total price */
 
         /* সাবমিট বাটন */
         .submit-btn {
-            width: 100%;
-            padding: 0.875rem;
-            background: #A52A2A;
-            color: white;
-            border: none;
-            border-radius: 0.5rem;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
+            width: 100%; padding: 0.875rem; background: #A52A2A; color: white; border: none; border-radius: 0.5rem; font-size: 1rem; font-weight: 600; /* Bolder text */ cursor: pointer; transition: background-color 0.3s ease, opacity 0.3s ease; display: inline-flex; align-items: center; justify-content: center; letter-spacing: 0.5px;
         }
-
-        .submit-btn:hover {
-            background: #8B1A1A;
-        }
+        .submit-btn:hover:not(:disabled) { background: #8B1A1A; }
+        .submit-btn:disabled { background: #cccccc; cursor: not-allowed; opacity: 0.7; }
 
         /* অর্ডার লিস্ট লিঙ্ক */
-        .order-list-link {
-            display: block;
-            text-align: center;
-            margin-top: 1.25rem;
-            color: #A52A2A;
-            text-decoration: none;
-            font-size: 0.95rem;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
+        .order-list-link { display: inline-flex; align-items:center; justify-content: center; text-align: center; margin-top: 1.25rem; color: #A52A2A; text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: color 0.3s ease, background-color 0.3s ease; width: 100%; padding: 0.6rem; border: 1px solid #f3d9d9; /* Lighter border */ border-radius: 0.5rem; background-color: #fff5f7; }
+        .order-list-link:hover { color: #8B1A1A; background-color: #fdecec; border-color: #eebbbb; }
 
-        .order-list-link:hover {
-            color: #8B1A1A;
-        }
+        /* Required field indicator */
+        /* Included in label style */
 
-        /* রেসপন্সিভ ডিজাইন */
+        /* Hide scrollbar utility */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Responsive */
         @media (max-width: 768px) {
-            .checkout-item img {
-                width: 50px;
-                height: 50px;
-            }
-
-            .checkout-item-details p {
-                font-size: 0.85rem;
-            }
-
-            .radio-group {
-                flex-direction: column;
-                gap: 0.625rem;
-            }
+            .checkout-item img { width: 50px; height: 50px; }
+            .checkout-item-details p { font-size: 0.9rem; }
+            .radio-group { flex-direction: column; gap: 0.75rem; align-items: flex-start; }
+            h2 { font-size: 1.25rem; } /* Slightly smaller heading */
+            h3 { font-size: 1.1rem; }
         }
-
         @media (max-width: 480px) {
-            .checkout-item {
-                padding: 0.625rem;
-            }
-
-            .checkout-item img {
-                width: 40px;
-                height: 40px;
-            }
-
-            .checkout-item-details {
-                margin-left: 0.625rem;
-            }
-
-            .checkout-item-details p {
-                font-size: 0.8rem;
-            }
-
-            .price-summary p {
-                font-size: 0.85rem;
-            }
-        }
+             .checkout-item { padding: 0.6rem; }
+             .checkout-item img { width: 45px; height: 45px; }
+             .checkout-item-details { margin-left: 0.75rem; }
+             .checkout-item-details p { font-size: 0.85rem; }
+             .price-summary p { font-size: 0.9rem; }
+             .submit-btn { font-size: 0.95rem; padding: 0.75rem; }
+             .order-list-link { font-size: 0.9rem; padding: 0.5rem; }
+         }
     </style>
 </head>
 <body class="bg-background">
-    <!-- হেডার লোড করার জন্য -->
+    <!-- Header Load -->
     <div id="header"></div>
 
-    <!-- মোবাইল সার্চ বার -->
-    <div class="md:hidden p-2 w-full fixed top-20 left-0 z-40 hidden bg-transparent" id="mobileSearchBar">
-        <div class="relative">
-            <input type="text" id="searchInput" 
-                   class="w-full p-2 pl-10 border-0 rounded-full text-gray-800 focus:outline-none focus:ring-2 focus:ring-lipstick bg-white/50 backdrop-blur-sm placeholder:text-gray-400/80" 
-                   placeholder="প্রোডাক্ট সার্চ করুন..." 
-                   oninput="searchProducts()">
-            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400/80"></i>
-        </div>
-        <!-- সার্চ রেজাল্ট -->
-        <div id="searchResults" class="mt-2 max-h-60 overflow-y-auto absolute bg-white/50 backdrop-blur-sm w-full shadow-lg rounded-lg z-50"></div>
-    </div>
+    <!-- Mobile Search Bar -->
+    <!-- Include your mobile search bar HTML if it's not part of header.html -->
 
-    <!-- মেইন কন্টেন্ট -->
-    <main class="p-4 pt-20">
-        <!-- ফর্ম কন্টেইনার -->
-        <div class="bg-white/20 backdrop-blur-md border border-white/30 rounded-lg shadow-lg p-6">
-            <h2 class="text-xl font-bold text-center mb-4 text-lipstick">অর্ডার ফর্ম</h2>
-            <form id="orderForm">
-                <!-- কার্ট আইটেম শো করার জন্য -->
-                <div class="checkout-items" id="checkoutItems">
-                    <!-- প্রোডাক্ট এখানে ডায়নামিকভাবে লোড হবে -->
+    <!-- Main Content -->
+    <main class="p-4 pt-24 md:pt-28">
+        <!-- Form Container -->
+        <div class="bg-white/60 backdrop-blur-md border border-white/40 rounded-lg shadow-xl p-4 md:p-6 max-w-2xl mx-auto">
+            <h2 class="text-2xl font-bold text-center mb-6 text-lipstick">অর্ডার ফর্ম</h2>
+
+             <!-- Loading Indicator -->
+            <div id="loadingIndicator" class="text-center p-6 text-gray-600 flex flex-col items-center">
+                <i class="fas fa-spinner fa-spin fa-2x mb-3 text-lipstick"></i>
+                <span>লোড হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...</span>
+            </div>
+
+            <!-- Login Prompt -->
+             <div id="loginPrompt" class="text-center p-6 text-red-600 hidden">
+                 <i class="fas fa-exclamation-circle fa-2x mb-3"></i>
+                 <p>অর্ডার করার জন্য আপনাকে লগইন করতে হবে।</p>
+                 <p>আপনাকে লগইন পেজে পাঠানো হচ্ছে...</p>
+             </div>
+
+            <!-- Checkout Form (Initially Hidden) -->
+            <form id="checkoutForm" class="hidden">
+                <!-- Checkout Items Display -->
+                <h3 class="text-lg font-semibold mb-3 text-gray-700">অর্ডার আইটেম</h3>
+                <div class="checkout-items mb-6 max-h-60 overflow-y-auto no-scrollbar border rounded-md p-2 bg-gray-50/50" id="checkoutItems">
+                    <p class="text-center text-gray-500 italic p-4">কার্ট লোড হচ্ছে...</p>
                 </div>
 
-                <!-- কাস্টমারের নাম -->
+                <!-- Price Summary -->
+                <h3 class="text-lg font-semibold mb-3 text-gray-700">মূল্য বিবরণী</h3>
+                <div class="price-summary mb-6">
+                     <p><span>সাব-টোটাল:</span> <span id="subTotalDisplay">০.০০ টাকা</span></p>
+                     <p><span>ডেলিভারি ফি:</span> <span id="deliveryFeeDisplay">০.০০ টাকা</span></p>
+                     <p class="total-row"><span>মোট প্রদেয়:</span> <span id="totalAmountDisplay">০.০০ টাকা</span></p>
+                 </div>
+
+                <h3 class="text-lg font-semibold mb-4 text-gray-700 border-t pt-5">ডেলিভারি তথ্য</h3>
+
+                <!-- Customer Name -->
                 <div class="form-group">
-                    <label for="customerName">নাম</label>
+                    <label for="customerName">নাম<span class="required-star">*</span></label>
                     <input type="text" id="customerName" name="customerName" placeholder="আপনার নাম লিখুন" required>
                 </div>
 
-                <!-- ফোন নম্বর -->
+                <!-- Phone Number -->
                 <div class="form-group">
-                    <label for="phoneNumber">ফোন নম্বর</label>
-                    <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="আপনার ফোন নম্বর লিখুন" pattern="[0-9]{11}" required>
+                    <label for="phoneNumber">ফোন নম্বর<span class="required-star">*</span></label>
+                    <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="১১ ডিজিটের ফোন নম্বর দিন" pattern="01[3-9][0-9]{8}" title="অনুগ্রহ করে একটি বৈধ ১১ ডিজিটের বাংলাদেশী মোবাইল নম্বর দিন।" required>
                 </div>
 
-                <!-- ঠিকানা -->
+                <!-- Address -->
                 <div class="form-group">
-                    <label for="address">ঠিকানা</label>
-                    <textarea id="address" name="address" placeholder="আপনার সম্পূর্ণ ঠিকানা লিখুন" rows="3" required></textarea>
+                    <label for="address">পূর্ণ ঠিকানা<span class="required-star">*</span></label>
+                    <textarea id="address" name="address" placeholder="বাসা/হোল্ডিং নং, রোড নং, এলাকা, থানা, জেলা" rows="3" required></textarea>
                 </div>
 
-                <!-- ঢাকার ভেতরে/বাইরে -->
+                <!-- Delivery Location -->
                 <div class="form-group">
-                    <label>ডেলিভারি লোকেশন</label>
+                    <label>ডেলিভারি এলাকা<span class="required-star">*</span></label>
                     <div class="radio-group">
                         <label>
                             <input type="radio" name="deliveryLocation" value="insideDhaka" required checked>
-                            ঢাকার ভেতরে
+                            ঢাকার ভেতরে (ডেলিভারি চার্জ ৭০৳)
                         </label>
                         <label>
                             <input type="radio" name="deliveryLocation" value="outsideDhaka">
-                            ঢাকার বাইরে
+                            ঢাকার বাইরে (ডেলিভারি চার্জ ১৬০৳)
                         </label>
                     </div>
                 </div>
 
-                <!-- ঢাকার বাইরে হলে লোকেশন সিলেক্ট করার ড্রপডাউন -->
+                <!-- Outside Dhaka Location Dropdown -->
                 <div id="outsideDhakaLocationGroup" class="form-group hidden">
-                    <label for="outsideDhakaLocation">ঢাকার বাইরে লোকেশন</label>
+                    <label for="outsideDhakaLocation">ঢাকার বাইরে জেলা<span class="required-star">*</span></label>
                     <select id="outsideDhakaLocation" name="outsideDhakaLocation">
-                        <option value="" disabled selected>একটি লোকেশন নির্বাচন করুন</option>
-                        <option value="Barisal">বরিশাল</option>
-                        <option value="Chittagong">চট্টগ্রাম</option>
-                        <option value="Dhaka">ঢাকা (বাইরের এলাকা)</option>
-                        <option value="Khulna">খুলনা</option>
-                        <option value="Mymensingh">ময়মনসিংহ</option>
-                        <option value="Rajshahi">রাজশাহী</option>
-                        <option value="Rangpur">রংপুর</option>
-                        <option value="Sylhet">সিলেট</option>
+                        <option value="" disabled selected>--- জেলা নির্বাচন করুন ---</option>
+                        <option value="Bagerhat">Bagerhat</option>
+                        <option value="Bandarban">Bandarban</option>
+                        <option value="Barguna">Barguna</option>
+                        <option value="Barisal">Barisal</option>
+                        <option value="Bhola">Bhola</option>
+                        <option value="Bogra">Bogra</option>
+                        <option value="Brahmanbaria">Brahmanbaria</option>
+                        <option value="Chandpur">Chandpur</option>
+                        <option value="Chapainawabganj">Chapainawabganj</option>
+                        <option value="Chattogram">Chattogram</option>
+                        <option value="Chuadanga">Chuadanga</option>
+                        <option value="Comilla">Comilla</option>
+                        <option value="Cox's Bazar">Cox's Bazar</option>
+                        <option value="Dhaka City">Dhaka City</option>
+                        <option value="Dhaka District(Outside City)">Dhaka District(Outside City)</option>
+                        <option value="Dinajpur">Dinajpur</option>
+                        <option value="Faridpur">Faridpur</option>
+                        <option value="Feni">Feni</option>
+                        <option value="Gaibandha">Gaibandha</option>
+                        <option value="Gazipur">Gazipur</option>
+                        <option value="Gopalganj">Gopalganj</option>
+                        <option value="Habiganj">Habiganj</option>
+                        <option value="Jamalpur">Jamalpur</option>
+                        <option value="Jashore">Jashore</option>
+                        <option value="Jhalokati">Jhalokati</option>
+                        <option value="Jhenaidah">Jhenaidah</option>
+                        <option value="Joypurhat">Joypurhat</option>
+                        <option value="Khagrachari">Khagrachari</option>
+                        <option value="Khulna">Khulna</option>
+                        <option value="Kishoreganj">Kishoreganj</option>
+                        <option value="Kurigram">Kurigram</option>
+                        <option value="Kushtia">Kushtia</option>
+                        <option value="Lakshmipur">Lakshmipur</option>
+                        <option value="Lalmonirhat">Lalmonirhat</option>
+                        <option value="Madaripur">Madaripur</option>
+                        <option value="Magura">Magura</option>
+                        <option value="Manikganj">Manikganj</option>
+                        <option value="Meherpur">Meherpur</option>
+                        <option value="Moulvibazar">Moulvibazar</option>
+                        <option value="Munshiganj">Munshiganj</option>
+                        <option value="Mymensingh">Mymensingh</option>
+                        <option value="Naogaon">Naogaon</option>
+                        <option value="Narail">Narail</option>
+                        <option value="Narayanganj">Narayanganj</option>
+                        <option value="Narsingdi">Narsingdi</option>
+                        <option value="Natore">Natore</option>
+                        <option value="Netrokona">Netrokona</option>
+                        <option value="Nilphamari">Nilphamari</option>
+                        <option value="Noakhali">Noakhali</option>
+                        <option value="Pabna">Pabna</option>
+                        <option value="Panchagarh">Panchagarh</option>
+                        <option value="Patuakhali">Patuakhali</option>
+                        <option value="Pirojpur">Pirojpur</option>
+                        <option value="Rajbari">Rajbari</option>
+                        <option value="Rajshahi">Rajshahi</option>
+                        <option value="Rangamati">Rangamati</option>
+                        <option value="Rangpur">Rangpur</option>
+                        <option value="Satkhira">Satkhira</option>
+                        <option value="Shariatpur">Shariatpur</option>
+                        <option value="Sherpur">Sherpur</option>
+                        <option value="Sirajganj">Sirajganj</option>
+                        <option value="Sunamganj">Sunamganj</option>
+                        <option value="Sylhet">Sylhet</option>
+                        <option value="Tangail">Tangail</option>
+                        <option value="Thakurgaon">Thakurgaon</option>
+                        <!-- Add more districts as needed -->
                     </select>
                 </div>
 
-                <!-- ডেলিভারি নোট (অপশনাল) -->
+                <!-- Delivery Note -->
                 <div class="form-group">
-                    <label for="deliveryNote">ডেলিভারি নোট (অপশনাল)</label>
-                    <textarea id="deliveryNote" name="deliveryNote" placeholder="যদি কোনো বিশেষ নির্দেশনা থাকে" rows="2"></textarea>
+                    <label for="deliveryNote">ডেলিভারি নোট (ঐচ্ছিক)</label>
+                    <textarea id="deliveryNote" name="deliveryNote" placeholder="ডেলিভারিম্যান এর জন্য কোনো বিশেষ নির্দেশনা থাকলে লিখুন" rows="2"></textarea>
                 </div>
 
-                <!-- ডেলিভারি চার্জের পেমেন্ট মেথড (ঢাকার বাইরে হলে শুধু দেখাবে) -->
+                <!-- Payment Section Heading -->
+                 <h3 class="text-lg font-semibold mb-4 text-gray-700 border-t pt-5">পেমেন্ট তথ্য</h3>
+
+                <!-- Delivery Charge Payment Method (Conditional) -->
                 <div id="deliveryPaymentGroup" class="form-group hidden">
-                    <label for="deliveryPaymentMethod">ডেলিভারি চার্জের পেমেন্ট মেথড</label>
+                    <label for="deliveryPaymentMethod">ডেলিভারি চার্জ পেমেন্ট মেথড (১৬০৳ অগ্রিম)<span class="required-star">*</span></label>
                     <select id="deliveryPaymentMethod" name="deliveryPaymentMethod">
-                        <option value="" disabled selected>পেমেন্ট মেথড নির্বাচন করুন</option>
+                        <option value="" disabled selected>--- পেমেন্ট মেথড নির্বাচন করুন ---</option>
                         <option value="bkash">বিকাশ</option>
+                        <option value="nagad">নগদ</option>
                         <option value="rocket">রকেট</option>
                     </select>
+                    <p class="text-xs text-gray-500 mt-1">ঢাকার বাইরের অর্ডারের জন্য ডেলিভারি চার্জ অগ্রিম প্রযোজ্য।</p>
                 </div>
 
-                <!-- ডেলিভারি চার্জের পেমেন্ট নাম্বার (বিকাশ/রকেট সিলেক্ট করলে দেখাবে) -->
+                 <!-- Payment Notice (Conditional) -->
+                 <div id="paymentNotice" class="payment-notice">
+                    নোট: অনুগ্রহ করে ডেলিভারি চার্জ <strong>১৬০ টাকা</strong> নিচের নম্বরে <strong>বিকাশ/নগদ/রকেট</strong> এর মাধ্যমে <strong>সেন্ড মানি</strong> করুন এবং নিচের ফিল্ডে আপনার নম্বর ও ট্রানজাকশন আইডি দিন। <br>
+                    <strong class="text-base">পেমেন্ট নম্বর: 01972580114</strong> <!-- !!! আপনার আসল নম্বর দিন !!! -->
+                </div>
+
+                <!-- Sender Payment Number (Conditional) -->
                 <div id="paymentNumberGroup" class="form-group hidden">
-                    <label for="paymentNumber">ডেলিভারি চার্জের পেমেন্ট নাম্বার (বিকাশ/রকেট)</label>
-                    <input type="tel" id="paymentNumber" name="paymentNumber" placeholder="আপনার বিকাশ/রকেট নাম্বার লিখুন" pattern="[0-9]{11}">
+                    <label for="paymentNumber">আপনার পেমেন্ট নম্বর (যে নম্বর থেকে টাকা পাঠিয়েছেন)<span class="required-star">*</span></label>
+                    <input type="tel" id="paymentNumber" name="paymentNumber" placeholder="১১ ডিজিটের মোবাইল নম্বর" pattern="01[3-9][0-9]{8}" title="১১ ডিজিটের মোবাইল নম্বর দিন।" >
                 </div>
 
-                <!-- ট্রানজাকশন আইডি ফিল্ড (ঢাকার বাইরে হলে দেখাবে) -->
+                <!-- Transaction ID (Conditional) -->
                 <div id="transactionIdGroup" class="form-group hidden">
-                    <label for="transactionId">ট্রানজাকশন আইডি</label>
-                    <input type="text" id="transactionId" name="transactionId" placeholder="বিকাশ/রকেট থেকে পাওয়া ট্রানজাকশন আইডি লিখুন">
+                    <label for="transactionId">ট্রানজাকশন আইডি (TrxID)<span class="required-star">*</span></label>
+                    <input type="text" id="transactionId" name="transactionId" placeholder="পেমেন্টের পর পাওয়া ট্রানজাকশন আইডি">
                 </div>
 
-                <!-- প্রোডাক্টের পেমেন্ট মেথড (ফিক্সড: ক্যাশ অন ডেলিভারি) -->
+                <!-- Product Payment Method (Fixed) -->
                 <div class="form-group">
-                    <label for="productPaymentMethod">প্রোডাক্টের পেমেন্ট মেথড</label>
-                    <select id="productPaymentMethod" name="productPaymentMethod" disabled>
-                        <option value="cod" selected>ক্যাশ অন ডেলিভারি</option>
-                    </select>
+                    <label for="productPaymentMethodDisplay">প্রোডাক্টের মূল্য পরিশোধ</label>
+                    <input type="text" id="productPaymentMethodDisplay" name="productPaymentMethodDisplay" value="ক্যাশ অন ডেলিভারি (প্রোডাক্ট হাতে পেয়ে টাকা দেবেন)" readonly disabled>
+                    <input type="hidden" id="productPaymentMethod" name="productPaymentMethod" value="cod">
                 </div>
 
-                <!-- পেমেন্ট নোটিশ -->
-                <div id="paymentNotice" class="payment-notice">
-                    নোট: ডেলিভারি লোকেশন ঢাকার বাইরে হলে ডেলিভারি চার্জ ১৬০ টাকা অগ্রিম পেমেন্ট করতে হবে। আমাদের বিকাশ নম্বর: 01972580114 পেমেন্ট করার পর ট্রানজাকশন আইডি উপরের ফিল্ডে দিন।
-                </div>
+                <!-- Submit Button -->
+                <button type="submit" id="submitButton" class="submit-btn" disabled>
+                    <i class="fas fa-spinner fa-spin mr-2"></i> অনুগ্রহ করে অপেক্ষা করুন...
+                </button>
 
-                <!-- ডেলিভারি ফি এবং মোট মূল্য ডিসপ্লে -->
-                <div class="price-summary">
-                    <p id="deliveryFeeDisplay">ডেলিভারি ফি: ০ টাকা</p>
-                    <p id="totalAmountDisplay">মোট মূল্য: ০ টাকা</p>
-                </div>
-
-                <!-- সাবমিট বাটন -->
-                <button type="submit" class="submit-btn">অর্ডার কনফার্ম করুন</button>
-
-                <!-- অর্ডার লিস্ট পেজে যাওয়ার লিঙ্ক -->
-                <a href="order-list.html" class="order-list-link">সকল অর্ডার দেখুন</a>
+                <!-- Order List Link -->
+                <a href="order-list.html" class="order-list-link mt-4">
+                   <i class="fas fa-list-alt mr-1"></i> আপনার সকল অর্ডার দেখুন
+                </a>
             </form>
         </div>
     </main>
 
-    <!-- ফুটার লোড করার জন্য -->
+    <!-- Footer Load -->
     <div id="footer"></div>
 
-    <!-- সোশ্যাল মিডিয়া ফ্লোটিং বাটন -->
+    <!-- Social Media Floating Button -->
     <div class="fixed bottom-4 right-4 z-50">
-        <!-- শেয়ার বাটন -->
-        <button id="shareButton" class="bg-lipstick text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center">
-            <i class="fas fa-user-circle"></i>
+        <button id="shareButton" class="bg-lipstick text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center mb-2 hover:bg-lipstick-dark transition-colors duration-300">
+            <i class="fas fa-share-alt text-xl"></i>
         </button>
-        <!-- সোশ্যাল মিডিয়া আইকনগুলি (লুকানো অবস্থায়) -->
-        <div id="socialIcons" class="hidden space-y-2 mt-2">
-            <a href="https://www.facebook.com/share/1PyLUzGE9P/" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
-                <i class="fab fa-facebook"></i>
-            </a>
-            <a href="https://www.instagram.com/anysbeautycorner/?utm_medium=copy_link" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
-                <i class="fab fa-instagram"></i>
-            </a>
-            <a href="https://www.tiktok.com/@anysbeautycorner" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
-                <i class="fab fa-tiktok"></i>
-            </a>
-            <a href="https://youtube.com/@anysbeautycorner?si=oXGtEuakP_SIPH_Q" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
-                <i class="fab fa-youtube"></i>
-            </a>
+        <div id="socialIcons" class="hidden flex flex-col space-y-2">
+             <!-- Social Links with Titles and Transitions -->
+                         <a href="https://www.facebook.com/share/1PyLUzGE9P/" target="_blank" rel="noopener noreferrer" title="Facebook" class="bg-blue-600 hover:bg-blue-700 text-white w-10 h-10 rounded-full flex items-center justify-center transition-transform transform hover:scale-110"><i class="fab fa-facebook-f"></i></a>
+             <a href="https://www.instagram.com/anysbeautycorner/?utm_medium=copy_link" target="_blank" rel="noopener noreferrer" title="Instagram" class="bg-pink-500 hover:bg-pink-600 text-white w-10 h-10 rounded-full flex items-center justify-center transition-transform transform hover:scale-110"><i class="fab fa-instagram"></i></a>
+             <a href="https://www.tiktok.com/@anysbeautycorner" target="_blank" rel="noopener noreferrer" title="TikTok" class="bg-black hover:bg-gray-800 text-white w-10 h-10 rounded-full flex items-center justify-center transition-transform transform hover:scale-110"><i class="fab fa-tiktok"></i></a>
+             <a href="https://youtube.com/@anysbeautycorner?si=oXGtEuakP_SIPH_Q" target="_blank" rel="noopener noreferrer" title="YouTube" class="bg-red-600 hover:bg-red-700 text-white w-10 h-10 rounded-full flex items-center justify-center transition-transform transform hover:scale-110"><i class="fab fa-youtube"></i></a>
         </div>
     </div>
 
-    <!-- Firebase SDK এবং স্ক্রিপ্ট -->
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-[100] w-11/12 max-w-md"></div>
+
+    <!-- Firebase SDK and App Logic -->
     <script type="module">
-        // Firebase SDK ইম্পোর্ট
+        // Firebase SDK Imports
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getDatabase, ref, set, push, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
+        import { getMessaging, getToken, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
-        // Firebase কনফিগারেশন
+        // --- Firebase Configuration ---
+        // !!! আপনার আসল Firebase কনফিগারেশন এখানে দিন !!!
         const firebaseConfig = {
-            apiKey: "AIzaSyCVSzQS1c7H4BLhsDF_fW8wnqUN4B35LPA",
-            authDomain: "nahid-6714.firebaseapp.com",
-            databaseURL: "https://nahid-6714-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "nahid-6714",
-            storageBucket: "nahid-6714.firebasestorage.app",
-            messagingSenderId: "505741217147",
-            appId: "1:505741217147:web:25ed4e9f0d00e3c4d381de",
-            measurementId: "G-QZ7CTRKHCW"
-        };
+             apiKey: "AIzaSyCVSzQS1c7H4BLhsDF_fW8wnqUN4B35LPA", // Replace
+             authDomain: "nahid-6714.firebaseapp.com",          // Replace
+             databaseURL: "https://nahid-6714-default-rtdb.asia-southeast1.firebasedatabase.app", // Replace
+             projectId: "nahid-6714",                     // Replace
+             storageBucket: "nahid-6714.firebasestorage.app",    // Replace
+             messagingSenderId: "505741217147",             // Replace
+             appId: "1:505741217147:web:25ed4e9f0d00e3c4d381de", // Replace
+             measurementId: "G-QZ7CTRKHCW"              // Optional
+         };
 
-        // Firebase ইনিশিয়ালাইজ
+        // --- VAPID Key for Push Notifications ---
+        // !!! আপনার আসল VAPID Key এখানে দিন !!!
+        const VAPID_KEY = 'YJmRy7RwHDamT_Wq9GSpJQm3Iexnkq1K9zvRFu3H_oI'; // Replace
+
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
         const auth = getAuth(app);
-        const messaging = getMessaging(app);
+        let messaging = null;
+        isSupported().then((supported) => {
+            if (supported) {
+                try {
+                     messaging = getMessaging(app);
+                     console.log("Firebase Messaging initialized.");
+                     initializeForegroundMessageHandler(); // Initialize only if supported
+                } catch (err) {
+                     console.error("Error initializing messaging:", err);
+                }
+            } else {
+                console.warn("Firebase Messaging not supported in this browser.");
+            }
+        }).catch(err => {
+             console.error("Error checking messaging support:", err);
+        });
 
-        // VAPID Key
-        const VAPID_KEY = 'YJmRy7RwHDamT_Wq9GSpJQm3Iexnkq1K9zvRFu3H_oI';
 
-        // এই পেজের জন্য আলাদা কার্ট ভেরিয়েবল
-        let checkoutCart = [];
+        // Global Variables
+        let checkoutCart = []; // Holds items for this checkout session
+        let currentUser = null; // Stores the logged-in user object
+        let authInitialized = false; // Track if auth state check has run
+        let isBuyNowMode = false; // Track if it's a Buy Now checkout
 
-        // টোস্ট নোটিফিকেশন ফাংশন
-        function showToast(message, type = 'success') {
-            const toast = document.createElement('div');
-            toast.className = `fixed bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 ${
-                type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-            }`;
-            toast.textContent = message;
-            document.body.appendChild(toast);
+        // --- UI Elements ---
+        const checkoutForm = document.getElementById('checkoutForm');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const loginPrompt = document.getElementById('loginPrompt');
+        const submitButton = document.getElementById('submitButton');
+        const checkoutItemsContainer = document.getElementById('checkoutItems');
+        const subTotalDisplay = document.getElementById('subTotalDisplay');
+        const deliveryFeeDisplay = document.getElementById('deliveryFeeDisplay');
+        const totalAmountDisplay = document.getElementById('totalAmountDisplay');
 
-            setTimeout(() => {
-                toast.classList.add('hidden');
-                toast.remove();
-            }, 3000);
-        }
+        // --- Helper Functions ---
 
-        // FCM টোকেন সংগ্রহ করা
+        // Improved Toast Notification
+        function showToast(message, type = 'success', duration = 4000) {
+             const toastContainer = document.getElementById('toast-container');
+             if (!toastContainer) {
+                 console.warn("Toast container not found! Falling back to alert.");
+                 alert(message);
+                 return;
+             }
+             const toast = document.createElement('div');
+             const iconClass = type === 'success' ? 'fa-check-circle text-green-600' :
+                              type === 'error' ? 'fa-exclamation-triangle text-red-600' :
+                              'fa-info-circle text-blue-600'; // Info type
+
+             toast.className = `flex items-start p-4 rounded-lg shadow-lg mb-2 text-sm font-medium border w-full break-words ${
+                 type === 'success' ? 'bg-green-50 border-green-300 text-green-800' :
+                 type === 'error' ? 'bg-red-50 border-red-300 text-red-800' :
+                 'bg-blue-50 border-blue-300 text-blue-800' // Info type
+             }`;
+             toast.innerHTML = `
+                 <i class="fas ${iconClass} mr-3 mt-1 text-lg"></i>
+                 <span class="flex-1">${message}</span>
+                 <button class="ml-3 text-xl font-semibold leading-none opacity-70 hover:opacity-100 focus:outline-none" onclick="this.parentElement.remove()">×</button>
+                 `;
+
+             toastContainer.prepend(toast); // Prepend to show newest on top
+
+             setTimeout(() => {
+                 if (toast.parentElement) { // Check if still exists
+                     toast.style.opacity = '0';
+                     toast.style.transition = 'opacity 0.5s ease';
+                     setTimeout(() => toast.remove(), 500);
+                 }
+             }, duration);
+         }
+
+
+        // FCM Token Management (Request only once per session or if needed)
+        let fcmTokenRequested = false;
         async function requestNotificationPermissionAndGetToken(userId) {
+            if (!messaging || fcmTokenRequested) return null; // Don't request if no support or already requested this session
+
+            fcmTokenRequested = true; // Mark as requested for this session
+            console.log("Attempting to request Notification permission and get FCM token...");
+
             try {
-                const permission = await Notification.requestPermission();
-                if (permission === 'granted') {
-                    console.log('নোটিফিকেশন পারমিশন দেওয়া হয়েছে।');
+                const currentPermission = Notification.permission;
+                let finalPermission = currentPermission;
+
+                if (currentPermission === 'default') {
+                    console.log("Requesting notification permission...");
+                    finalPermission = await Notification.requestPermission();
+                }
+
+                if (finalPermission === 'granted') {
+                    console.log("Notification permission granted. Getting FCM token...");
                     const token = await getToken(messaging, { vapidKey: VAPID_KEY });
                     if (token) {
-                        console.log('FCM টোকেন পাওয়া গেছে:', token);
-                        const userRef = ref(database, `users/${userId}/fcmToken`);
-                        await set(userRef, token);
-                        console.log('FCM টোকেন সফলভাবে সংরক্ষণ করা হয়েছে।');
+                        console.log('FCM Token obtained:', token);
+                        // Save token to user profile in DB
+                        await set(ref(database, `users/${userId}/fcmToken`), token);
+                        console.log("FCM token saved to DB for user:", userId);
+                        return token;
                     } else {
-                        console.error('FCM টোকেন পাওয়া যায়নি।');
-                    }
+                         console.warn("Failed to retrieve FCM token even with permission granted.");
+                         return null;
+                     }
                 } else {
-                    console.error('নোটিফিকেশন পারমিশন দেওয়া হয়নি।');
+                    console.warn(`Notification permission was not granted: ${finalPermission}`);
+                    // Optional: Store preference that user denied/ignored prompt
+                    // await set(ref(database, `users/${userId}/notificationPref`), 'denied');
+                    return null;
                 }
             } catch (error) {
-                console.error('FCM টোকেন সংগ্রহ করতে সমস্যা হয়েছে:', error);
+                console.error('Error in notification/FCM process:', error);
+                 if (error.code && (error.code.includes('permission') || error.code.includes('notifications-blocked'))) {
+                     console.warn("Browser or OS level notification blocking detected.");
+                 } else {
+                     // Avoid showing toast for permission issues, log instead
+                     // showToast('নোটিফিকেশন সেটআপে সমস্যা হয়েছে।', 'error');
+                 }
+                return null;
             }
         }
 
-        // ফোরগ্রাউন্ডে নোটিফিকেশন হ্যান্ডল করা
-        onMessage(messaging, (payload) => {
-            console.log('নোটিফিকেশন পেয়েছি:', payload);
-            const notificationTitle = payload.notification.title;
-            const notificationOptions = {
-                body: payload.notification.body,
-                icon: '/path/to/icon.png' // আপনার আইকনের পাথ
-            };
-            new Notification(notificationTitle, notificationOptions);
-        });
 
-        // ইউজার লগইন করার পর FCM টোকেন সংগ্রহ করা
-        onAuthStateChanged(auth, (user) => {
+        // Foreground Notification Handler
+        function initializeForegroundMessageHandler() {
+            if (!messaging) return;
+             try {
+                 onMessage(messaging, (payload) => {
+                     console.log('Foreground message received:', payload);
+                     const title = payload.notification?.title || 'নতুন বার্তা';
+                     const body = payload.notification?.body || '(কোনো বিবরণ নেই)';
+                     const options = {
+                         body: body,
+                         icon: payload.notification?.icon || '/images/logo.png' // Use your logo path
+                     };
+                     // Show in-app toast instead of system notification for foreground
+                     showToast(`"${title}": ${body}`, 'info', 6000);
+
+                     // Optional: If you *really* want a system notification even if app is open:
+                     // navigator.serviceWorker.getRegistration().then(reg => {
+                     //     if (reg) {
+                     //         reg.showNotification(title, options);
+                     //     }
+                     // });
+                 });
+                 console.log("Foreground message handler initialized.");
+             } catch (err) {
+                  console.error("Error setting up foreground message handler:", err);
+             }
+         }
+
+
+        // --- Core Logic ---
+
+        // Auth State Change Listener
+        onAuthStateChanged(auth, async (user) => {
+            authInitialized = true;
+            currentUser = user;
+            loadingIndicator.classList.add('hidden'); // Always hide loading indicator once checked
+
             if (user) {
-                const userId = user.uid;
-                console.log('ইউজার লগইন করেছে। userId:', userId);
-                requestNotificationPermissionAndGetToken(userId);
+                loginPrompt.classList.add('hidden'); // Ensure login prompt is hidden
+                console.log("User Logged In. UID:", user.uid, "Email:", user.email); // Log email too
+                checkoutForm.classList.remove('hidden'); // Show the form
+                submitButton.disabled = true; // Keep disabled until cart loads and is valid
+                submitButton.innerHTML = '<i class="fas fa-shopping-cart mr-2"></i> আইটেম লোড হচ্ছে...';
+
+                // Prefill user info if available
+                const customerNameInput = document.getElementById('customerName');
+                if (customerNameInput && !customerNameInput.value && user.displayName) {
+                    customerNameInput.value = user.displayName;
+                    console.log("Prefilled name:", user.displayName);
+                }
+
+                // Attempt to get FCM token (non-blocking)
+                 requestNotificationPermissionAndGetToken(user.uid).catch(err => {
+                     console.error("Background FCM token request failed:", err); // Log errors from the async request
+                 });
+
+                // Load checkout data (checks URL params first, then localStorage)
+                await loadCheckoutData(); // This will enable button if cart has items
+
             } else {
-                console.log('ইউজার লগইন করেনি।');
-                showToast('অর্ডার দিতে লগইন করুন।', 'error');
-                window.location.href = 'login.html'; // লগইন পেজে রিডাইরেক্ট
+                console.log("User Not Logged In / Logged Out.");
+                checkoutForm.classList.add('hidden'); // Hide form
+                loginPrompt.classList.remove('hidden'); // Show login prompt
+                 // Redirect to login after a short delay
+                 setTimeout(() => {
+                     const currentUrl = encodeURIComponent(window.location.href); // Pass current page back
+                     // Prevent redirect loop if already on login page
+                     if (!window.location.pathname.includes('login.html')) {
+                         window.location.href = `login.html?redirect=${currentUrl}`;
+                     }
+                 }, 3000);
             }
         });
 
-                // হেডার এবং ফুটার লোড করা
-        document.addEventListener("DOMContentLoaded", function() {
-            $("#header").load("header.html", function(response, status, xhr) {
-                if (status === "success") {
-                    console.log("header.html লোড হয়েছে");
-                    const searchInput = document.getElementById('searchInput');
-                    const searchInputDesktop = document.getElementById('searchInputDesktop');
+        // Load Checkout Data (Decides between Buy Now or Cart)
+        async function loadCheckoutData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+            const quantityParam = urlParams.get('quantity');
 
-                    if (searchInput) {
-                        searchInput.addEventListener('input', function(e) {
-                            if (window.searchProducts) {
-                                window.searchProducts();
-                            }
-                        });
-                    }
+            checkoutCart = []; // Reset cart before loading
 
-                    if (searchInputDesktop) {
-                        searchInputDesktop.addEventListener('input', function(e) {
-                            if (window.searchProductsDesktop) {
-                                window.searchProductsDesktop();
-                            }
-                        });
+            if (productId) {
+                isBuyNowMode = true;
+                console.log(`Mode: Buy Now. Product ID: ${productId}, Quantity: ${quantityParam || 'default 1'}`);
+                const quantity = parseInt(quantityParam) || 1;
+                await loadSingleProductForCheckout(productId, quantity);
+            } else {
+                isBuyNowMode = false;
+                console.log("Mode: Cart Checkout (from localStorage).");
+                loadCartItemsFromLocalStorage();
+            }
+
+            // Update UI and button state after loading attempt
+            displayCheckoutItems(); // Display whatever is in checkoutCart (could be empty)
+            updateCartTotal(); // Update totals
+
+            if(checkoutCart.length > 0) {
+                 submitButton.disabled = false;
+                 submitButton.innerHTML = '<i class="fas fa-check-circle mr-2"></i> অর্ডার কনফার্ম করুন';
+                 console.log("Checkout items loaded, submit button enabled.");
+                 // Initialize delivery fields based on default selection *after* cart loads
+                 handleDeliveryLocationChange();
+            } else {
+                  submitButton.disabled = true;
+                  submitButton.innerHTML = '<i class="fas fa-times-circle mr-2"></i> কার্টে কোনো আইটেম নেই';
+                  console.log("Checkout cart is empty, submit button disabled.");
+             }
+        }
+
+
+        // Load Single Product (Buy Now) - Refined error handling
+        async function loadSingleProductForCheckout(productId, quantity) {
+            checkoutItemsContainer.innerHTML = '<p class="text-center text-gray-500 italic p-4">প্রোডাক্ট লোড হচ্ছে...</p>';
+            try {
+                console.log(`Fetching product data for ID: ${productId}`);
+                const productRef = ref(database, `products/${productId}`);
+                const snapshot = await get(productRef);
+
+                if (snapshot.exists()) {
+                    const product = snapshot.val();
+                    console.log("Product data received:", product);
+
+                    // Validate essential data
+                    const price = parseFloat(product.price);
+                    if (!product.name || product.name.trim() === "") {
+                        throw new Error(`Product (ID: ${productId}) has an invalid or missing name.`);
                     }
+                     if (isNaN(price) || price <= 0) {
+                         throw new Error(`Product (ID: ${productId}, Name: ${product.name}) has an invalid price: ${product.price}`);
+                     }
+                    const validQuantity = quantity > 0 ? quantity : 1; // Ensure quantity is at least 1
+
+                    const item = {
+                        id: productId,
+                        name: product.name,
+                        price: price,
+                        quantity: validQuantity,
+                        image: product.image ? String(product.image).split(',')[0].trim() : null // Ensure string before split
+                    };
+                    checkoutCart = [item]; // Set cart to this single item
+                    console.log("Single product added to checkoutCart:", checkoutCart);
                 } else {
-                    console.error("header.html লোড করতে সমস্যা হয়েছে: ", xhr.status, xhr.statusText);
-                    $("#header").html("<p>হেডার লোড করতে সমস্যা হয়েছে।</p>");
+                    throw new Error(`Product with ID '${productId}' not found in Firebase.`);
                 }
-            });
+            } catch (error) {
+                console.error("Error loading single product:", error);
+                showToast(`প্রোডাক্ট লোড করতে সমস্যা হয়েছে: ${error.message}`, 'error');
+                checkoutCart = []; // Ensure cart is empty on error
+            }
+            // UI update happens in loadCheckoutData after this promise resolves/rejects
+        }
 
-            $("#footer").load("footer.html", function(response, status, xhr) {
-                if (status === "success") {
-                    console.log("footer.html লোড হয়েছে");
-                } else {
-                    console.error("footer.html লোড করতে সমস্যা হয়েছে: ", xhr.status, xhr.statusText);
-                    $("#footer").html("<p>ফুটার লোড করতে সমস্যা হয়েছে।</p>");
-                }
-            });
 
-            // কার্ট আইটেম লোড করা
-            loadCartItemsForCheckout();
+        // Load Cart Items (Cart Checkout) - Refined parsing and validation
+        function loadCartItemsFromLocalStorage() {
+             const cartItemsJSON = localStorage.getItem('cartItems');
+             let items = [];
+             checkoutCart = []; // Reset cart first
 
-            // ডেলিভারি লোকেশন পরিবর্তনের সময় আপডেট করা
-            document.querySelectorAll('input[name="deliveryLocation"]').forEach((radio) => {
-                radio.addEventListener('change', () => {
-                    const deliveryLocation = document.querySelector('input[name="deliveryLocation"]:checked').value;
-                    updateDeliveryPaymentFields(deliveryLocation);
-                });
-            });
+             if (cartItemsJSON) {
+                 try {
+                     items = JSON.parse(cartItemsJSON);
+                     if (!Array.isArray(items)) {
+                         console.warn("Cart data in localStorage is not an array. Clearing.");
+                         items = [];
+                         localStorage.removeItem('cartItems');
+                     }
+                 } catch (e) {
+                     console.error("Error parsing cart items from localStorage:", e);
+                     items = [];
+                     localStorage.removeItem('cartItems'); // Clear potentially corrupted data
+                 }
+             }
 
-            // ডেলিভারি পেমেন্ট মেথড সিলেক্ট করলে নাম্বার ফিল্ড আপডেট
-            document.getElementById('deliveryPaymentMethod').addEventListener('change', (event) => {
-                const paymentNumberGroup = document.getElementById('paymentNumberGroup');
-                const transactionIdGroup = document.getElementById('transactionIdGroup');
-                const paymentNumberInput = document.getElementById('paymentNumber');
-                const transactionIdInput = document.getElementById('transactionId');
-                const selectedMethod = event.target.value;
+             // Filter out invalid items and ensure correct types
+             checkoutCart = items.map(item => {
+                  // Basic validation for each item structure
+                  if (typeof item !== 'object' || item === null) return null;
 
-                if (selectedMethod === 'bkash' || selectedMethod === 'rocket') {
-                    paymentNumberGroup.classList.remove('hidden');
-                    transactionIdGroup.classList.remove('hidden');
-                    paymentNumberInput.setAttribute('required', 'true');
-                    transactionIdInput.setAttribute('required', 'true');
-                } else {
-                    paymentNumberGroup.classList.add('hidden');
-                    transactionIdGroup.classList.add('hidden');
-                    paymentNumberInput.removeAttribute('required');
-                    transactionIdInput.removeAttribute('required');
-                }
-            });
+                  const price = parseFloat(item.price);
+                  const quantity = parseInt(item.quantity);
 
-            // ফর্ম সাবমিট হ্যান্ডল করা
-            document.getElementById('orderForm').addEventListener('submit', async function(e) {
-                e.preventDefault();
+                  if (!item.id || typeof item.name !== 'string' || item.name.trim() === "" || isNaN(price) || price <= 0 || isNaN(quantity) || quantity <= 0) {
+                      console.warn("Filtering out invalid cart item from localStorage:", item);
+                      return null; // Mark for removal
+                  }
+                  return {
+                      id: String(item.id), // Ensure ID is string
+                      name: item.name,
+                      price: price,
+                      quantity: quantity,
+                      image: item.image ? String(item.image).split(',')[0].trim() : null // Ensure string before split
+                  };
+             }).filter(item => item !== null); // Remove null entries
 
-                // কার্ট আইটেম চেক করা
-                if (checkoutCart.length === 0) {
-                    showToast('দয়া করে কমপক্ষে একটি প্রোডাক্ট সিলেক্ট করুন।', 'error');
-                    return;
-                }
+             console.log("Cart items loaded from localStorage:", checkoutCart);
+             // UI update happens in loadCheckoutData after this function runs
+        }
 
-                const user = auth.currentUser;
-                if (!user) {
-                    showToast('অর্ডার দিতে লগইন করুন।', 'error');
-                    window.location.href = 'login.html';
-                    return;
-                }
 
-                // ফর্ম ডাটা সংগ্রহ করা
-                const customerName = document.getElementById('customerName').value;
-                const phoneNumber = document.getElementById('phoneNumber').value;
-                const address = document.getElementById('address').value;
-                const deliveryLocation = document.querySelector('input[name="deliveryLocation"]:checked').value;
-                const outsideDhakaLocation = deliveryLocation === 'outsideDhaka' ? document.getElementById('outsideDhakaLocation').value : null;
-                const deliveryNote = document.getElementById('deliveryNote').value;
-                const deliveryPaymentMethod = document.getElementById('deliveryPaymentMethod').value;
-                const paymentNumber = document.getElementById('paymentNumber').value;
-                const transactionId = document.getElementById('transactionId').value;
-                const productPaymentMethod = document.getElementById('productPaymentMethod').value;
+        // Display Items in the UI - Improved Styling
+        function displayCheckoutItems() {
+            checkoutItemsContainer.innerHTML = ''; // Clear previous
+            if (checkoutCart.length > 0) {
+                checkoutCart.forEach(item => {
+                    const imageUrl = item.image || 'https://via.placeholder.com/60'; // Default placeholder
+                    const price = item.price.toFixed(2);
+                    const itemTotal = (item.price * item.quantity).toFixed(2);
 
-                // ফোন নম্বর ভ্যালিডেশন
-                if (!/^[0-9]{11}$/.test(phoneNumber)) {
-                    showToast('অনুগ্রহ করে সঠিক ফোন নম্বর দিন (১১ ডিজিট)।', 'error');
-                    return;
-                }
-
-                // ঢাকার বাইরে হলে পেমেন্ট নাম্বার এবং ট্রানজাকশন আইডি ভ্যালিডেশন
-                if (deliveryLocation === 'outsideDhaka') {
-                    if (!deliveryPaymentMethod) {
-                        showToast('অনুগ্রহ করে ডেলিভারি চার্জের পেমেন্ট মেথড নির্বাচন করুন।', 'error');
-                        return;
-                    }
-                    if (!paymentNumber || !/^[0-9]{11}$/.test(paymentNumber)) {
-                        showToast('অনুগ্রহ করে সঠিক বিকাশ/রকেট নাম্বার দিন (১১ ডিজিট)।', 'error');
-                        return;
-                    }
-                    if (!transactionId) {
-                        showToast('অনুগ্রহ করে ট্রানজাকশন আইডি দিন।', 'error');
-                        return;
-                    }
-                }
-
-                // ডেলিভারি ফি ক্যালকুলেশন
-                const deliveryFee = deliveryLocation === 'insideDhaka' ? 70 : 160;
-                const cartTotal = checkoutCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                const totalAmount = cartTotal + deliveryFee;
-
-                // অর্ডার ডাটা তৈরি
-                const orderData = {
-                    customerName,
-                    userEmail: user.email,
-                    phoneNumber,
-                    address,
-                    deliveryLocation,
-                    outsideDhakaLocation,
-                    deliveryNote,
-                    deliveryPaymentMethod: deliveryLocation === 'outsideDhaka' ? deliveryPaymentMethod : 'cod',
-                    paymentNumber: deliveryLocation === 'outsideDhaka' ? paymentNumber : null,
-                    transactionId: deliveryLocation === 'outsideDhaka' ? transactionId : null,
-                    productPaymentMethod,
-                    cartItems: checkoutCart,
-                    deliveryFee,
-                    totalAmount,
-                    orderId: Date.now(),
-                    orderDate: new Date().toISOString(),
-                    advancePayment: deliveryLocation === 'outsideDhaka' ? deliveryFee : 0,
-                    status: 'pending',
-                    userId: user.uid // userId সংরক্ষণ করা
-                };
-
-                try {
-                    // অর্ডার সংরক্ষণ করা
-                    const orderRef = ref(database, `orders/${orderData.orderId}`);
-                    await set(orderRef, orderData);
-
-                    // টোস্ট নোটিফিকেশন দেখানো
-                    if (deliveryLocation === 'outsideDhaka') {
-                        showToast(`অর্ডার সফলভাবে প্লেস করা হয়েছে! ডেলিভারি চার্জ (${deliveryFee} টাকা) পেমেন্ট করা হয়েছে। অর্ডার আইডি: ${orderData.orderId}`, 'success');
-                    } else {
-                        showToast(`অর্ডার সফলভাবে প্লেস করা হয়েছে! অর্ডার আইডি: ${orderData.orderId}`, 'success');
-                    }
-
-                    // কার্ট ক্লিয়ার করা
-                    localStorage.removeItem('cartItems');
-                    checkoutCart = [];
-                    document.getElementById('checkoutItems').innerHTML = '<p class="text-gray-700">কোনো প্রোডাক্ট নির্বাচন করা হয়নি।</p>';
-                    updateCartTotal();
-                    updateDeliveryPaymentFields('insideDhaka'); // ফিল্ড রিসেট করা
-
-                    // ফর্ম রিসেট করা
-                    document.getElementById('orderForm').reset();
-                } catch (error) {
-                    console.error('অর্ডার সাবমিট করতে সমস্যা হয়েছে:', error);
-                    showToast('অর্ডার সাবমিট করতে সমস্যা হয়েছে।', 'error');
-                }
-            });
-        });
-
-        // কার্ট আইটেম লোড করা
-        function loadCartItemsForCheckout() {
-            const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-            const checkoutItemsContainer = document.getElementById('checkoutItems');
-            checkoutItemsContainer.innerHTML = ''; // পুরানো আইটেম ক্লিয়ার করা
-
-            if (cartItems.length > 0) {
-                checkoutCart = cartItems; // কার্ট আইটেমগুলো এই পেজের জন্য সেভ করা
-                cartItems.forEach(item => {
-                    const imageUrl = item.image ? item.image.split(',')[0].trim() : 'https://via.placeholder.com/50';
-
-                    const checkoutItem = document.createElement('div');
-                    checkoutItem.classList.add('checkout-item');
-                    checkoutItem.innerHTML = `
-                        <img src="${imageUrl}" alt="${item.name || 'প্রোডাক্টের নাম'}" onerror="this.src='https://via.placeholder.com/50'; this.alt='ছবি লোড হয়নি';">
-                        <div class="checkout-item-details">
-                            <p>${item.name || 'নাম পাওয়া যায়নি'}</p>
-                            <p>মূল্য: ${item.price || '0'} টাকা</p>
-                            <p>পরিমাণ: ${item.quantity || 1}</p>
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'checkout-item bg-white rounded-md shadow-sm'; // Added some background/shadow
+                    itemDiv.innerHTML = `
+                        <img src="${imageUrl}" alt="${item.name}" class="w-16 h-16 object-cover rounded-l-md flex-shrink-0" onerror="this.onerror=null; this.src='https://via.placeholder.com/60'; this.alt='ছবি লোড হয়নি';">
+                        <div class="checkout-item-details px-3 py-2">
+                            <p class="item-name text-sm md:text-base">${item.name}</p>
+                            <p class="text-xs md:text-sm text-gray-600">${item.quantity} x ${price}৳</p>
                         </div>
+                        <p class="font-semibold text-sm md:text-base text-gray-800 px-3 py-2 text-right flex-shrink-0">${itemTotal}৳</p>
                     `;
-                    checkoutItemsContainer.appendChild(checkoutItem);
+                    checkoutItemsContainer.appendChild(itemDiv);
                 });
             } else {
-                checkoutItemsContainer.innerHTML = '<p class="text-gray-700">কার্টে কোনো প্রোডাক্ট নেই।</p>';
+                checkoutItemsContainer.innerHTML = '<p class="text-center text-gray-500 italic p-4">আপনার শপিং কার্ট খালি। হোম পেজ থেকে প্রোডাক্ট যোগ করুন।</p>';
             }
-            updateCartTotal();
         }
 
-        // কার্ট টোটাল আপডেট করার ফাংশন
+
+        // Update Price Summary UI - Consistent Formatting
         function updateCartTotal() {
-            const deliveryLocation = document.querySelector('input[name="deliveryLocation"]:checked')?.value || 'insideDhaka';
-            const deliveryFee = deliveryLocation === 'insideDhaka' ? 70 : 160;
-            const cartTotal = checkoutCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const totalAmount = cartTotal + deliveryFee;
+             const deliveryLocationRadio = document.querySelector('input[name="deliveryLocation"]:checked');
+             const deliveryLocation = deliveryLocationRadio ? deliveryLocationRadio.value : 'insideDhaka';
+             const deliveryFee = deliveryLocation === 'insideDhaka' ? 70.00 : 160.00;
+             const cartSubTotal = checkoutCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+             const totalAmount = cartSubTotal + deliveryFee;
 
-            document.getElementById('deliveryFeeDisplay').textContent = `ডেলিভারি ফি: ${deliveryFee} টাকা`;
-            document.getElementById('totalAmountDisplay').textContent = `মোট মূল্য: ${totalAmount} টাকা`;
-        }
+             if (subTotalDisplay) subTotalDisplay.textContent = `${cartSubTotal.toFixed(2)} টাকা`;
+             if (deliveryFeeDisplay) deliveryFeeDisplay.textContent = `${deliveryFee.toFixed(2)} টাকা`;
+             if (totalAmountDisplay) totalAmountDisplay.textContent = `${totalAmount.toFixed(2)} টাকা`;
+         }
 
-        // ডেলিভারি চার্জের পেমেন্ট ফিল্ড আপডেট করার ফাংশন
+
+        // Update Conditional Form Fields UI - Improved Safety & Reset
         function updateDeliveryPaymentFields(deliveryLocation) {
+            // Get elements (assuming they exist based on HTML structure)
             const deliveryPaymentGroup = document.getElementById('deliveryPaymentGroup');
             const paymentNumberGroup = document.getElementById('paymentNumberGroup');
             const transactionIdGroup = document.getElementById('transactionIdGroup');
             const paymentNotice = document.getElementById('paymentNotice');
-            const deliveryPaymentMethod = document.getElementById('deliveryPaymentMethod');
             const outsideDhakaLocationGroup = document.getElementById('outsideDhakaLocationGroup');
-            const outsideDhakaLocation = document.getElementById('outsideDhakaLocation');
+            const deliveryPaymentMethodSelect = document.getElementById('deliveryPaymentMethod');
+            const outsideDhakaLocationSelect = document.getElementById('outsideDhakaLocation');
             const paymentNumberInput = document.getElementById('paymentNumber');
             const transactionIdInput = document.getElementById('transactionId');
 
-            if (deliveryLocation === 'insideDhaka') {
-                deliveryPaymentGroup.classList.add('hidden');
-                paymentNumberGroup.classList.add('hidden');
-                transactionIdGroup.classList.add('hidden');
-                outsideDhakaLocationGroup.classList.add('hidden');
-                paymentNotice.style.display = 'none';
-                deliveryPaymentMethod.removeAttribute('required');
-                outsideDhakaLocation.removeAttribute('required');
-                paymentNumberInput.removeAttribute('required');
-                transactionIdInput.removeAttribute('required');
-            } else {
-                deliveryPaymentGroup.classList.remove('hidden');
-                outsideDhakaLocationGroup.classList.remove('hidden');
-                paymentNotice.style.display = 'block';
-                deliveryPaymentMethod.setAttribute('required', 'true');
-                outsideDhakaLocation.setAttribute('required', 'true');
-                paymentNumberGroup.classList.remove('hidden');
-                transactionIdGroup.classList.remove('hidden');
-                paymentNumberInput.setAttribute('required', 'true');
-                transactionIdInput.setAttribute('required', 'true');
-            }
-            updateCartTotal();
+            const isOutsideDhaka = deliveryLocation === 'outsideDhaka';
+
+            // Toggle visibility
+            outsideDhakaLocationGroup.classList.toggle('hidden', !isOutsideDhaka);
+            deliveryPaymentGroup.classList.toggle('hidden', !isOutsideDhaka);
+            paymentNotice.style.display = isOutsideDhaka ? 'block' : 'none';
+
+            // Determine if payment details should be shown
+            const selectedPaymentMethod = deliveryPaymentMethodSelect.value;
+            const showPaymentDetails = isOutsideDhaka && ['bkash', 'nagad', 'rocket'].includes(selectedPaymentMethod);
+            paymentNumberGroup.classList.toggle('hidden', !showPaymentDetails);
+            transactionIdGroup.classList.toggle('hidden', !showPaymentDetails);
+
+            // Set required attributes
+            outsideDhakaLocationSelect.required = isOutsideDhaka;
+            deliveryPaymentMethodSelect.required = isOutsideDhaka;
+            paymentNumberInput.required = showPaymentDetails;
+            transactionIdInput.required = showPaymentDetails;
+
+            // Reset values if visibility or main location changes
+             if (!isOutsideDhaka) {
+                 outsideDhakaLocationSelect.value = '';
+                 deliveryPaymentMethodSelect.value = '';
+             }
+             if (!showPaymentDetails || !isOutsideDhaka) {
+                  paymentNumberInput.value = '';
+                  transactionIdInput.value = '';
+             }
+             // No need to reset deliveryPaymentMethodSelect if isOutsideDhaka is true but showPaymentDetails is false
+
+            updateCartTotal(); // Recalculate total
         }
 
-        // শেয়ার বাটন টগল করা
-        document.getElementById('shareButton').addEventListener('click', () => {
+
+        // --- Event Handlers ---
+
+        // Delivery Location Change Handler
+        function handleDeliveryLocationChange(event) {
+            // event.target.value gives the value of the clicked radio
+             updateDeliveryPaymentFields(event.target.value);
+         }
+
+        // Delivery Payment Method Change Handler
+        function handleDeliveryPaymentMethodChange() {
+             const deliveryLocationRadio = document.querySelector('input[name="deliveryLocation"]:checked');
+             // Only update visibility of num/trxid if outside Dhaka is active
+             if (deliveryLocationRadio && deliveryLocationRadio.value === 'outsideDhaka') {
+                 updateDeliveryPaymentFields(deliveryLocationRadio.value);
+             }
+         }
+
+
+        // Order Form Submit Handler - **Aligned Data Structure**
+        async function handleOrderSubmit(event) {
+            event.preventDefault(); // Prevent default form submission
+            if (!currentUser) {
+                showToast('অর্ডার করার জন্য লগইন আবশ্যক।', 'error');
+                return;
+            }
+            if (checkoutCart.length === 0) {
+                showToast('আপনার কার্ট খালি। অর্ডার করার জন্য অনুগ্রহ করে আইটেম যোগ করুন।', 'error');
+                return;
+            }
+
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> আপনার অর্ডার প্রসেস করা হচ্ছে...';
+
+            // Get Form Data using FormData for reliability
+            const formData = new FormData(checkoutForm);
+            const customerName = formData.get('customerName')?.trim() || '';
+            const phoneNumber = formData.get('phoneNumber')?.trim() || '';
+            const address = formData.get('address')?.trim() || '';
+            const deliveryLocation = formData.get('deliveryLocation'); // 'insideDhaka' or 'outsideDhaka'
+            const outsideDhakaLocation = formData.get('outsideDhakaLocation'); // Value or empty string
+            const deliveryNote = formData.get('deliveryNote')?.trim() || '';
+            const deliveryPaymentMethod = formData.get('deliveryPaymentMethod'); // Value or empty string
+            const paymentNumber = formData.get('paymentNumber')?.trim() || '';
+            const transactionId = formData.get('transactionId')?.trim() || '';
+            const productPaymentMethod = formData.get('productPaymentMethod'); // Hidden field 'cod'
+
+
+            // --- Comprehensive Validation ---
+             let isValid = true;
+             const errors = [];
+             if (!customerName) errors.push("নাম প্রয়োজন।");
+             if (!phoneNumber) errors.push("ফোন নম্বর প্রয়োজন।");
+             else if (!/^01[3-9][0-9]{8}$/.test(phoneNumber)) errors.push("১১ ডিজিটের সঠিক ফোন নম্বর প্রয়োজন।");
+             if (!address) errors.push("ঠিকানা প্রয়োজন।");
+             if (!deliveryLocation) errors.push("ডেলিভারি এলাকা নির্বাচন করুন।"); // Should not happen with default checked
+
+             if (deliveryLocation === 'outsideDhaka') {
+                  if (!outsideDhakaLocation) errors.push("ঢাকার বাইরের জেলা নির্বাচন করুন।");
+                  if (!deliveryPaymentMethod) errors.push("ডেলিভারি চার্জের পেমেন্ট মেথড নির্বাচন করুন।");
+                  else if (['bkash', 'nagad', 'rocket'].includes(deliveryPaymentMethod)) {
+                      if (!paymentNumber) errors.push("আপনার পেমেন্ট নম্বর প্রয়োজন।");
+                      else if (!/^01[3-9][0-9]{8}$/.test(paymentNumber)) errors.push("১১ ডিজিটের সঠিক পেমেন্ট নম্বর প্রয়োজন।");
+                      if (!transactionId) errors.push("পেমেন্টের ট্রানজাকশন আইডি প্রয়োজন।");
+                  }
+             }
+
+             if (errors.length > 0) {
+                  showToast(`অনুগ্রহ করে ফর্মটি সঠিকভাবে পূরণ করুন: ${errors.join(' ')}`, 'error');
+                  // Focus logic can be added here if desired
+                  submitButton.disabled = false;
+                  submitButton.innerHTML = '<i class="fas fa-check-circle mr-2"></i> অর্ডার কনফার্ম করুন';
+                  return; // Stop submission
+              }
+
+
+            // --- Prepare Order Data (Matching User's Simpler Structure + Required Fields) ---
+            const deliveryFee = deliveryLocation === 'insideDhaka' ? 70.00 : 160.00;
+            const cartSubTotal = checkoutCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const totalAmount = cartSubTotal + deliveryFee;
+
+            const orderData = {
+                // --- Fields from User's Simpler Structure ---
+                customerName,
+                phoneNumber,
+                address,
+                deliveryLocation,
+                outsideDhakaLocation: deliveryLocation === 'outsideDhaka' ? outsideDhakaLocation : null,
+                deliveryNote: deliveryNote || null,
+                deliveryPaymentMethod: deliveryLocation === 'outsideDhaka' ? deliveryPaymentMethod : 'cod', // Use 'cod' if inside Dhaka
+                paymentNumber: deliveryLocation === 'outsideDhaka' && ['bkash', 'nagad', 'rocket'].includes(deliveryPaymentMethod) ? paymentNumber : null, // Store only if relevant
+                transactionId: deliveryLocation === 'outsideDhaka' && ['bkash', 'nagad', 'rocket'].includes(deliveryPaymentMethod) ? transactionId : null, // Store only if relevant
+                productPaymentMethod, // Should be 'cod'
+
+                // Cart items in the desired format
+                cartItems: checkoutCart.map(item => ({
+                    id: item.id,
+                    name: item.name,
+                    price: item.price,
+                    quantity: item.quantity,
+                    image: item.image // Already processed image URL
+                })),
+
+                deliveryFee,
+                totalAmount,
+                orderDate: new Date().toISOString(), // Use standard ISO format
+                advancePayment: deliveryLocation === 'outsideDhaka' ? deliveryFee : 0,
+
+                // --- Essential Fields from Complex Structure (for rules/queries) ---
+                userEmail: currentUser.email,
+                userId: currentUser.uid,
+                status: 'pending' // Initial status is crucial
+            };
+
+            // NOTE: We are NOT including `orderId: Date.now()` because `push()` generates the ID.
+
+            console.log("Submitting Final Order Data Structure:", JSON.stringify(orderData, null, 2));
+
+            // --- Submit to Firebase using push() ---
+            try {
+                const ordersRef = ref(database, 'orders'); // Reference to the 'orders' list
+                const newOrderRef = await push(ordersRef, orderData); // Use push for unique ID
+                const newOrderId = newOrderRef.key; // Get the generated ID from Firebase
+
+                console.log("Order submitted successfully! Firebase Auto-Generated Order ID:", newOrderId);
+
+                const successMsg = `আপনার অর্ডার (ID: ${newOrderId}) সফলভাবে প্লেস করা হয়েছে।`;
+                showToast(successMsg, 'success', 5000); // Show longer success message
+
+                // Clear relevant data and reset form
+                 if (!isBuyNowMode) { // Clear localStorage only if it was a cart checkout
+                    console.log("Clearing localStorage cartItems (Cart Mode).");
+                    localStorage.removeItem('cartItems');
+                 } else {
+                     console.log("Skipping localStorage clear (Buy Now Mode).");
+                 }
+
+                checkoutCart = []; // Clear the internal cart array
+                displayCheckoutItems(); // Update UI to show empty cart
+                updateCartTotal(); // Update totals to zero
+                checkoutForm.reset(); // Reset form fields
+
+                // Reset delivery location to default and update conditional fields
+                 document.querySelector('input[name="deliveryLocation"][value="insideDhaka"]').checked = true;
+                 updateDeliveryPaymentFields('insideDhaka');
+
+                 // Prefill name again if available after reset
+                 if (currentUser && currentUser.displayName) {
+                    document.getElementById('customerName').value = currentUser.displayName;
+                  }
+
+                 // Disable button again after successful submission and reset
+                  submitButton.disabled = true;
+                  submitButton.innerHTML = '<i class="fas fa-check-circle mr-2"></i> অর্ডার সফল হয়েছে!';
+
+
+                 // Optionally redirect after a delay
+                 // setTimeout(() => { window.location.href = `order-success.html?orderId=${newOrderId}`; }, 2500);
+
+
+            } catch (error) {
+                console.error("Firebase order submission failed:", error);
+                // Provide more context if possible
+                showToast(`অর্ডার সাবমিট করার সময় একটি ত্রুটি হয়েছে। (${error.code || error.message}) অনুগ্রহ করে আবার চেষ্টা করুন।`, 'error');
+                 // Re-enable button on failure to allow retry
+                 submitButton.disabled = false;
+                 submitButton.innerHTML = '<i class="fas fa-check-circle mr-2"></i> অর্ডার কনফার্ম করুন';
+            }
+            // The finally block is removed as the button state is handled within try/catch
+        }
+
+
+        // Setup Share Button Toggle
+        function setupShareButton() {
+            const shareButton = document.getElementById('shareButton');
             const socialIcons = document.getElementById('socialIcons');
-            socialIcons.classList.toggle('hidden');
+            if (!shareButton || !socialIcons) return;
+            shareButton.addEventListener('click', (e) => {
+                e.stopPropagation(); socialIcons.classList.toggle('hidden');
+            });
+            // Close when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!shareButton.contains(e.target) && !socialIcons.contains(e.target)) {
+                    socialIcons.classList.add('hidden');
+                }
+            });
+        }
+
+        // --- Initial Setup on DOM Load ---
+        document.addEventListener("DOMContentLoaded", () => {
+            console.log("DOM fully loaded and parsed.");
+            loadingIndicator.classList.remove('hidden'); // Show loading indicator
+            checkoutForm.classList.add('hidden');    // Hide form initially
+            loginPrompt.classList.add('hidden');   // Hide login prompt initially
+
+            // Load Header/Footer using jQuery
+             try {
+                  $("#header").load("header.html", (response, status, xhr) => {
+                     if (status === "error") console.error("Header load failed:", xhr.status, xhr.statusText);
+                     else console.log("Header loaded successfully.");
+                 });
+                 $("#footer").load("footer.html", (response, status, xhr) => {
+                      if (status === "error") console.error("Footer load failed:", xhr.status, xhr.statusText);
+                      else console.log("Footer loaded successfully.");
+                 });
+             } catch (e) {
+                 console.error("Error initiating header/footer load:", e);
+             }
+
+
+            // Attach Event Listeners to form elements *after* ensuring form exists
+            if (checkoutForm) {
+                document.querySelectorAll('input[name="deliveryLocation"]').forEach(radio => {
+                    radio.addEventListener('change', handleDeliveryLocationChange);
+                });
+                const deliveryMethodSelect = document.getElementById('deliveryPaymentMethod');
+                if (deliveryMethodSelect) {
+                    deliveryMethodSelect.addEventListener('change', handleDeliveryPaymentMethodChange);
+                }
+                checkoutForm.addEventListener('submit', handleOrderSubmit);
+                console.log("Form event listeners attached.");
+            } else {
+                 console.error("Checkout form not found on DOMContentLoaded!");
+            }
+
+
+            // Setup other UI interactions
+            setupShareButton();
+
+            // Timeout for auth state check (Fallback)
+            setTimeout(() => {
+                 if (!authInitialized) {
+                     console.warn("Auth state check timed out after 7 seconds.");
+                     loadingIndicator.classList.add('hidden');
+                     if (!currentUser) { // Only show error if user is still not determined
+                        loginPrompt.classList.add('hidden'); // Hide potential redirect message
+                        showToast("ব্যবহারকারী সেশন লোড করতে সমস্যা হচ্ছে। ইন্টারনেট সংযোগ পরীক্ষা করে পেজ রিফ্রেশ করুন।", "error");
+                     }
+                 }
+             }, 7000); // 7 seconds timeout
+
         });
+
     </script>
+
 </body>
 </html>
