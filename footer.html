@@ -1,17 +1,245 @@
-<!DOCTYPE html>
-<html>
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title></title>
-</head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>কমপ্যাক্ট ফুটার (ড্রপডাউন সহ)</title>
+    <!-- প্রয়োজনীয় CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css"> <!-- আপনার কাস্টম স্টাইলশীট -->
+    <style>
+        /* কাস্টম ব্র্যান্ড কালার */
+        :root {
+            --lipshine-color: #E52E71; /* Example color */
+            --lipshine-dark-color: #C41E5B; /* Example darker shade */
+        }
+        .text-lipshine { color: var(--lipshine-color); }
+        .bg-lipshine { background-color: var(--lipshine-color); }
+        .border-lipshine { border-color: var(--lipshine-color); }
+        .hover\:bg-lipshine-dark:hover { background-color: var(--lipshine-dark-color); }
+        .focus\:ring-lipshine:focus { --tw-ring-color: var(--lipshine-color); box-shadow: 0 0 0 2px rgba(229, 46, 113, 0.4); }
+        .ring-lipshine { --tw-ring-color: var(--lipshine-color); }
 
-<body>
-  
-</body>
-    <!-- ফুটার -->
-    <footer class="bg-brushstroke text-white p-4 text-center">
-      <p>&copy; ২০২৫ Any's Beauty Corner। সর্বস্বত্ব সংরক্ষিত।</p>
+        /* ফুটার স্পেসিফিক স্টাইল */
+        footer a:not(.social-icon-link):not(.dev-link) { transition: color 0.2s ease-in-out; }
+        footer a:not(.social-icon-link):not(.dev-link):hover { color: var(--lipshine-color); }
+        #newsletterEmail:focus { border-color: var(--lipshine-color); }
+        #scrollToTopBtn { transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out, transform 0.2s ease-in-out; }
+        #scrollToTopBtn:hover { transform: scale(1.1); }
+        footer a { text-decoration: none; }
+        footer ul { list-style: none; padding: 0; margin: 0; }
+
+        /* Collapsible Menu Styles */
+        .footer-menu-toggle {
+            display: flex; justify-content: space-between; align-items: center; width: 100%; text-align: left; background: none; border: none;
+            border-bottom: 1px solid rgba(107, 114, 128, 0.3); padding-bottom: 0.5rem; cursor: pointer; color: white;
+        }
+        @media (min-width: 768px) { /* md breakpoint */
+            .footer-menu-toggle { cursor: default; pointer-events: none; border-bottom: 1px solid rgba(107, 114, 128, 0.3); }
+            .footer-menu-toggle i { display: none; } /* Hide icon on desktop */
+        }
+        .footer-menu-toggle h4 { margin-bottom: 0; padding-bottom: 0; border: none; font-size: 1rem; font-weight: 600; }
+        .footer-menu-content { overflow: hidden; transition: max-height 0.5s ease-out, opacity 0.5s ease-out; max-height: 0; opacity: 0; }
+        .footer-menu-content.open { max-height: 500px; opacity: 1; margin-top: 0.75rem; }
+        @media (min-width: 768px) { /* md breakpoint */
+            .footer-menu-content { max-height: none !important; opacity: 1 !important; margin-top: 0.75rem !important; display: block !important; }
+        }
+        /* Icon styles */
+        .footer-menu-toggle i { transition: transform 0.3s ease-out; }
+        .footer-menu-toggle[aria-expanded="true"] i { transform: rotate(180deg); }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+
+    <!-- Footer Section Start -->
+    <footer class="bg-gray-900 text-gray-400 py-10">
+        <div class="container mx-auto px-4 max-w-6xl">
+
+            <!-- Top Row: Brand Info & Social Links -->
+            <div class="flex flex-col md:flex-row justify-between items-center md:items-start gap-8 mb-8 pb-8 border-b border-gray-700/50">
+                <div class="text-center md:text-left md:max-w-sm">
+                     <a href="index.html" class="inline-flex items-center space-x-3 group mb-4" aria-label="Any's Beauty Corner Home">
+                        <img alt="Any's Beauty Corner লোগো" class="h-10 w-10 rounded-full border-2 border-lipshine group-hover:opacity-90 transition-opacity" src="https://anysbeautycorner.com/logo.png" width="40" height="40" onerror="this.style.display='none';">
+                        <span class="text-lg font-semibold text-white group-hover:text-lipshine transition-colors">Any's Beauty Corner</span>
+                    </a>
+                    <p class="text-xs leading-relaxed">আপনার সৌন্দর্য চর্চার বিশ্বস্ত সঙ্গী।</p>
+                </div>
+                <div class="flex space-x-3 mt-4 md:mt-0">
+                     <a href="https://www.facebook.com/Anysbeautycorner" target="_blank" rel="noopener noreferrer" aria-label="Facebook" title="Facebook" class="social-icon-link bg-gray-700 hover:bg-blue-600 text-gray-300 hover:text-white h-8 w-8 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110"><i class="fab fa-facebook-f text-sm"></i></a>
+                     <a href="https://www.instagram.com/anysbeautycorner" target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Instagram" class="social-icon-link bg-gray-700 hover:bg-pink-600 text-gray-300 hover:text-white h-8 w-8 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110"><i class="fab fa-instagram text-sm"></i></a>
+                     <a href="https://wa.me/8801931866636" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" title="WhatsApp" class="social-icon-link bg-gray-700 hover:bg-green-500 text-gray-300 hover:text-white h-8 w-8 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110"><i class="fab fa-whatsapp text-sm"></i></a>
+                     <a href="https://www.youtube.com/anysbeautycorner" target="_blank" rel="noopener noreferrer" aria-label="YouTube" title="YouTube" class="social-icon-link bg-gray-700 hover:bg-red-600 text-gray-300 hover:text-white h-8 w-8 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110"><i class="fab fa-youtube text-sm"></i></a>
+                     <a href="https://www.tiktok.com/@anysbeautycorner" target="_blank" rel="noopener noreferrer" aria-label="TikTok" title="TikTok" class="social-icon-link bg-gray-700 hover:bg-black text-gray-300 hover:text-white h-8 w-8 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110"><i class="fab fa-tiktok text-sm"></i></a>
+                </div>
+            </div>
+
+            <!-- Middle Row: Links, Contact, Newsletter -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10 mb-8">
+                <!-- দরকারি লিংক -->
+                <div>
+                    <button type="button" class="footer-menu-toggle" aria-expanded="false">
+                        <h4>দরকারি লিংক</h4>
+                        <i class="fas fa-chevron-down text-xs ml-2 transition-transform duration-300 md:hidden"></i>
+                    </button>
+                    <div class="footer-menu-content md:block">
+                        <ul class="space-y-2">
+                            <!-- *** লিংকগুলো যোগ করা হয়েছে *** -->
+                            <li><a href="index.html" class="text-xs flex items-center"><i class="fas fa-circle text-[5px] mr-2 opacity-50"></i> হোম</a></li>
+                            <li><a href="products.html" class="text-xs flex items-center"><i class="fas fa-circle text-[5px] mr-2 opacity-50"></i> সকল প্রোডাক্ট</a></li>
+                            <li><a href="order-track.html" class="text-xs flex items-center"><i class="fas fa-circle text-[5px] mr-2 opacity-50"></i> অর্ডার ট্র্যাক</a></li>
+                            <li><a href="about.html" class="text-xs flex items-center"><i class="fas fa-circle text-[5px] mr-2 opacity-50"></i> আমাদের সম্পর্কে</a></li>
+                            <li><a href="blog.html" class="text-xs flex items-center"><i class="fas fa-circle text-[5px] mr-2 opacity-50"></i> ব্লগ</a></li>
+                            <li><a href="contact.html" class="text-xs flex items-center"><i class="fas fa-circle text-[5px] mr-2 opacity-50"></i> যোগাযোগ</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- পণ্যের ক্যাটাগরি -->
+                <div>
+                    <button type="button" class="footer-menu-toggle" aria-expanded="false">
+                        <h4>ক্যাটাগরি</h4>
+                        <i class="fas fa-chevron-down text-xs ml-2 transition-transform duration-300 md:hidden"></i>
+                    </button>
+                    <div class="footer-menu-content md:block">
+                        <ul class="space-y-2">
+                            <!-- *** লিংকগুলো যোগ করা হয়েছে *** -->
+                            <li><a href="products.html?category=all" class="text-xs flex items-center"><i class="fas fa-circle text-[5px] mr-2 opacity-50"></i> সকল প্রোডাক্ট</a></li>
+                            <li><a href="products.html?category=cosmetics" class="text-xs flex items-center"><i class="fas fa-circle text-[5px] mr-2 opacity-50"></i> মেকআপ</a></li>
+                            <li><a href="products.html?category=skincare" class="text-xs flex items-center"><i class="fas fa-circle text-[5px] mr-2 opacity-50"></i> স্কিনকেয়ার</a></li>
+                            <li><a href="products.html?category=haircare" class="text-xs flex items-center"><i class="fas fa-circle text-[5px] mr-2 opacity-50"></i> হেয়ারকেয়ার</a></li>
+                            <li><a href="products.html?category=health" class="text-xs flex items-center"><i class="fas fa-circle text-[5px] mr-2 opacity-50"></i> স্বাস্থ্য পণ্য</a></li>
+                            <li><a href="products.html?category=accessories" class="text-xs flex items-center"><i class="fas fa-circle text-[5px] mr-2 opacity-50"></i> এক্সেসরিজ</a></li>
+                        </ul>
+                    </div>
+                </div>
+                 <!-- যোগাযোগ -->
+                 <div class="mt-6 sm:mt-0">
+                    <h4 class="text-sm font-semibold uppercase tracking-wider text-white border-b border-gray-700/50 pb-2 mb-4">যোগাযোগ</h4>
+                     <ul class="space-y-3 text-xs">
+                        <li class="flex items-start"><i class="fas fa-map-marker-alt mt-1 mr-2 text-lipshine w-3 text-center flex-shrink-0"></i><span>মিরপুর ১০, ঢাকা</span></li>
+                        <li class="flex items-center"><i class="fas fa-phone-alt mr-2 text-lipshine w-3 text-center flex-shrink-0"></i><a href="tel:+8801931866636" class="hover:text-lipshine">+880 1931-866636</a></li>
+                        <li class="flex items-center"><i class="fas fa-envelope mr-2 text-lipshine w-3 text-center flex-shrink-0"></i><a href="mailto:info@anysbeautycorner.com" class="hover:text-lipshine break-all">info@anysbeautycorner.com</a></li>
+                    </ul>
+                </div>
+
+            <!-- Bottom Row: Copyright, Legal Links, Payment -->
+            <div class="border-t border-gray-700/50 pt-6 mt-6 text-xs">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="text-center md:text-left order-last md:order-first">
+                        <p>© <span id="currentYear"></span> Any's Beauty Corner. সর্বস্বত্ব সংরক্ষিত।</p>
+                         <p class="mt-1 text-gray-500">ডেভেলপ করেছে: <a href="https://devxhub.com" target="_blank" rel="noopener noreferrer" class="dev-link hover:text-lipshine transition font-medium">Nahid</a></p>
+                    </div>
+                    <nav class="flex flex-wrap justify-center gap-x-4 gap-y-1">
+                        <a href="privacy-policy.html" class="hover:text-lipshine transition">প্রাইভেসি</a>
+                        <a href="terms-conditions.html" class="hover:text-lipshine transition">শর্তাবলী</a>
+                        <a href="return-policy.html" class="hover:text-lipshine transition">রিটার্ন</a>
+                        <a href="shipping-policy.html" class="hover:text-lipshine transition">শিপিং</a>
+                    </nav>
+                    <div class="flex flex-wrap gap-2 items-center justify-center md:justify-end order-first md:order-last">
+                         <i class="fab fa-cc-visa text-2xl text-gray-500" title="Visa"></i>
+                         <i class="fab fa-cc-mastercard text-2xl text-gray-500" title="Mastercard"></i>
+                         <img src="https://cdn.sslcommerz.com/public/image/bkash_logo.png" alt="bKash" class="h-5" title="bKash">
+                         <img src="https://cdn.sslcommerz.com/public/image/nagad_logo.png" alt="Nagad" class="h-5" title="Nagad">
+                    </div>
+                </div>
+            </div>
+        </div>
     </footer>
-</html>
+    <!-- Footer Section End -->
+
+
+    <!-- ফুটারের জন্য স্ক্রিপ্ট -->
+    <script>
+        (function() { // Wrap in IIFE
+            // Set Current Year
+            const currentYearElem = document.getElementById('currentYear');
+            if (currentYearElem) currentYearElem.textContent = new Date().getFullYear();
+
+            // Newsletter Form Handling
+            const newsletterForm = document.getElementById('newsletterForm');
+            if (newsletterForm) {
+                 const emailInput = newsletterForm.querySelector('#newsletterEmail');
+                 const submitBtn = newsletterForm.querySelector('button[type="submit"]');
+                 const messageDiv = document.getElementById('newsletterMessage');
+                 const loadingSpinner = submitBtn.querySelector('.loading-spinner');
+                 const buttonText = submitBtn.querySelector('.button-text');
+
+                 newsletterForm.addEventListener('submit', function(e) {
+                    e.preventDefault(); const email = emailInput.value.trim();
+                    if (email && /\S+@\S+\.\S+/.test(email)) {
+                        submitBtn.disabled = true; buttonText.classList.add('hidden'); loadingSpinner.classList.remove('hidden'); messageDiv.textContent = '';
+                        setTimeout(() => {
+                            const isSuccess = Math.random() > 0.2;
+                            messageDiv.textContent = isSuccess ? 'ধন্যবাদ! সাবস্ক্রিপশন সফল হয়েছে।' : 'সাবস্ক্রাইব করতে সমস্যা হয়েছে।';
+                            messageDiv.className = `text-xs mt-2 h-4 ${isSuccess ? 'text-green-400' : 'text-red-400'}`;
+                            if (isSuccess) newsletterForm.reset();
+                            submitBtn.disabled = false; buttonText.classList.remove('hidden'); loadingSpinner.classList.add('hidden');
+                            setTimeout(() => { messageDiv.textContent = ''; }, 5000);
+                        }, 1200);
+                    } else { messageDiv.textContent = 'সঠিক ইমেইল ঠিকানা দিন।'; messageDiv.className = 'text-xs mt-2 h-4 text-red-400'; setTimeout(() => { messageDiv.textContent = ''; }, 3000); } });
+            }
+
+            // Scroll to Top Button Logic
+            const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+            if (scrollToTopBtn) {
+                let isVisible = false; const checkScroll = () => { const shouldBeVisible = window.pageYOffset > 400; if (shouldBeVisible !== isVisible) { isVisible = shouldBeVisible; scrollToTopBtn.classList.toggle('opacity-0', !isVisible); scrollToTopBtn.classList.toggle('invisible', !isVisible); scrollToTopBtn.classList.toggle('opacity-100', isVisible); scrollToTopBtn.classList.toggle('visible', isVisible); } };
+                window.addEventListener('scroll', checkScroll, { passive: true });
+                scrollToTopBtn.addEventListener('click', () => { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+                checkScroll();
+            }
+
+            // Footer Menu Toggle Logic
+            function toggleFooterMenu(button) {
+                const content = button.nextElementSibling; const icon = button.querySelector('i'); const isOpen = content.classList.contains('open');
+                button.setAttribute('aria-expanded', !isOpen); content.classList.toggle('open');
+                if (isOpen) { // Closing
+                     content.style.maxHeight = '0'; content.style.opacity = '0';
+                     if(icon) icon.classList.remove('rotate-180');
+                 } else { // Opening
+                     content.style.maxHeight = content.scrollHeight + "px"; // Set max-height for transition
+                     content.style.opacity = '1';
+                     if(icon) icon.classList.add('rotate-180');
+                 }
+            }
+
+            // Add event listeners to all toggle buttons
+            const toggleButtons = document.querySelectorAll('.footer-menu-toggle');
+            toggleButtons.forEach(button => {
+                button.addEventListener('click', () => { if (window.innerWidth < 768) toggleFooterMenu(button); }); // Only toggle on mobile
+                // Initial state check for desktop
+                if (window.innerWidth >= 768) {
+                     const content = button.nextElementSibling;
+                     content.classList.add('open'); content.style.maxHeight = 'none'; content.style.opacity = '1'; button.setAttribute('aria-expanded', 'true');
+                 }
+            });
+
+            // Adjust on resize (optional but good practice)
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                 clearTimeout(resizeTimeout);
+                 resizeTimeout = setTimeout(() => {
+                     toggleButtons.forEach(button => {
+                         const content = button.nextElementSibling;
+                         const icon = button.querySelector('i');
+                         if (window.innerWidth >= 768) {
+                              content.classList.add('open'); content.style.maxHeight = 'none'; content.style.opacity = '1'; button.setAttribute('aria-expanded', 'true');
+                              if(icon) icon.classList.remove('rotate-180');
+                          } else {
+                              // If it was open on desktop, close it on mobile unless explicitly opened by click
+                              if(content.classList.contains('open') && button.getAttribute('aria-expanded') === 'true' && !button.dataset.mobileOpen ) {
+                                   content.classList.remove('open'); content.style.maxHeight = '0'; content.style.opacity = '0'; button.setAttribute('aria-expanded', 'false');
+                                   if(icon) icon.classList.remove('rotate-180');
+                              } else if (!content.classList.contains('open')) {
+                                   content.style.maxHeight = '0'; content.style.opacity = '0'; button.setAttribute('aria-expanded', 'false');
+                                    if(icon) icon.classList.remove('rotate-180');
+                              }
+                          }
+                     });
+                 }, 200);
+             });
+
+
+        })(); // End IIFE
+    </script>
+
+</body>
