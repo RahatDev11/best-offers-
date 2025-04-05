@@ -517,6 +517,29 @@ document.addEventListener('DOMContentLoaded', () => {
     if (socialIcons) {
         socialIcons.addEventListener('click', (e) => {
             e.stopPropagation();
+            const socialIcons = document.getElementById('socialIcons');
+            const shareButton = document.getElementById('shareButton');
+            if (socialIcons && shareButton) {
+                socialIcons.classList.toggle('hidden');
+                shareButton.classList.toggle('hidden');
+            }
+        });
+    }
+
+    document.addEventListener('click', (e) => {
+        const socialIcons = document.getElementById('socialIcons');
+        const shareButton = document.getElementById('shareButton');
+
+        if (socialIcons && !socialIcons.classList.contains('hidden') && !e.target.closest('#shareButton') && !e.target.closest('#socialIcons')) {
+            socialIcons.classList.add('hidden');
+            if (shareButton) shareButton.classList.remove('hidden');
+        }
+    });
+
+    const socialIcons = document.getElementById('socialIcons');
+    if (socialIcons) {
+        socialIcons.addEventListener('click', (e) => {
+            e.stopPropagation();
         });
     }
 });
