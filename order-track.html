@@ -3,143 +3,237 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>অর্ডার ট্র্যাক - আমার দোকান</title>
+    <title>অর্ডার ট্র্যাক - Any's Beauty Corner</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
+        /* Lipstick কালার ভেরিয়েবল */
+        :root {
+            --lipstick-color: #A52A2A; /* Brownish Red */
+            --lipstick-dark-color: #800020; /* Burgundy for hover */
+            --success-color: #10B981; /* Emerald for shipped/delivered */
+            --processing-color: #F59E0B; /* Amber for processing */
+            --confirmed-color: #3B82F6; /* Blue for confirmed */
+            --packaging-color: #8B5CF6; /* Violet for packaging */
+            --failed-color: #EF4444; /* Red for failed */
+            --cancelled-color: #6B7280; /* Gray for cancelled */
+        }
+
+        .text-lipstick { color: var(--lipstick-color); }
+        .bg-lipstick { background-color: var(--lipstick-color); }
+        .hover\:bg-lipstick-dark:hover { background-color: var(--lipstick-dark-color); }
+
+        /* Main Body & Container */
+        body {
+            font-family: 'Inter', sans-serif; /* একটি আধুনিক ফন্ট */
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+
+        /* অর্ডার আইটেম স্টাইল */
         .order-item {
-            border: 1px solid #e5e7eb;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            border-radius: 0.5rem;
+            background-color: white;
+            border: 1px solid #e5e7eb; /* Tailwind gray-200 */
+            padding: 1.25rem; /* 20px */
+            margin-bottom: 1.25rem; /* 20px */
+            border-radius: 0.75rem; /* 12px */
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.25s ease-in-out;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
         }
         .order-item:hover {
-            background-color: #f3f4f6;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-4px) scale(1.01);
         }
-        .status-processing { color: #f59e0b; }
-        .status-confirmed { color: #3b82f6; }
-        .status-packaging { color: #8b5cf6; }
-        .status-shipped { color: #10b981; }
-        .status-delivered { color: #22c55e; }
-        .status-failed { color: #ef4444; }
-        .status-cancelled { color: #6b7280; }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
+        .order-item p {
+            margin-bottom: 0.35rem;
+            color: #4b5563; /* Tailwind gray-600 */
+            font-size: 0.9rem;
+        }
+        .order-item p strong {
+            color: #1f2937; /* Tailwind gray-800 */
+            font-weight: 500; /* Medium weight */
+        }
+        .order-item .order-id-status {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            z-index: 1000;
+            margin-bottom: 0.75rem;
+        }
+        .order-item .order-id-status .order-id {
+            font-size: 0.8rem;
+            color: #6b7280; /* gray-500 */
+        }
+         .order-item .order-id-status .order-id strong {
+            color: #374151; /* gray-700 */
+        }
+        .order-item .product-summary {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--lipstick-color);
+            margin-bottom: 0.5rem;
+        }
+
+
+        /* স্ট্যাটাস ব্যাজ */
+        .status-badge {
+            font-size: 0.75rem; /* 12px */
+            font-weight: 600; /* Semibold */
+            padding: 0.25rem 0.75rem; /* 4px 12px */
+            border-radius: 9999px; /* Pill shape */
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .status-processing { background-color: #FEF3C7; color: #D97706; } /* Amber 100/600 */
+        .status-confirmed { background-color: #DBEAFE; color: #2563EB; }  /* Blue 100/600 */
+        .status-packaging { background-color: #EDE9FE; color: #7C3AED; }  /* Violet 100/600 */
+        .status-shipped { background-color: #D1FAE5; color: #059669; }   /* Emerald 100/600 */
+        .status-delivered { background-color: #DCFCE7; color: #16A34A; }  /* Green 100/600 */
+        .status-failed { background-color: #FEE2E2; color: #DC2626; }    /* Red 100/600 */
+        .status-cancelled { background-color: #F3F4F6; color: #4B5563; }  /* Gray 100/600 */
+        
+        /* মডাল স্টাইল */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.65); z-index: 1000; 
+            justify-content: center; align-items: center; padding: 1rem;
         }
         .modal-content {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 0.5rem;
-            max-width: 90%;
-            max-height: 90%;
-            overflow-y: auto;
-            position: relative;
+            background-color: white; padding: 1.5rem 2rem; border-radius: 0.75rem; /* 12px */
+            max-width: 95%; width: 650px; max-height: 90vh; overflow-y: auto; 
+            position: relative; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
         }
         .modal-close {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            font-size: 1.5rem;
-            cursor: pointer;
+            position: absolute; top: 1rem; right: 1rem; font-size: 1.75rem;
+            color: #9ca3af; cursor: pointer; line-height: 1;
         }
-        .cart-items {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
+        .modal-close:hover { color: #374151; }
+
+        .modal-content h3.main-title { /* মডালের প্রধান শিরোনাম */
+            font-size: 1.75rem; /* 28px */
+            font-weight: 700; /* Bold */
+            color: var(--lipstick-color);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            border-bottom: 2px solid #f3f4f6; /* light gray border */
+            padding-bottom: 0.75rem;
         }
+        .modal-content h4.section-title { /* সেকশন শিরোনাম */
+            font-size: 1.15rem; /* 18px */
+            font-weight: 600; /* Semibold */
+            color: var(--lipstick-color);
+            margin-top: 1.75rem;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.3rem;
+            border-bottom: 1px dotted #d1d5db; /* Dotted border */
+        }
+        .modal-content h4.section-title:first-of-type {
+            margin-top: 0; /* প্রথম সেকশন শিরোনামের উপরে মার্জিন থাকবে না */
+        }
+
+        .modal-content p { margin-bottom: 0.5rem; color: #374151; font-size: 0.95rem; line-height: 1.6; }
+        .modal-content p strong { font-weight: 600; color: #111827; }
+
+        /* কার্ট আইটেম (মডালে) */
+        .cart-items { display: flex; flex-direction: column; gap: 0.75rem; }
         .cart-item {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
+            display: flex; gap: 1rem; align-items: center;
+            padding: 0.75rem; background-color: #f9fafb; border-radius: 0.5rem;
         }
-        .cart-item img {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 0.25rem;
-        }
-        .progress-bar-container {
-            margin-top: 1rem;
-        }
+        .cart-item img { width: 55px; height: 55px; object-fit: cover; border-radius: 0.375rem; }
+        .cart-item-details p { font-size: 0.9rem; margin-bottom: 0.2rem; }
+        .cart-item-details p.font-medium { font-weight: 500; color: #1f2937; }
+
+        /* প্রোগ্রেস বার */
+        .progress-bar-container { margin-top: 0.5rem; margin-bottom: 1.75rem; }
         .progress-bar {
-            width: 100%;
-            background-color: #e5e7eb;
-            height: 0.5rem;
-            border-radius: 0.25rem;
-            overflow: hidden;
+            width: 100%; background-color: #e5e7eb; height: 0.75rem; /* বার একটু মোটা */
+            border-radius: 0.375rem; overflow: hidden;
         }
         .progress-bar-fill {
-            height: 100%;
-            background-color: #f43f5e;
-            transition: width 0.3s;
+            height: 100%; background-color: var(--success-color); /* সবুজ রঙ */
+            transition: width 0.6s ease-in-out;
         }
-        .timeline {
-            position: relative;
-            padding-left: 2rem;
+
+        /* টাইমলাইন */
+        .timeline { margin-top: 0.5rem; position: relative; padding-left: 1.5rem; }
+        .timeline-item { position: relative; padding-left: 1.5rem; padding-bottom: 1.75rem; }
+        .timeline-item:last-child { padding-bottom: 0.25rem; }
+        .timeline-item::before { /* The vertical line */
+            content: ''; position: absolute; left: 0; top: 0.45rem; bottom: -0.45rem;
+            width: 3px; background-color: #d1d5db; border-radius: 2px;
         }
-        .timeline-item {
-            position: relative;
-            margin-bottom: 1rem;
-        }
+        .timeline-item:first-child::before { top: 0.45rem; }
+        .timeline-item:last-child::before { height: 0.45rem; bottom: auto; }
+
         .timeline-dot {
-            position: absolute;
-            left: -1.5rem;
-            top: 0.25rem;
-            width: 1rem;
-            height: 1rem;
-            background-color: #f43f5e;
-            border-radius: 50%;
+            position: absolute; left: -0.5rem; top: 0.25rem; 
+            width: 1.25rem; height: 1.25rem; background-color: white;
+            border: 3px solid var(--success-color); border-radius: 50%; z-index: 1;
         }
         .timeline-content {
-            border-left: 2px solid #e5e7eb;
-            padding-left: 1rem;
+            background-color: #f3f4f6; padding: 0.75rem 1rem; border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
+        .timeline-content p { margin-bottom: 0.25rem; font-size: 0.9rem; }
+        .timeline-content p strong { color: #1f2937; }
+        .timeline-content .text-timestamp { /* আপডেটের সময় */
+            color: #6b7280; font-size: 0.8rem; margin-top: 0.25rem; display: block;
+        }
+
+        /* লোডিং স্পিনার (আগেরটার মতই, শুধু রঙ text-lipstick থেকে ভেরিয়েবল) */
+        #loadingSpinner .spinner {
+            border: 4px solid rgba(165, 42, 42, 0.2); /* হালকা lipstick */
+            border-top: 4px solid var(--lipstick-color); 
+            border-radius: 50%; width: 3rem; height: 3rem; /* একটু বড় */
+            animation: spin 1.2s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #toast-notification { z-index: 2000 !important; }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 text-gray-800">
     <!-- হেডার -->
     <div id="header"></div>
 
     <!-- মেইন কন্টেন্ট -->
-    <div class="container mx-auto py-8 px-4">
-        <h1 class="text-3xl font-bold text-center mb-8 text-lipstick">আপনার অর্ডারসমূহ</h1>
+    <div class="container mx-auto py-10 px-4 min-h-screen">
+        <h1 class="text-3xl md:text-4xl font-bold text-center mb-12 text-lipstick">আপনার অর্ডারসমূহ</h1>
 
         <!-- লোডিং স্পিনার -->
-        <div id="loadingSpinner" class="flex justify-center items-center" style="display: none;">
-            <svg class="animate-spin h-8 w-8 text-lipstick" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-            </svg>
+        <div id="loadingSpinner" class="flex justify-center items-center py-16" style="display: none;">
+            <div class="spinner"></div>
         </div>
 
         <!-- লগইন প্রম্পট -->
-        <div id="loginPrompt" class="text-center" style="display: none;">
-            <p class="text-lg text-gray-600 mb-4">আপনার অর্ডার দেখতে অনুগ্রহ করে লগইন করুন।</p>
-            <button id="loginButton" class="bg-lipstick text-white px-6 py-2 rounded-lg hover:bg-opacity-90">লগইন করুন</button>
+        <div id="loginPrompt" class="text-center bg-white p-8 md:p-12 rounded-xl shadow-lg max-w-md mx-auto" style="display: none;">
+            <img src="images/logo.png" alt="লোগো" class="w-24 h-24 mx-auto mb-6 rounded-full shadow-sm"> <!-- আপনার লোগোর পাথ দিন -->
+            <h2 class="text-2xl font-semibold text-gray-700 mb-3">স্বাগতম!</h2>
+            <p class="text-gray-600 mb-8">আপনার সকল অর্ডার ট্র্যাক করতে এবং বিস্তারিত দেখতে অনুগ্রহ করে লগইন করুন।</p>
+            <button id="loginButton" class="w-full bg-lipstick text-white px-6 py-3 rounded-lg hover:bg-lipstick-dark text-lg font-semibold transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center">
+                <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512"><path fill="currentColor" d="M488 261.8C488 403.3 381.5 512 244 512 109.8 512 0 403.3 0 261.8c0-110.8 66.8-207.8 162.7-246.2C187.2 8.2 214.2 0 244 0c70.7 0 132.3 33.3 175.8 85.7C452 126.4 488 189.8 488 261.8zM100.7 273.6c0 .2 0 .4 0 .6 0 82.8 67.2 150 150 150s150-67.2 150-150c0-.2 0-.4 0-.6H100.7zM244 66.8c-98.3 0-179.3 82.7-179.3 185.2 0 8.4 1.3 16.6 2.8 24.6h353c1.5-8 2.8-16.2 2.8-24.6 0-102.5-81-185.2-179.3-185.2z"/></svg> <!-- একটি placeholder Google আইকন -->
+                Google দিয়ে লগইন করুন
+            </button>
         </div>
 
         <!-- অর্ডার লিস্ট -->
-        <div id="orderListContainer" style="display: none;">
-            <div id="orderList"></div>
+        <div id="orderListContainer" class="max-w-3xl mx-auto" style="display: none;">
+            <div id="orderList" class="space-y-5">
+                <!-- অর্ডার আইটেমগুলো এখানে যোগ হবে -->
+            </div>
         </div>
     </div>
 
     <!-- মডাল -->
     <div id="orderModal" class="modal">
         <div class="modal-content">
-            <span id="modalClose" class="modal-close">&times;</span>
-            <div id="modalContent"></div>
+            <span id="modalClose" class="modal-close hover:text-red-600 transition-colors">×</span>
+            <div id="modalContent">
+                <!-- মডালের কন্টেন্ট এখানে ডাইনামিকভাবে লোড হবে -->
+            </div>
         </div>
     </div>
 
@@ -148,347 +242,291 @@
 
     <!-- Firebase এবং স্ক্রিপ্ট -->
     <script type="module">
-        // Firebase SDK ইম্পোর্ট
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
-        import { getDatabase, ref, onValue, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getDatabase, ref, onValue, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-        // Firebase কনফিগারেশন
         const firebaseConfig = {
             apiKey: "AIzaSyCVSzQS1c7H4BLhsDF_fW8wnqUN4B35LPA",
             authDomain: "nahid-6714.firebaseapp.com",
             databaseURL: "https://nahid-6714-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "nahid-6714",
-            storageBucket: "nahid-6714.firebasestorage.app",
+            storageBucket: "nahid-6714.appspot.com", 
             messagingSenderId: "505741217147",
             appId: "1:505741217147:web:25ed4e9f0d00e3c4d381de",
             measurementId: "G-QZ7CTRKHCW"
         };
 
-        // Firebase ইনিশিয়ালাইজ
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const database = getDatabase(app);
-
-        // Google Auth Provider
         const provider = new GoogleAuthProvider();
 
-        // হেডার এবং ফুটার লোড করা
         document.addEventListener("DOMContentLoaded", function() {
             $("#header").load("header.html", function(response, status, xhr) {
                 if (status === "success") {
-                    console.log("header.html লোড হয়েছে");
-                    const searchInput = document.getElementById('searchInput');
                     const searchInputDesktop = document.getElementById('searchInputDesktop');
-
-                    if (searchInput) {
-                        searchInput.addEventListener('input', function(e) {
-                            if (window.searchProducts) {
-                                window.searchProducts();
-                            }
-                        });
+                    if(searchInputDesktop && typeof window.searchProductsDesktop === 'function') {
+                        searchInputDesktop.addEventListener('input', window.searchProductsDesktop);
                     }
-
-                    if (searchInputDesktop) {
-                        searchInputDesktop.addEventListener('input', function(e) {
-                            if (window.searchProductsDesktop) {
-                                window.searchProductsDesktop();
-                            }
-                        });
+                     const mobileSearchInput = document.getElementById('searchInput');
+                    if(mobileSearchInput && typeof window.searchProducts === 'function') {
+                        mobileSearchInput.addEventListener('input', window.searchProducts);
                     }
                 } else {
-                    console.error("header.html লোড করতে সমস্যা হয়েছে: ", xhr.status, xhr.statusText);
-                    $("#header").html("<p>হেডার লোড করতে সমস্যা হয়েছে।</p>");
+                    console.error("header.html load error:", xhr.status, xhr.statusText);
                 }
             });
-
             $("#footer").load("footer.html", function(response, status, xhr) {
-                if (status === "success") {
-                    console.log("footer.html লোড হয়েছে");
-                } else {
-                    console.error("footer.html লোড করতে সমস্যা হয়েছে: ", xhr.status, xhr.statusText);
-                    $("#footer").html("<p>ফুটার লোড করতে সমস্যা হয়েছে।</p>");
-                }
+                if (status === "error") console.error("footer.html load error:", xhr.status, xhr.statusText);
             });
 
-            // লগইন বাটনে ক্লিক হ্যান্ডলার
             const loginButton = document.getElementById('loginButton');
             if (loginButton) {
-                loginButton.addEventListener('click', () => {
-                    signInWithPopup(auth, provider)
-                        .then((result) => {
-                            const user = result.user;
-                            console.log("ইউজার লগইন করেছে: ", user.email);
-                            loadOrders(user.email);
-                        })
-                        .catch((error) => {
-                            console.error("লগইন করতে সমস্যা হয়েছে: ", error.message);
-                            showToast("লগইন করতে সমস্যা হয়েছে।");
-                        });
-                });
+                loginButton.addEventListener('click', handleGoogleLogin);
             }
 
-            // ইউজারের লগইন স্ট্যাটাস চেক করা
             onAuthStateChanged(auth, (user) => {
+                const loginPrompt = document.getElementById('loginPrompt');
+                const orderListContainer = document.getElementById('orderListContainer');
+                const loadingSpinner = document.getElementById('loadingSpinner');
+
                 if (user) {
-                    // ইউজার লগইন করা আছে
-                    document.getElementById('loginPrompt').style.display = 'none';
+                    loginPrompt.style.display = 'none';
+                    loadingSpinner.style.display = 'flex';
                     loadOrders(user.email);
                 } else {
-                    // ইউজার লগইন করা নেই
-                    document.getElementById('loginPrompt').style.display = 'block';
-                    document.getElementById('orderListContainer').style.display = 'none';
-                    document.getElementById('loadingSpinner').style.display = 'none';
+                    loginPrompt.style.display = 'block';
+                    orderListContainer.style.display = 'none';
+                    loadingSpinner.style.display = 'none';
+                    document.getElementById('orderList').innerHTML = '';
                 }
             });
         });
 
-        // টোস্ট নোটিফিকেশন ফাংশন
-        function showToast(message) {
-            const toast = document.createElement('div');
-            toast.id = 'toast';
-            toast.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-lipstick text-white px-4 py-2 rounded-lg shadow-lg z-50';
+        function handleGoogleLogin() {
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    showToast(`স্বাগতম, ${result.user.displayName}! আপনার অর্ডার লোড হচ্ছে।`, 'success');
+                })
+                .catch((error) => {
+                    console.error("Google login error:", error);
+                    let errorMessage = "লগইন করতে সমস্যা হয়েছে।";
+                    if (error.code === 'auth/popup-closed-by-user') {
+                        errorMessage = "আপনি লগইন পপআপটি বন্ধ করে দিয়েছেন।";
+                    } else if (error.code === 'auth/cancelled-popup-request') {
+                        errorMessage = "একাধিক লগইন চেষ্টার কারণে এটি বাতিল করা হয়েছে।";
+                    }
+                    showToast(errorMessage, 'error');
+                });
+        }
+        
+        function showToast(message, type = 'success') {
+            const toastId = 'toast-notification';
+            let toast = document.getElementById(toastId);
+            if (toast) toast.remove();
+
+            toast = document.createElement('div');
+            toast.id = toastId;
+            toast.className = `fixed bottom-6 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg shadow-xl text-base font-medium z-[2000] ${
+                type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
+            }`;
             toast.textContent = message;
             document.body.appendChild(toast);
-
-            setTimeout(() => {
-                toast.classList.add('hidden');
-                toast.remove();
-            }, 3000);
+            setTimeout(() => { toast.remove(); }, 3500);
         }
 
-        // ইউজারের Gmail এর উপর ভিত্তি করে অর্ডার লোড করা
         function loadOrders(userEmail) {
             const loadingSpinner = document.getElementById('loadingSpinner');
             const orderListContainer = document.getElementById('orderListContainer');
+            const orderListDiv = document.getElementById('orderList');
 
-            // লোডিং স্পিনার দেখানো
-            loadingSpinner.style.display = 'block';
+            loadingSpinner.style.display = 'flex';
             orderListContainer.style.display = 'none';
+            orderListDiv.innerHTML = '';
 
-            // Firebase থেকে ইউজারের Gmail এর উপর ভিত্তি করে অর্ডার খুঁজে বের করা
             const ordersRef = ref(database, 'orders');
-            const ordersQuery = query(ordersRef, orderByChild('userEmail'), equalTo(userEmail));
+            const userOrdersQuery = query(ordersRef, orderByChild('userEmail'), equalTo(userEmail));
 
-            onValue(ordersQuery, (snapshot) => {
+            onValue(userOrdersQuery, (snapshot) => {
                 const orders = [];
                 if (snapshot.exists()) {
                     snapshot.forEach((childSnapshot) => {
                         const order = childSnapshot.val();
                         order.key = childSnapshot.key;
-                        orders.push(order);
+                        if (order.orderId && order.orderDate) {
+                            orders.push(order);
+                        }
                     });
-                } else {
-                    console.log("এই ইমেইলে কোনো অর্ডার পাওয়া যায়নি।");
                 }
-
-                // লোডিং স্পিনার বন্ধ করা
+                
                 loadingSpinner.style.display = 'none';
+                orderListContainer.style.display = 'block';
 
                 if (orders.length > 0) {
-                    // অর্ডারগুলো সর্ট করা (নতুন অর্ডার উপরে)
-                    orders.sort((a, b) => b.orderId - a.orderId);
+                    orders.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate));
                     displayOrderList(orders);
-                    orderListContainer.style.display = 'block';
                 } else {
-                    showToast("আপনার কোনো অর্ডার নেই।");
-                    orderListContainer.style.display = 'block';
+                    orderListDiv.innerHTML = '<p class="text-center text-gray-600 text-lg py-10">আপনার কোনো অর্ডার খুঁজে পাওয়া যায়নি।</p>';
                 }
             }, (error) => {
-                console.error("অর্ডার লোড করতে সমস্যা হয়েছে: ", error.message, error.code);
-                showToast(`অর্ডার লোড করতে সমস্যা হয়েছে: ${error.message}`);
+                console.error("Error loading orders:", error);
+                showToast("অর্ডার লোড করতে সমস্যা হয়েছে: " + error.message, 'error');
                 loadingSpinner.style.display = 'none';
-                orderListContainer.style.display = 'none';
-            }, { onlyOnce: true });
-        }
-
-        // অর্ডার লিস্ট দেখানো
-        function displayOrderList(orders) {
-            const orderList = document.getElementById('orderList');
-            orderList.innerHTML = '';
-
-            if (orders.length === 0) {
-                orderList.innerHTML = '<p class="text-center text-gray-600">কোনো অর্ডার পাওয়া যায়নি।</p>';
-                return;
-            }
-
-            orders.forEach(order => {
-                const productNames = order.cartItems ? order.cartItems.map(item => item.name).join(', ') : 'প্রোডাক্টের নাম পাওয়া যায়নি';
-                const currentStatus = order.status || 'processing';
-
-                const orderItem = document.createElement('div');
-                orderItem.className = 'order-item';
-                orderItem.innerHTML = `
-                    <p><strong>অর্ডার আইডি:</strong> ${order.orderId || 'N/A'}</p>
-                    <p><strong>প্রোডাক্ট:</strong> ${productNames}</p>
-                    <p><strong>স্ট্যাটাস:</strong> <span class="status-${currentStatus}">${getStatusText(currentStatus)}</span></p>
-                    <p><strong>অর্ডারের তারিখ:</strong> ${order.orderDate ? new Date(order.orderDate).toLocaleString('bn-BD') : 'তারিখ পাওয়া যায়নি'}</p>
-                `;
-                orderItem.addEventListener('click', () => showOrderDetails(order.key));
-                orderList.appendChild(orderItem);
+                orderListContainer.style.display = 'block';
+                orderListDiv.innerHTML = '<p class="text-center text-red-600 text-lg py-10">অর্ডার লোড করা সম্ভব হয়নি। অনুগ্রহ করে কিছুক্ষণ পর আবার চেষ্টা করুন।</p>';
             });
         }
 
-        // অর্ডারের বিস্তারিত মডালে দেখানো
-        function showOrderDetails(orderId) {
-            const orderRef = ref(database, `orders/${orderId}`);
+        function displayOrderList(orders) {
+            const orderListDiv = document.getElementById('orderList');
+            orderListDiv.innerHTML = '';
+
+            orders.forEach(order => {
+                const productSummary = order.cartItems && order.cartItems.length > 0
+                    ? order.cartItems.map(item => item.name).slice(0, 2).join(', ') + (order.cartItems.length > 2 ? ' সহ আরও...' : '')
+                    : 'প্রোডাক্ট নেই';
+                const currentStatus = order.status || 'processing';
+
+                const orderItemEl = document.createElement('div');
+                orderItemEl.className = 'order-item';
+                orderItemEl.innerHTML = `
+                    <div class="order-id-status">
+                        <p class="order-id">অর্ডার আইডি: <strong>${order.orderId || 'N/A'}</strong></p>
+                        <span class="status-badge status-${currentStatus}">${getStatusText(currentStatus)}</span>
+                    </div>
+                    <p class="product-summary">${productSummary}</p>
+                    <p>অর্ডারের তারিখ: <strong>${order.orderDate ? new Date(order.orderDate).toLocaleDateString('bn-BD', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}</strong></p>
+                    <p>মোট মূল্য: <strong class="text-xl">${order.totalAmount || '0'} টাকা</strong></p>
+                `;
+                orderItemEl.addEventListener('click', () => showOrderDetails(order.key));
+                orderListDiv.appendChild(orderItemEl);
+            });
+        }
+        
+        function showOrderDetails(orderKey) {
+            const orderRef = ref(database, `orders/${orderKey}`);
+            const modal = document.getElementById('orderModal');
+            const modalContentEl = document.getElementById('modalContent');
+            const modalCloseBtn = document.getElementById('modalClose');
+
             onValue(orderRef, (snapshot) => {
                 const order = snapshot.val();
-                if (order) {
-                    const modal = document.getElementById('orderModal');
-                    const modalContent = document.getElementById('modalContent');
+                if (!order) {
+                    showToast("অর্ডারের বিস্তারিত তথ্য পাওয়া যায়নি।", "error");
+                    modal.style.display = 'none'; // ডেটা না পেলে মডাল বন্ধ করে দিন
+                    return;
+                }
 
-                    // কাস্টমারের তথ্য দেখানো
-                    let detailsHTML = `
-                        <p><strong>নাম:</strong> ${order.customerName || 'N/A'}</p>
-                        <p><strong>ফোন নম্বর:</strong> ${order.phoneNumber || 'N/A'}</p>
-                        <p><strong>ঠিকানা:</strong> ${order.address || 'N/A'}</p>
-                        <p><strong>ডেলিভারি লোকেশন:</strong> ${order.deliveryLocation === 'insideDhaka' ? 'ঢাকার ভেতরে' : 'ঢাকার বাইরে'}</p>
-                        ${order.outsideDhakaLocation ? `<p><strong>ঢাকার বাইরে লোকেশন:</strong> ${order.outsideDhakaLocation}</p>` : ''}
-                        ${order.deliveryNote ? `<p><strong>ডেলিভারি নোট:</strong> ${order.deliveryNote}</p>` : ''}
-                        <p><strong>প্রোডাক্টের পেমেন্ট মেথড:</strong> ${order.productPaymentMethod === 'cod' ? 'ক্যাশ অন ডেলিভারি' : (order.productPaymentMethod || 'N/A')}</p>
-                        ${order.deliveryPaymentMethod && order.deliveryLocation === 'outsideDhaka' ? `<p><strong>ডেলিভারি চার্জের পেমেন্ট মেথড:</strong> ${order.deliveryPaymentMethod}</p>` : ''}
-                        ${order.paymentNumber && order.deliveryLocation === 'outsideDhaka' ? `<p><strong>ডেলিভারি চার্জের পেমেন্ট নাম্বার:</strong> ${order.paymentNumber}</p>` : ''}
+                let detailsHTML = `
+                    <h3 class="main-title">অর্ডার বিবরণ (ID: ${order.orderId || 'N/A'})</h3>
+                    
+                    <h4 class="section-title">কাস্টমারের তথ্য</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 mb-4">
+                        <div><p><strong>নাম:</strong> ${order.customerName || 'N/A'}</p></div>
+                        <div><p><strong>ফোন:</strong> ${order.phoneNumber || 'N/A'}</p></div>
+                        <div class="md:col-span-2"><p><strong>ঠিকানা:</strong> ${order.address || 'N/A'}</p></div>
+                        <div><p><strong>ডেলিভারি:</strong> ${order.deliveryLocation === 'insideDhaka' ? 'ঢাকার ভেতরে' : 'ঢাকার বাইরে'} ${order.outsideDhakaLocation ? `(${order.outsideDhakaLocation})` : ''}</p></div>
+                        <div><p><strong>অর্ডারের তারিখ:</strong> ${order.orderDate ? new Date(order.orderDate).toLocaleString('bn-BD', { dateStyle: 'long', timeStyle: 'short' }) : 'N/A'}</p></div>
+                        ${order.deliveryNote ? `<div class="md:col-span-2"><p><strong>নোট:</strong> ${order.deliveryNote}</p></div>` : ''}
+                    </div>
+
+                    <h4 class="section-title">পেমেন্টের বিবরণ</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 mb-4">
+                        <p><strong>পণ্যের পেমেন্ট:</strong> ${order.productPaymentMethod === 'cod' ? 'ক্যাশ অন ডেলিভারি' : (order.productPaymentMethod || 'N/A')}</p>
+                        ${order.deliveryPaymentMethod && order.deliveryLocation === 'outsideDhaka' ? `<p><strong>ডেলিভারি চার্জ পেমেন্ট:</strong> ${order.deliveryPaymentMethod}</p>` : ''}
+                        ${order.paymentNumber && order.deliveryLocation === 'outsideDhaka' ? `<p><strong>পেমেন্ট নম্বর:</strong> ${order.paymentNumber}</p>` : ''}
                         <p><strong>ডেলিভারি ফি:</strong> ${order.deliveryFee || '0'} টাকা</p>
-                        <p><strong>মোট মূল্য:</strong> ${order.totalAmount || '0'} টাকা</p>
-                        <p><strong>অর্ডার আইডি:</strong> ${order.orderId || 'N/A'}</p>
-                        <p><strong>অর্ডারের তারিখ:</strong> ${order.orderDate ? new Date(order.orderDate).toLocaleString('bn-BD') : 'তারিখ পাওয়া যায়নি'}</p>
-                        <p><strong>অর্ডার স্ট্যাটাস:</strong> <span class="status-${order.status || 'processing'}">${getStatusText(order.status || 'processing')}</span></p>
-                    `;
+                        <p class="text-lg font-semibold"><strong>মোট মূল্য:</strong> ${order.totalAmount || '0'} টাকা</p>
+                    </div>
+                `;
 
-                    // প্রোগ্রেস বার
-                    const progress = calculateProgress(order.status || 'processing');
-                    detailsHTML += `
-                        <div class="progress-bar-container">
-                            <h4 class="text-md font-semibold mb-2 text-lipstick">অর্ডার প্রোগ্রেস</h4>
-                            <div class="progress-bar">
-                                <div class="progress-bar-fill" style="width: ${progress}%"></div>
-                            </div>
+                const currentStatus = order.status || 'processing';
+                detailsHTML += `<h4 class="section-title">অর্ডার স্ট্যাটাস: <span class="status-badge status-${currentStatus} ml-2">${getStatusText(currentStatus)}</span></h4>`;
+                const progress = calculateProgress(currentStatus);
+                detailsHTML += `
+                    <div class="progress-bar-container">
+                        <div class="progress-bar">
+                            <div class="progress-bar-fill" style="width: ${progress}%"></div>
                         </div>
-                    `;
+                    </div>
+                `;
 
-                    // স্ট্যাটাস টাইমলাইন দেখানো
-                    if (order.statusHistory && order.statusHistory.length > 0) {
+                if (order.statusHistory && order.statusHistory.length > 0) {
+                    detailsHTML += `<h4 class="section-title">স্ট্যাটাস টাইমলাইন</h4><div class="timeline">`;
+                    order.statusHistory.slice().reverse().forEach(history => {
                         detailsHTML += `
-                            <div class="mt-4">
-                                <h4 class="text-md font-semibold mb-2 text-lipstick">স্ট্যাটাস টাইমলাইন</h4>
-                                <div class="timeline">
-                        `;
-                        order.statusHistory.forEach(history => {
-                            detailsHTML += `
-                                <div class="timeline-item">
-                                    <div class="timeline-dot"></div>
-                                    <div class="timeline-content">
-                                        <p><strong>স্ট্যাটাস:</strong> <span class="status-${history.status}">${getStatusText(history.status)}</span></p>
-                                        <p><strong>আপডেটের সময়:</strong> ${new Date(history.updatedAt).toLocaleString('bn-BD')}</p>
-                                    </div>
+                            <div class="timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content">
+                                    <p><strong>স্ট্যাটাস:</strong> <span class="status-${history.status} font-medium">${getStatusText(history.status)}</span></p>
+                                    <span class="text-timestamp">আপডেটের সময়: ${new Date(history.updatedAt).toLocaleString('bn-BD', { dateStyle: 'medium', timeStyle: 'short' })}</span>
                                 </div>
-                            `;
-                        });
-                        detailsHTML += '</div></div>';
-                    }
-
-                    // প্রোডাক্টগুলো দেখানো
-                    detailsHTML += '<h4 class="text-md font-semibold mt-4 mb-2 text-lipstick">অর্ডার করা প্রোডাক্ট</h4>';
-                    detailsHTML += '<div class="cart-items">';
-                    if (order.cartItems && order.cartItems.length > 0) {
-                        order.cartItems.forEach(item => {
-                            const imageUrl = item.image ? item.image.split(',')[0].trim() : 'https://via.placeholder.com/60';
-                            detailsHTML += `
-                                <div class="cart-item">
-                                    <img src="${imageUrl}" alt="${item.name || 'প্রোডাক্টের নাম'}" onerror="this.src='https://via.placeholder.com/60'; this.alt='ছবি লোড হয়নি';">
-                                    <div class="cart-item-details">
-                                        <p>${item.name || 'নাম পাওয়া যায়নি'}</p>
-                                        <p>মূল্য: ${item.price || '0'} টাকা</p>
-                                        <p>পরিমাণ: ${item.quantity || 1}</p>
-                                    </div>
-                                </div>
-                            `;
-                        });
-                    } else {
-                        detailsHTML += '<p class="text-gray-600">কোনো প্রোডাক্ট পাওয়া যায়নি।</p>';
-                    }
-                    detailsHTML += '</div>';
-
-                    // এডমিন নোট দেখানো (যদি থাকে এবং কাস্টমারের জন্য দৃশ্যমান করতে চান)
-                    if (order.adminNotes && order.adminNotes.length > 0) {
-                        detailsHTML += `
-                            <div class="mt-4">
-                                <h4 class="text-md font-semibold mb-2 text-lipstick">এডমিন নোটসমূহ</h4>
-                                <div class="timeline">
-                        `;
-                        order.adminNotes.forEach(note => {
-                            detailsHTML += `
-                                <div class="timeline-item">
-                                    <div class="timeline-dot"></div>
-                                    <div class="timeline-content">
-                                        <p><strong>নোট:</strong> ${note.note}</p>
-                                        <p><strong>যোগ করা হয়েছে:</strong> ${new Date(note.addedAt).toLocaleString('bn-BD')}</p>
-                                    </div>
-                                </div>
-                            `;
-                        });
-                        detailsHTML += '</div></div>';
-                    }
-
-                    modalContent.innerHTML = detailsHTML;
-                    modal.style.display = 'flex';
-
-                    // মডাল বন্ধ করার লজিক
-                    const modalClose = document.getElementById('modalClose');
-                    modalClose.addEventListener('click', () => {
-                        modal.style.display = 'none';
+                            </div>`;
                     });
+                    detailsHTML += '</div>';
+                }
 
-                    // মডালের বাইরে ক্লিক করলে বন্ধ হবে
-                    modal.addEventListener('click', (e) => {
-                        if (e.target === modal) {
-                            modal.style.display = 'none';
-                        }
+                detailsHTML += `<h4 class="section-title">অর্ডার করা প্রোডাক্ট (${order.cartItems ? order.cartItems.length : 0} টি)</h4><div class="cart-items mt-3">`;
+                if (order.cartItems && order.cartItems.length > 0) {
+                    order.cartItems.forEach(item => {
+                        const imageUrl = item.image ? item.image.split(',')[0].trim() : 'https://via.placeholder.com/50';
+                        detailsHTML += `
+                            <div class="cart-item">
+                                <img src="${imageUrl}" alt="${item.name || 'প্রোডাক্ট'}" onerror="this.src='https://via.placeholder.com/50';">
+                                <div class="cart-item-details">
+                                    <p class="font-medium">${item.name || 'N/A'}</p>
+                                    <p>মূল্য: ${item.price || '0'} টাকা, পরিমাণ: ${item.quantity || 1}</p>
+                                </div>
+                            </div>`;
                     });
                 } else {
-                    showToast("অর্ডারের বিস্তারিত পাওয়া যায়নি।");
+                    detailsHTML += '<p class="text-gray-500">এই অর্ডারে কোনো প্রোডাক্ট নেই।</p>';
                 }
-            }, (error) => {
-                console.error("অর্ডারের বিস্তারিত লোড করতে সমস্যা হয়েছে: ", error.message, error.code);
-                showToast(`অর্ডারের বিস্তারিত লোড করতে সমস্যা হয়েছে: ${error.message}`);
+                detailsHTML += '</div>';
+
+                if (order.adminNotes && order.adminNotes.length > 0) {
+                    detailsHTML += `<h4 class="section-title">এডমিন বার্তা</h4><div class="timeline">`;
+                     order.adminNotes.slice().reverse().forEach(note => {
+                        detailsHTML += `
+                            <div class="timeline-item">
+                                <div class="timeline-dot" style="background-color: #6b7280; border-color: #4b5563;"></div>
+                                <div class="timeline-content">
+                                    <p>${note.note}</p>
+                                    <span class="text-timestamp">বার্তার সময়: ${new Date(note.addedAt).toLocaleString('bn-BD', {dateStyle: 'medium', timeStyle: 'short'})}</span>
+                                </div>
+                            </div>`;
+                     });
+                    detailsHTML += `</div>`;
+                }
+
+                modalContentEl.innerHTML = detailsHTML;
+                modal.style.display = 'flex';
             }, { onlyOnce: true });
+
+            const newModalCloseBtn = modalCloseBtn.cloneNode(true);
+            modalCloseBtn.parentNode.replaceChild(newModalCloseBtn, modalCloseBtn);
+            newModalCloseBtn.addEventListener('click', () => modal.style.display = 'none');
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.style.display = 'none';
+            });
         }
 
-        // প্রোগ্রেস বারের শতাংশ গণনা
         function calculateProgress(status) {
             const statusOrder = {
-                'processing': 10,
-                'confirmed': 30,
-                'packaging': 50,
-                'shipped': 70,
-                'delivered': 100,
-                'failed': 0,
-                'cancelled': 0
+                'processing': 10, 'confirmed': 30, 'packaging': 50,
+                'shipped': 70, 'delivered': 100, 'failed': 0, 'cancelled': 0
             };
             return statusOrder[status] || 0;
         }
 
-        // স্ট্যাটাস টেক্সট ফরম্যাট করার ফাংশন
         function getStatusText(status) {
-            switch (status) {
-                case 'processing':
-                    return 'প্রসেসিং';
-                case 'confirmed':
-                    return 'অর্ডার কনফার্মড';
-                case 'packaging':
-                    return 'প্যাকেজিং';
-                case 'shipped':
-                    return 'ডেলিভারি দেওয়া হয়েছে';
-                case 'delivered':
-                    return 'ডেলিভারি সম্পন্ন হয়েছে';
-                case 'failed':
-                    return 'ডেলিভারি ব্যর্থ';
-                case 'cancelled':
-                    return 'ক্যানসেলড';
-                default:
-                    return 'প্রসেসিং';
-            }
+            const statuses = {
+                processing: 'প্রসেসিং', confirmed: 'অর্ডার কনফার্মড', packaging: 'প্যাকেজিং',
+                shipped: 'ডেলিভারি দেওয়া হয়েছে', delivered: 'ডেলিভারি সম্পন্ন',
+                failed: 'ডেলিভারি ব্যর্থ', cancelled: 'অর্ডার বাতিল'
+            };
+            return statuses[status] || 'অজানা স্ট্যাটাস';
         }
     </script>
 </body>
