@@ -312,6 +312,7 @@
         const FCM_SERVER_KEY = 'BG07gtUq0oYXoUHPvOQNxs5-fri-4TsCCkvcK2QdWFpXk_OYVs4uv3IguNNcxSHi-pjSgR03ULlup5IHkJzgCso';
 
         let allOrders = [];
+        let orderSerialNumberMap = {}; // ক্রমিক নম্বর ম্যাপ করার জন্য 
 
         document.addEventListener("DOMContentLoaded", function() {
             $("#header").load("header.html", (response, status, xhr) => {
@@ -419,15 +420,21 @@
                         }
                     });
                 }
-                allOrders.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate));
+                // Display order: Newest on top
+                allOrders.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate)); 
+                
                 filterAndDisplayOrders();
+                
                 loadingSpinner.style.display = 'none';
-                if (allOrders.length > 0) {
+                // Check if orderList has content, not just allOrders.length, because filters might result in empty list
+                const orderListEl = document.getElementById('orderList');
+                if (orderListEl.innerHTML.includes('clickable-row')) { // A bit of a hack, better to check filtered list length
                     orderTable.classList.remove('hidden');
-                } else {
-                     const orderListEl = document.getElementById('orderList');
+                } else if (allOrders.length === 0) { // No orders at all
                      orderListEl.innerHTML = `<tr><td colspan="5" class="text-center text-gray-600 py-6">এখনও কোনো অর্ডার পাওয়া যায়নি।</td></tr>`;
                      orderTable.classList.remove('hidden');
+                } else { // Orders exist, but current filter shows none
+                     orderTable.classList.remove('hidden'); // Keep table visible to show "no orders in filter"
                 }
             }, (error) => {
                 console.error("অর্ডার লোড করতে সমস্যা:", error);
@@ -464,18 +471,21 @@
                 return;
             }
 
-            ordersToDisplay.forEach((order, index) => {
+            // ordersToDisplay is already sorted newest first by filterAndDisplayOrders
+            ordersToDisplay.forEach((order) => {
                 const productNames = (order.cartItems && order.cartItems.length > 0) 
                     ? order.cartItems.map(item => item.name).join(', ') 
                     : 'N/A';
                 const currentStatus = order.status || 'processing';
+                
+                const serialNumber = orderSerialNumberMap[order.key] || '-';
 
                 const row = document.createElement('tr');
                 row.className = 'clickable-row';
                 row.setAttribute('data-order-id', order.key);
                 
                 row.innerHTML = `
-                    <td>${index + 1}</td>
+                    <td>${serialNumber}</td>
                     <td>${order.customerName}</td>
                     <td class="product-col">${productNames.substring(0, 50)}${productNames.length > 50 ? '...' : ''}</td>
                     <td class="status-col status-${currentStatus}">${getStatusText(currentStatus)}</td>
@@ -497,15 +507,20 @@
             const now = new Date();
             const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             
-            let todaysOrdersCount = 0;
-
-            let filtered = allOrders.filter(order => {
+            let actualTodaysCount = 0; // Count today's orders from allOrders
+            allOrders.forEach(order => {
                 const orderDateOnly = new Date(new Date(order.orderDate).getFullYear(), new Date(order.orderDate).getMonth(), new Date(order.orderDate).getDate());
-                
                 if (orderDateOnly.getTime() === today.getTime()) {
-                    todaysOrdersCount++;
+                    actualTodaysCount++;
                 }
+            });
+            const todaysOrderCountEl = document.getElementById('todaysOrderCount');
+            if (todaysOrderCountEl) {
+                todaysOrderCountEl.textContent = `আজকের অর্ডার: ${actualTodaysCount}`;
+            }
 
+            let filteredForDisplay = allOrders.filter(order => { // Filter for display (newest first)
+                const orderDateOnly = new Date(new Date(order.orderDate).getFullYear(), new Date(order.orderDate).getMonth(), new Date(order.orderDate).getDate());
                 const matchesSearch = order.customerName.toLowerCase().includes(searchTerm);
                 const matchesStatus = statusFilterValue ? (order.status || 'processing') === statusFilterValue : true;
                 let matchesDate = true;
@@ -527,12 +542,15 @@
                 return matchesSearch && matchesStatus && matchesDate;
             });
 
-            const todaysOrderCountEl = document.getElementById('todaysOrderCount');
-            if (todaysOrderCountEl) {
-                todaysOrderCountEl.textContent = `আজকের অর্ডার: ${todaysOrdersCount}`;
-            }
-
-            displayOrders(filtered);
+            // Create serial numbers based on the filtered list, sorted oldest first for serializing
+            const ordersForSerializing = [...filteredForDisplay].sort((a, b) => new Date(a.orderDate) - new Date(b.orderDate));
+            
+            orderSerialNumberMap = {}; 
+            ordersForSerializing.forEach((order, index) => {
+                orderSerialNumberMap[order.key] = index + 1;
+            });
+            
+            displayOrders(filteredForDisplay); // Display the list that's already sorted newest first
         }
         
         async function updateOrderStatus(orderId) {
