@@ -7,99 +7,103 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        /* Lipstick কালার ভেরিয়েবল */
         :root {
-            --lipstick-color: #A52A2A; /* Brownish Red */
-            --lipstick-dark-color: #800020; /* Burgundy for hover */
-            --success-color: #10B981; /* Emerald for shipped/delivered */
-            --processing-color: #F59E0B; /* Amber for processing */
-            --confirmed-color: #3B82F6; /* Blue for confirmed */
-            --packaging-color: #8B5CF6; /* Violet for packaging */
-            --failed-color: #EF4444; /* Red for failed */
-            --cancelled-color: #6B7280; /* Gray for cancelled */
+            --lipstick-color: #A52A2A; 
+            --lipstick-dark-color: #800020;
+            --success-color: #10B981; 
+            /* ... অন্যান্য কালার ভেরিয়েবল ... */
         }
-
         .text-lipstick { color: var(--lipstick-color); }
         .bg-lipstick { background-color: var(--lipstick-color); }
         .hover\:bg-lipstick-dark:hover { background-color: var(--lipstick-dark-color); }
 
-        /* Main Body & Container */
-        body {
-            font-family: 'Inter', sans-serif; /* একটি আধুনিক ফন্ট */
-        }
+        body { font-family: 'Inter', sans-serif; }
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-
-        /* অর্ডার আইটেম স্টাইল */
         .order-item {
-            background-color: white;
-            border: 1px solid #e5e7eb; /* Tailwind gray-200 */
-            padding: 1.25rem; /* 20px */
-            margin-bottom: 1.25rem; /* 20px */
-            border-radius: 0.75rem; /* 12px */
+            display: flex; 
+            align-items: flex-start; 
+            gap: 1rem; 
+            border: 1px solid #e5e7eb;
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
+            border-radius: 0.75rem;
             cursor: pointer;
             transition: all 0.25s ease-in-out;
+            background-color: white;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
         }
         .order-item:hover {
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             transform: translateY(-4px) scale(1.01);
         }
-        .order-item p {
+        .order-item-image {
+            width: 70px; 
+            height: 70px; 
+            object-fit: cover;
+            border-radius: 0.375rem; 
+            flex-shrink: 0; 
+            background-color: #f3f4f6; 
+            border: 1px solid #e5e7eb;
+        }
+        .order-item-content {
+            flex-grow: 1; 
+        }
+        .order-item-content p {
             margin-bottom: 0.35rem;
-            color: #4b5563; /* Tailwind gray-600 */
+            color: #4b5563;
             font-size: 0.9rem;
         }
-        .order-item p strong {
-            color: #1f2937; /* Tailwind gray-800 */
-            font-weight: 500; /* Medium weight */
+        .order-item-content p strong {
+            color: #1f2937;
+            font-weight: 500;
         }
-        .order-item .order-id-status {
+        .order-item-content .order-id-status {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem; /* গ্যাপ কমানো */
         }
-        .order-item .order-id-status .order-id {
+        .order-item-content .order-id-status .order-id {
             font-size: 0.8rem;
-            color: #6b7280; /* gray-500 */
+            color: #6b7280;
         }
-         .order-item .order-id-status .order-id strong {
-            color: #374151; /* gray-700 */
+         .order-item-content .order-id-status .order-id strong {
+            color: #374151;
         }
-        .order-item .product-summary {
-            font-size: 1.1rem;
+        .order-item-content .product-summary {
+            font-size: 1.05rem; /* প্রোডাক্টের নাম একটু ছোট করা */
             font-weight: 600;
             color: var(--lipstick-color);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.4rem;
+            line-height: 1.3;
         }
-
 
         /* স্ট্যাটাস ব্যাজ */
         .status-badge {
-            font-size: 0.75rem; /* 12px */
-            font-weight: 600; /* Semibold */
-            padding: 0.25rem 0.75rem; /* 4px 12px */
-            border-radius: 9999px; /* Pill shape */
+            font-size: 0.7rem; /* ব্যাজ একটু ছোট */
+            font-weight: 600; 
+            padding: 0.2rem 0.6rem; 
+            border-radius: 9999px; 
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            white-space: nowrap;
         }
-        .status-processing { background-color: #FEF3C7; color: #D97706; } /* Amber 100/600 */
-        .status-confirmed { background-color: #DBEAFE; color: #2563EB; }  /* Blue 100/600 */
-        .status-packaging { background-color: #EDE9FE; color: #7C3AED; }  /* Violet 100/600 */
-        .status-shipped { background-color: #D1FAE5; color: #059669; }   /* Emerald 100/600 */
-        .status-delivered { background-color: #DCFCE7; color: #16A34A; }  /* Green 100/600 */
-        .status-failed { background-color: #FEE2E2; color: #DC2626; }    /* Red 100/600 */
-        .status-cancelled { background-color: #F3F4F6; color: #4B5563; }  /* Gray 100/600 */
+        .status-processing { background-color: #FEF3C7; color: #D97706; }
+        .status-confirmed { background-color: #DBEAFE; color: #2563EB; }
+        .status-packaging { background-color: #EDE9FE; color: #7C3AED; }
+        .status-shipped { background-color: #D1FAE5; color: #059669; }
+        .status-delivered { background-color: #DCFCE7; color: #16A34A; }
+        .status-failed { background-color: #FEE2E2; color: #DC2626; }
+        .status-cancelled { background-color: #F3F4F6; color: #4B5563; }
         
-        /* মডাল স্টাইল */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.65); z-index: 1000; 
             justify-content: center; align-items: center; padding: 1rem;
         }
         .modal-content {
-            background-color: white; padding: 1.5rem 2rem; border-radius: 0.75rem; /* 12px */
+            background-color: white; padding: 1.5rem 2rem; border-radius: 0.75rem;
             max-width: 95%; width: 650px; max-height: 90vh; overflow-y: auto; 
             position: relative; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
         }
@@ -108,33 +112,20 @@
             color: #9ca3af; cursor: pointer; line-height: 1;
         }
         .modal-close:hover { color: #374151; }
-
-        .modal-content h3.main-title { /* মডালের প্রধান শিরোনাম */
-            font-size: 1.75rem; /* 28px */
-            font-weight: 700; /* Bold */
-            color: var(--lipstick-color);
-            margin-bottom: 1.5rem;
-            text-align: center;
-            border-bottom: 2px solid #f3f4f6; /* light gray border */
-            padding-bottom: 0.75rem;
+        .modal-content h3.main-title {
+            font-size: 1.75rem; font-weight: 700; color: var(--lipstick-color);
+            margin-bottom: 1.5rem; text-align: center;
+            border-bottom: 2px solid #f3f4f6; padding-bottom: 0.75rem;
         }
-        .modal-content h4.section-title { /* সেকশন শিরোনাম */
-            font-size: 1.15rem; /* 18px */
-            font-weight: 600; /* Semibold */
-            color: var(--lipstick-color);
-            margin-top: 1.75rem;
-            margin-bottom: 0.75rem;
-            padding-bottom: 0.3rem;
-            border-bottom: 1px dotted #d1d5db; /* Dotted border */
+        .modal-content h4.section-title {
+            font-size: 1.15rem; font-weight: 600; color: var(--lipstick-color);
+            margin-top: 1.75rem; margin-bottom: 0.75rem; padding-bottom: 0.3rem;
+            border-bottom: 1px dotted #d1d5db;
         }
-        .modal-content h4.section-title:first-of-type {
-            margin-top: 0; /* প্রথম সেকশন শিরোনামের উপরে মার্জিন থাকবে না */
-        }
-
+        .modal-content h4.section-title:first-of-type { margin-top: 0; }
         .modal-content p { margin-bottom: 0.5rem; color: #374151; font-size: 0.95rem; line-height: 1.6; }
         .modal-content p strong { font-weight: 600; color: #111827; }
 
-        /* কার্ট আইটেম (মডালে) */
         .cart-items { display: flex; flex-direction: column; gap: 0.75rem; }
         .cart-item {
             display: flex; gap: 1rem; align-items: center;
@@ -144,28 +135,25 @@
         .cart-item-details p { font-size: 0.9rem; margin-bottom: 0.2rem; }
         .cart-item-details p.font-medium { font-weight: 500; color: #1f2937; }
 
-        /* প্রোগ্রেস বার */
         .progress-bar-container { margin-top: 0.5rem; margin-bottom: 1.75rem; }
         .progress-bar {
-            width: 100%; background-color: #e5e7eb; height: 0.75rem; /* বার একটু মোটা */
+            width: 100%; background-color: #e5e7eb; height: 0.75rem;
             border-radius: 0.375rem; overflow: hidden;
         }
         .progress-bar-fill {
-            height: 100%; background-color: var(--success-color); /* সবুজ রঙ */
+            height: 100%; background-color: var(--success-color);
             transition: width 0.6s ease-in-out;
         }
 
-        /* টাইমলাইন */
         .timeline { margin-top: 0.5rem; position: relative; padding-left: 1.5rem; }
         .timeline-item { position: relative; padding-left: 1.5rem; padding-bottom: 1.75rem; }
         .timeline-item:last-child { padding-bottom: 0.25rem; }
-        .timeline-item::before { /* The vertical line */
+        .timeline-item::before {
             content: ''; position: absolute; left: 0; top: 0.45rem; bottom: -0.45rem;
             width: 3px; background-color: #d1d5db; border-radius: 2px;
         }
         .timeline-item:first-child::before { top: 0.45rem; }
         .timeline-item:last-child::before { height: 0.45rem; bottom: auto; }
-
         .timeline-dot {
             position: absolute; left: -0.5rem; top: 0.25rem; 
             width: 1.25rem; height: 1.25rem; background-color: white;
@@ -177,15 +165,14 @@
         }
         .timeline-content p { margin-bottom: 0.25rem; font-size: 0.9rem; }
         .timeline-content p strong { color: #1f2937; }
-        .timeline-content .text-timestamp { /* আপডেটের সময় */
+        .timeline-content .text-timestamp {
             color: #6b7280; font-size: 0.8rem; margin-top: 0.25rem; display: block;
         }
 
-        /* লোডিং স্পিনার (আগেরটার মতই, শুধু রঙ text-lipstick থেকে ভেরিয়েবল) */
         #loadingSpinner .spinner {
-            border: 4px solid rgba(165, 42, 42, 0.2); /* হালকা lipstick */
+            border: 4px solid rgba(165, 42, 42, 0.2);
             border-top: 4px solid var(--lipstick-color); 
-            border-radius: 50%; width: 3rem; height: 3rem; /* একটু বড় */
+            border-radius: 50%; width: 3rem; height: 3rem;
             animation: spin 1.2s linear infinite;
         }
         @keyframes spin {
@@ -196,51 +183,39 @@
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
-    <!-- হেডার -->
     <div id="header"></div>
 
-    <!-- মেইন কন্টেন্ট -->
     <div class="container mx-auto py-10 px-4 min-h-screen">
         <h1 class="text-3xl md:text-4xl font-bold text-center mb-12 text-lipstick">আপনার অর্ডারসমূহ</h1>
 
-        <!-- লোডিং স্পিনার -->
         <div id="loadingSpinner" class="flex justify-center items-center py-16" style="display: none;">
             <div class="spinner"></div>
         </div>
 
-        <!-- লগইন প্রম্পট -->
         <div id="loginPrompt" class="text-center bg-white p-8 md:p-12 rounded-xl shadow-lg max-w-md mx-auto" style="display: none;">
-            <img src="images/logo.png" alt="লোগো" class="w-24 h-24 mx-auto mb-6 rounded-full shadow-sm"> <!-- আপনার লোগোর পাথ দিন -->
+            <img src="images/logo.png" alt="লোগো" class="w-24 h-24 mx-auto mb-6 rounded-full shadow-sm">
             <h2 class="text-2xl font-semibold text-gray-700 mb-3">স্বাগতম!</h2>
             <p class="text-gray-600 mb-8">আপনার সকল অর্ডার ট্র্যাক করতে এবং বিস্তারিত দেখতে অনুগ্রহ করে লগইন করুন।</p>
             <button id="loginButton" class="w-full bg-lipstick text-white px-6 py-3 rounded-lg hover:bg-lipstick-dark text-lg font-semibold transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center">
-                <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512"><path fill="currentColor" d="M488 261.8C488 403.3 381.5 512 244 512 109.8 512 0 403.3 0 261.8c0-110.8 66.8-207.8 162.7-246.2C187.2 8.2 214.2 0 244 0c70.7 0 132.3 33.3 175.8 85.7C452 126.4 488 189.8 488 261.8zM100.7 273.6c0 .2 0 .4 0 .6 0 82.8 67.2 150 150 150s150-67.2 150-150c0-.2 0-.4 0-.6H100.7zM244 66.8c-98.3 0-179.3 82.7-179.3 185.2 0 8.4 1.3 16.6 2.8 24.6h353c1.5-8 2.8-16.2 2.8-24.6 0-102.5-81-185.2-179.3-185.2z"/></svg> <!-- একটি placeholder Google আইকন -->
+                <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512"><path fill="currentColor" d="M488 261.8C488 403.3 381.5 512 244 512 109.8 512 0 403.3 0 261.8c0-110.8 66.8-207.8 162.7-246.2C187.2 8.2 214.2 0 244 0c70.7 0 132.3 33.3 175.8 85.7C452 126.4 488 189.8 488 261.8zM100.7 273.6c0 .2 0 .4 0 .6 0 82.8 67.2 150 150 150s150-67.2 150-150c0-.2 0-.4 0-.6H100.7zM244 66.8c-98.3 0-179.3 82.7-179.3 185.2 0 8.4 1.3 16.6 2.8 24.6h353c1.5-8 2.8-16.2 2.8-24.6 0-102.5-81-185.2-179.3-185.2z"/></svg>
                 Google দিয়ে লগইন করুন
             </button>
         </div>
 
-        <!-- অর্ডার লিস্ট -->
         <div id="orderListContainer" class="max-w-3xl mx-auto" style="display: none;">
-            <div id="orderList" class="space-y-5">
-                <!-- অর্ডার আইটেমগুলো এখানে যোগ হবে -->
-            </div>
+            <div id="orderList" class="space-y-5"></div>
         </div>
     </div>
 
-    <!-- মডাল -->
     <div id="orderModal" class="modal">
         <div class="modal-content">
             <span id="modalClose" class="modal-close hover:text-red-600 transition-colors">×</span>
-            <div id="modalContent">
-                <!-- মডালের কন্টেন্ট এখানে ডাইনামিকভাবে লোড হবে -->
-            </div>
+            <div id="modalContent"></div>
         </div>
     </div>
 
-    <!-- ফুটার -->
     <div id="footer"></div>
 
-    <!-- Firebase এবং স্ক্রিপ্ট -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -388,22 +363,46 @@
                     : 'প্রোডাক্ট নেই';
                 const currentStatus = order.status || 'processing';
 
+                let firstProductImage = 'https://via.placeholder.com/70?text=ছবি+নেই';
+                if (order.cartItems && order.cartItems.length > 0 && order.cartItems[0].image) {
+                    const images = order.cartItems[0].image.split(',');
+                    if (images.length > 0 && images[0].trim() !== '') {
+                        firstProductImage = images[0].trim();
+                    }
+                }
+
                 const orderItemEl = document.createElement('div');
                 orderItemEl.className = 'order-item';
                 orderItemEl.innerHTML = `
-                    <div class="order-id-status">
-                        <p class="order-id">অর্ডার আইডি: <strong>${order.orderId || 'N/A'}</strong></p>
-                        <span class="status-badge status-${currentStatus}">${getStatusText(currentStatus)}</span>
+                    <img src="${firstProductImage}" alt="প্রোডাক্টের ছবি" class="order-item-image" onerror="this.style.display='none';">
+                    <div class="order-item-content">
+                        <div class="order-id-status">
+                            <p class="order-id">অর্ডার আইডি: <strong>${order.orderId || 'N/A'}</strong></p>
+                            <span class="status-badge status-${currentStatus}">${getStatusText(currentStatus)}</span>
+                        </div>
+                        <p class="product-summary">${productSummary}</p>
+                        <p>অর্ডারের তারিখ: <strong>${order.orderDate ? new Date(order.orderDate).toLocaleDateString('bn-BD', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}</strong></p>
+                        <p>মোট মূল্য: <strong class="text-xl">${order.totalAmount || '0'} টাকা</strong></p>
                     </div>
-                    <p class="product-summary">${productSummary}</p>
-                    <p>অর্ডারের তারিখ: <strong>${order.orderDate ? new Date(order.orderDate).toLocaleDateString('bn-BD', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}</strong></p>
-                    <p>মোট মূল্য: <strong class="text-xl">${order.totalAmount || '0'} টাকা</strong></p>
                 `;
                 orderItemEl.addEventListener('click', () => showOrderDetails(order.key));
                 orderListDiv.appendChild(orderItemEl);
             });
         }
         
+        function getStatusBgColor(status) {
+            const colors = {
+                processing: 'bg-amber-100 text-amber-700',
+                confirmed: 'bg-blue-100 text-blue-700', 
+                packaging: 'bg-violet-100 text-violet-700',
+                shipped: 'bg-emerald-100 text-emerald-700', 
+                delivered: 'bg-green-100 text-green-700', 
+                failed: 'bg-red-100 text-red-700', 
+                cancelled: 'bg-gray-200 text-gray-700'
+            };
+            return colors[status] || 'bg-gray-100 text-gray-700';
+        }
+
         function showOrderDetails(orderKey) {
             const orderRef = ref(database, `orders/${orderKey}`);
             const modal = document.getElementById('orderModal');
@@ -414,7 +413,7 @@
                 const order = snapshot.val();
                 if (!order) {
                     showToast("অর্ডারের বিস্তারিত তথ্য পাওয়া যায়নি।", "error");
-                    modal.style.display = 'none'; // ডেটা না পেলে মডাল বন্ধ করে দিন
+                    modal.style.display = 'none';
                     return;
                 }
 
@@ -473,7 +472,7 @@
                         const imageUrl = item.image ? item.image.split(',')[0].trim() : 'https://via.placeholder.com/50';
                         detailsHTML += `
                             <div class="cart-item">
-                                <img src="${imageUrl}" alt="${item.name || 'প্রোডাক্ট'}" onerror="this.src='https://via.placeholder.com/50';">
+                                <img src="${imageUrl}" alt="${item.name || 'প্রোডাক্ট'}" onerror="this.src='https://via.placeholder.com/50'; this.alt='ছবি নেই';">
                                 <div class="cart-item-details">
                                     <p class="font-medium">${item.name || 'N/A'}</p>
                                     <p>মূল্য: ${item.price || '0'} টাকা, পরিমাণ: ${item.quantity || 1}</p>
