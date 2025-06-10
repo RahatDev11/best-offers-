@@ -19,55 +19,79 @@
 
         /* Table Styles */
         .table-container {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            margin-bottom: 1rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.375rem;
+            overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 1rem;
+            border: 1px solid #e2e8f0; border-radius: 0.375rem;
         }
-        .order-table {
-            width: 100%;
-            min-width: 650px;
-            border-collapse: collapse;
-        }
-        .order-table th,
+        .order-table { width: 100%; min-width: 650px; border-collapse: collapse; }
+        
+        /* ডিফল্ট (মোবাইল এবং ছোট স্ক্রিনের জন্য) টেবিল ফন্ট সাইজ */
+        .order-table th, 
         .order-table td {
-            padding: 0.6rem 0.4rem;
-            text-align: left;
+            padding: 0.6rem 0.4rem; 
+            text-align: left; 
             border-bottom: 1px solid #e2e8f0;
-            font-size: 0.8rem;
+            font-size: 0.8rem; /* মোবাইল ও ছোট স্ক্রিনের জন্য ডিফল্ট */
             white-space: nowrap;
         }
         .order-table th:first-child, .order-table td:first-child { padding-left: 0.75rem; }
         .order-table th:last-child, .order-table td:last-child { padding-right: 0.75rem; }
 
-        .order-table th.product-col,
+        .order-table th.product-col, 
         .order-table td.product-col {
-            white-space: normal;
-            min-width: 130px;
-            max-width: 220px;
+            white-space: normal; 
+            min-width: 130px; /* মোবাইলের জন্য */
+            max-width: 220px; /* মোবাইলের জন্য */
         }
-        .order-table th { background: #f8fafc; font-weight: 600; color: #374151; text-transform: uppercase; font-size: 0.75rem;}
+        .order-table th { 
+            background: #f8fafc; 
+            font-weight: 600; 
+            color: #374151; 
+            text-transform: uppercase; 
+            font-size: 0.75rem; /* মোবাইল ও ছোট স্ক্রিনের জন্য হেডার */
+        }
         .order-table td { color: #1f2937; }
         .order-table tr:last-child td { border-bottom: none; }
         
         .clickable-row { cursor: pointer; transition: background-color 0.2s ease-in-out; }
         .clickable-row:hover { background-color: #eff6ff; }
-        .order-table th.time-col,
-        .order-table td.time-col { min-width: 90px; text-align: right; }
-        .order-table th.status-col,
-        .order-table td.status-col { text-align: center; }
+        .order-table th.time-col, .order-table td.time-col { 
+            min-width: 90px; /* মোবাইলের জন্য */
+            text-align: right; 
+        }
+        .order-table th.status-col, .order-table td.status-col { text-align: center; }
+
+        /* ডেস্কটপ ভিউয়ের জন্য টেবিলের ফন্ট সাইজ ও অন্যান্য স্টাইল বড় করা */
+        @media (min-width: 768px) { /* 768px বা তার চেয়ে বড় স্ক্রিনের জন্য (md breakpoint in Tailwind) */
+            .order-table th, 
+            .order-table td {
+                font-size: 0.95rem; /* ডেস্কটপের জন্য বড় ফন্ট সাইজ */
+                padding: 0.8rem 0.6rem; /* ডেস্কটপের জন্য প্যাডিং */
+            }
+
+            .order-table th {
+                font-size: 0.9rem;  /* ডেস্কটপের জন্য টেবিল হেডারের ফন্ট সাইজ */
+            }
+            
+            .order-table th.product-col,
+            .order-table td.product-col {
+                min-width: 200px; /* ডেস্কটপের জন্য প্রোডাক্ট কলামের ন্যূনতম প্রস্থ */
+                max-width: 350px; /* ডেস্কটপের জন্য প্রোডাক্ট কলামের সর্বোচ্চ প্রস্থ */
+            }
+            .order-table th.time-col,
+            .order-table td.time-col {
+                min-width: 120px; /* ডেস্কটপের জন্য সময় কলামের ন্যূনতম প্রস্থ */
+            }
+        }
+
 
         /* Status Colors */
         .status-processing { color: #D97706; font-weight: 500; }
         .status-confirmed { color: #2563EB; font-weight: 500; }
-        /* ... (অন্যান্য স্ট্যাটাস কালার আগের মতোই) ... */
         .status-packaging { color: #7C3AED; font-weight: 500; }
         .status-shipped { color: #1D4ED8; font-weight: 500; }
         .status-delivered { color: #16A34A; font-weight: 500; }
         .status-failed { color: #DC2626; font-weight: 500; }
         .status-cancelled { color: #6B7280; font-weight: 500; }
-
 
         /* Modal Styles */
         .modal {
@@ -79,6 +103,7 @@
             background: white; padding: 1.5rem; border-radius: 0.5rem; max-width: 100%;
             width: 550px; max-height: 90vh; overflow-y: auto; position: relative;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            font-size: 0.95rem; /* ডেস্কটপের জন্য ডিফল্ট */
         }
         .modal-close {
             position: absolute; top: 0.75rem; right: 0.75rem; font-size: 1.5rem;
@@ -86,21 +111,29 @@
         }
         .modal-close:hover { color: #A52A2A; }
 
+        /* Modal Inner Content Font Sizes (Desktop Default) */
+        #captureSection p,
+        .cart-item-details p,
+        .timeline-content p {
+            font-size: 0.9rem; 
+            line-height: 1.5;
+        }
+         #captureSection p strong { font-weight: 600; }
+        .cart-item-details p.font-medium { font-size: 0.95rem; font-weight: 500; }
+        .modal-content h3 { font-size: 1.25rem; }
+        .modal-content h4 { font-size: 1.05rem; margin-bottom: 0.5rem; }
+        .timeline-content .text-xs { font-size: 0.8rem; }
+
         /* Capture Section */
         #captureSection { padding: 1rem; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 0.375rem; margin-bottom: 1rem; }
-        #captureSection p { margin-bottom: 0.3rem; }
+        #captureSection p { margin-bottom: 0.4rem; }
 
         /* Cart Items in Modal */
         .cart-items { margin-bottom: 1.5rem; }
-        .cart-item {
-            display: flex; align-items: center;
-            padding: 0.5rem 0; border-bottom: 1px solid #e2e8f0;
-        }
+        .cart-item { display: flex; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid #e2e8f0; }
         .cart-item:last-child { border-bottom: none; }
-        .cart-item img { width: 40px; height: 40px; object-fit: cover; border-radius: 0.25rem; margin-right: 0.75rem;}
+        .cart-item img { width: 45px; height: 45px; object-fit: cover; border-radius: 0.25rem; margin-right: 0.85rem;}
         .cart-item-details { flex: 1; }
-        .cart-item-details p { font-size: 0.8rem; color: #4a5568; margin-bottom: 0.1rem; }
-        .cart-item-details p.font-medium { font-size: 0.85rem; color: #1f2937;}
 
         /* Login Message */
         .login-message-container { display: flex; justify-content: center; align-items: center; height: 100vh; }
@@ -110,13 +143,13 @@
         }
 
         /* Form Elements in Modal */
-        .status-select, .update-btn, .save-btn { font-size: 0.85rem; padding: 0.5rem 0.8rem; border-radius: 0.375rem; cursor: pointer; }
+        .status-select, .update-btn, .save-btn { font-size: 0.9rem; padding: 0.5rem 0.8rem; border-radius: 0.375rem; cursor: pointer; }
         .status-select { border: 1px solid #d1d5db; background: white; color: #1f2937; }
         .update-btn { background: #A52A2A; color: white; border: none; transition: background-color 0.3s ease; }
         .update-btn:hover { background: #8B1A1A; }
         .save-btn { background: #16A34A; color: white; border: none; transition: background-color 0.3s ease; margin-top: 1rem; display: block; width: 100%; }
         .save-btn:hover { background: #13863C; }
-        textarea.admin-note-input { border: 1px solid #d1d5db; border-radius: 0.375rem; padding: 0.5rem; width: 100%; font-size: 0.85rem; }
+        textarea.admin-note-input { border: 1px solid #d1d5db; border-radius: 0.375rem; padding: 0.5rem; width: 100%; font-size: 0.9rem; }
 
         /* Timeline */
         .timeline { position: relative; padding-left: 1.5rem; margin-top: 1rem; }
@@ -131,8 +164,7 @@
             width: 0.75rem; height: 0.75rem; background: #A52A2A; border-radius: 50%;
             border: 2px solid white;
         }
-        .timeline-content { background: #f8fafc; padding: 0.5rem 0.75rem; border-radius: 0.375rem; font-size: 0.8rem; border: 1px solid #e5e7eb;}
-        .timeline-content p { margin-bottom: 0.1rem; }
+        .timeline-content { background: #f8fafc; padding: 0.6rem 0.85rem; border-radius: 0.375rem; border: 1px solid #e5e7eb;}
 
         /* Loading Spinner */
         .loading-spinner { display: none; text-align: center; padding: 2rem 1rem; }
@@ -151,18 +183,33 @@
             .filter-controls input[type="text"] { flex-grow: 2; }
             .filter-controls select { flex-grow: 1; }
         }
-        /* Toast Notification z-index */
-        #toast-notification { z-index: 2000 !important; } /* টোস্ট আইডি পরিবর্তন ও z-index */
-
-        /* Today's Order Count Style */
+        #toast-notification { z-index: 2000 !important; }
         .todays-order-count {
-            font-size: 0.9rem;
-            color: #4B5563; /* Tailwind gray-600 */
-            margin-left: 0.75rem;
-            background-color: #F3F4F6; /* Tailwind gray-100 */
-            padding: 0.25rem 0.6rem;
-            border-radius: 0.375rem;
-            font-weight: 500;
+            font-size: 0.9rem; color: #4B5563; margin-left: 0.75rem;
+            background-color: #F3F4F6; padding: 0.25rem 0.6rem;
+            border-radius: 0.375rem; font-weight: 500;
+        }
+
+        /* Mobile Specific Font Sizes for Modal */
+        @media (max-width: 767px) {
+            .modal-content {
+                font-size: 0.85rem; 
+                padding: 1rem; 
+            }
+            #captureSection p,
+            .cart-item-details p,
+            .timeline-content p {
+                font-size: 0.8rem; 
+                line-height: 1.4;
+            }
+             #captureSection p strong { font-weight: 500; }
+            .cart-item-details p.font-medium { font-size: 0.85rem; }
+            .modal-content h3 { font-size: 1.1rem; }
+            .modal-content h4 { font-size: 0.95rem; }
+            .timeline-content .text-xs { font-size: 0.75rem; }
+            .status-select, .update-btn, .save-btn { font-size: 0.8rem; padding: 0.4rem 0.7rem; }
+            textarea.admin-note-input { font-size: 0.8rem; }
+            .cart-item img { width: 35px; height: 35px; margin-right: 0.5rem;}
         }
     </style>
 </head>
@@ -181,7 +228,7 @@
             <div class="flex justify-between items-center mb-4">
                 <div class="flex items-center">
                     <h2 class="text-xl font-bold text-lipstick">অর্ডার লিস্ট</h2>
-                    <span id="todaysOrderCount" class="todays-order-count">আজকের অর্ডার: ০</span> <!-- আজকের অর্ডারের কাউন্টার -->
+                    <span id="todaysOrderCount" class="todays-order-count">আজকের অর্ডার: ০</span>
                 </div>
                 <button id="logoutBtn" class="bg-lipstick text-white px-3 py-1.5 rounded-md text-sm hover:bg-lipstick-dark">
                     লগআউট
@@ -237,8 +284,8 @@
     <div id="orderModal" class="modal">
         <div class="modal-content" id="modalContentWrapper">
             <span id="modalClose" class="modal-close">×</span>
-            <h3 class="text-lg font-bold mb-3 text-lipstick">অর্ডারের বিস্তারিত</h3>
-            <div id="modalContent" class="text-sm"></div>
+            <h3 class="font-bold mb-3 text-lipstick">অর্ডারের বিস্তারিত</h3>
+            <div id="modalContent"></div>
             <button id="saveModalBtn" class="save-btn">ইনভয়েস ডাউনলোড</button>
         </div>
     </div>
@@ -286,14 +333,13 @@
             toast.className = `fixed bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-md shadow-lg text-sm ${
                 type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
             }`;
-            toast.style.zIndex = '2000';
+            toast.classList.add('z-[2000]');
             toast.textContent = message;
             document.body.appendChild(toast);
             setTimeout(() => { toast.remove(); }, 3000);
         }
         
         async function sendNotificationToCustomer(userId, title, body) {
-            // ... (আগের মতো)
              if (!FCM_SERVER_KEY) {
                 console.warn("FCM Server Key is not set. Skipping notification.");
                 return;
@@ -331,7 +377,6 @@
         }
 
         function checkAuthState() {
-            // ... (আগের মতো)
             const loginMessageContainer = document.getElementById('loginMessageContainer');
             const mainContent = document.getElementById('mainContent');
             onAuthStateChanged(auth, (user) => {
@@ -349,13 +394,11 @@
         }
 
         document.getElementById('logoutBtn').addEventListener('click', () => {
-            // ... (আগের মতো)
             signOut(auth).then(() => showToast('সফলভাবে লগআউট করা হয়েছে।', 'success'))
                          .catch(error => showToast(`লগআউট সমস্যা: ${error.message}`, 'error'));
         });
 
         function loadOrders() {
-            // ... (আগের মতো)
             const ordersRef = ref(database, 'orders');
             const loadingSpinner = document.getElementById('loadingSpinner');
             const orderTable = document.getElementById('orderTable');
@@ -377,7 +420,7 @@
                     });
                 }
                 allOrders.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate));
-                filterAndDisplayOrders(); // আজকের অর্ডারের সংখ্যাও এখানে আপডেট হবে
+                filterAndDisplayOrders();
                 loadingSpinner.style.display = 'none';
                 if (allOrders.length > 0) {
                     orderTable.classList.remove('hidden');
@@ -397,7 +440,6 @@
         }
         
         function formatTimeAgo(dateString) {
-            // ... (আগের মতো)
             const date = new Date(dateString);
             const now = new Date();
             const seconds = Math.round((now - date) / 1000);
@@ -414,7 +456,6 @@
         }
 
         function displayOrders(ordersToDisplay) {
-            // ... (আগের মতো)
             const orderListEl = document.getElementById('orderList');
             orderListEl.innerHTML = '';
 
@@ -451,23 +492,22 @@
 
         function filterAndDisplayOrders() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const statusFilter = document.getElementById('statusFilter').value;
-            const dateFilterValue = document.getElementById('dateFilter').value; // ভেরিয়েবলের নাম পরিবর্তন dateFilter -> dateFilterValue
+            const statusFilterValue = document.getElementById('statusFilter').value;
+            const dateFilterValue = document.getElementById('dateFilter').value;
             const now = new Date();
             const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             
-            let todaysOrdersCount = 0; // আজকের অর্ডারের সংখ্যা গণনার জন্য ভেরিয়েবল
+            let todaysOrdersCount = 0;
 
             let filtered = allOrders.filter(order => {
                 const orderDateOnly = new Date(new Date(order.orderDate).getFullYear(), new Date(order.orderDate).getMonth(), new Date(order.orderDate).getDate());
                 
-                // আজকের অর্ডার গণনা
                 if (orderDateOnly.getTime() === today.getTime()) {
                     todaysOrdersCount++;
                 }
 
                 const matchesSearch = order.customerName.toLowerCase().includes(searchTerm);
-                const matchesStatus = statusFilter ? (order.status || 'processing') === statusFilter : true;
+                const matchesStatus = statusFilterValue ? (order.status || 'processing') === statusFilterValue : true;
                 let matchesDate = true;
                 if (dateFilterValue === 'today') matchesDate = orderDateOnly.getTime() === today.getTime();
                 else if (dateFilterValue === 'yesterday') {
@@ -487,7 +527,6 @@
                 return matchesSearch && matchesStatus && matchesDate;
             });
 
-            // আজকের অর্ডারের সংখ্যা আপডেট করা
             const todaysOrderCountEl = document.getElementById('todaysOrderCount');
             if (todaysOrderCountEl) {
                 todaysOrderCountEl.textContent = `আজকের অর্ডার: ${todaysOrdersCount}`;
@@ -497,7 +536,6 @@
         }
         
         async function updateOrderStatus(orderId) {
-            // ... (আগের মতো)
             const selectEl = document.querySelector(`#statusSelect-${orderId}`);
             if (!selectEl) { showToast("স্ট্যাটাস এলিমেন্ট নেই।", 'error'); return; }
             const newStatus = selectEl.value;
@@ -523,7 +561,6 @@
         }
         
         async function addAdminNote(orderId) {
-            // ... (আগের মতো)
             const noteInputEl = document.querySelector(`#adminNote-${orderId}`);
             const newNote = noteInputEl.value.trim();
             if (!newNote) { showToast("নোট লিখুন।", 'error'); return; }
@@ -543,7 +580,6 @@
         }
 
         function showOrderDetails(orderId) {
-            // ... (আগের মতো, কোনো পরিবর্তন নেই)
             const orderRef = ref(database, `orders/${orderId}`);
             const modal = document.getElementById('orderModal');
             const modalContentEl = document.getElementById('modalContent');
@@ -563,20 +599,20 @@
                 if (order) {
                     let captureHTML = `
                         <div id="captureSection">
-                            <h4 class="text-base font-semibold mb-2 text-lipstick">ইনভয়েস</h4>
+                            <h4 class="font-semibold mb-2 text-lipstick">ইনভয়েস</h4>
                             <p><strong>নাম:</strong> ${order.customerName || 'N/A'}</p>
                             <p><strong>ইমেইল:</strong> ${order.userEmail || 'N/A'}</p>
                             <p><strong>ফোন:</strong> ${order.phoneNumber || 'N/A'}</p>
                             <p><strong>ঠিকানা:</strong> ${order.address || 'N/A'}</p>
                             <p><strong>ডেলিভারি:</strong> ${order.deliveryLocation === 'insideDhaka' ? 'ঢাকার ভেতরে' : 'ঢাকার বাইরে'} ${order.outsideDhakaLocation ? `(${order.outsideDhakaLocation})` : ''}</p>
                             ${order.deliveryNote ? `<p><strong>ডেলিভারি নোট:</strong> ${order.deliveryNote}</p>` : ''}
-                            <hr class="my-1">
+                            <hr class="my-1.5">
                             <p><strong>পণ্য পেমেন্ট:</strong> ${order.productPaymentMethod === 'cod' ? 'ক্যাশ অন ডেলিভারি' : (order.productPaymentMethod || 'N/A')}</p>
                             ${order.deliveryPaymentMethod && order.deliveryLocation === 'outsideDhaka' ? `<p><strong>ডেলিভারি চার্জ পেমেন্ট:</strong> ${order.deliveryPaymentMethod}</p>` : ''}
                             ${order.paymentNumber && order.deliveryLocation === 'outsideDhaka' ? `<p><strong>পেমেন্ট নম্বর:</strong> ${order.paymentNumber}</p>` : ''}
                             <p><strong>ডেলিভারি ফি:</strong> ${order.deliveryFee || 0} টাকা</p>
                             <p><strong>মোট মূল্য:</strong> ${order.totalAmount || 0} টাকা</p>
-                            <hr class="my-1">
+                            <hr class="my-1.5">
                             <p><strong>অর্ডার আইডি:</strong> ${order.orderId || 'N/A'}</p>
                             <p><strong>অর্ডারের তারিখ:</strong> ${new Date(order.orderDate).toLocaleString('bn-BD', { dateStyle: 'medium', timeStyle: 'short' })}</p>
                             <p><strong>বর্তমান স্ট্যাটাস:</strong> <span class="status-${order.status || 'processing'}">${getStatusText(order.status || 'processing')}</span></p>
@@ -586,7 +622,7 @@
                     const currentStatus = order.status || 'processing';
                     nonCaptureHTML += `
                         <div class="mt-3">
-                            <h4 class="text-base font-semibold mb-1.5 text-lipstick">স্ট্যাটাস আপডেট</h4>
+                            <h4 class="font-semibold mb-1.5 text-lipstick">স্ট্যাটাস আপডেট</h4>
                             <div class="flex items-center gap-2">
                                 <select id="statusSelect-${orderId}" class="status-select flex-grow">
                                     <option value="processing" ${currentStatus === 'processing' ? 'selected' : ''}>প্রসেসিং</option>
@@ -602,7 +638,7 @@
                         </div>`;
 
                     if (order.statusHistory && order.statusHistory.length > 0) {
-                        nonCaptureHTML += `<div class="mt-3"><h4 class="text-base font-semibold mb-1.5 text-lipstick">স্ট্যাটাস টাইমলাইন</h4><div class="timeline">`;
+                        nonCaptureHTML += `<div class="mt-3"><h4 class="font-semibold mb-1.5 text-lipstick">স্ট্যাটাস টাইমলাইন</h4><div class="timeline">`;
                         order.statusHistory.slice().reverse().forEach(history => {
                             nonCaptureHTML += `
                                 <div class="timeline-item">
@@ -618,13 +654,13 @@
 
                     nonCaptureHTML += `
                         <div class="mt-3">
-                            <h4 class="text-base font-semibold mb-1.5 text-lipstick">এডমিন নোট</h4>
+                            <h4 class="font-semibold mb-1.5 text-lipstick">এডমিন নোট</h4>
                             <textarea id="adminNote-${orderId}" class="admin-note-input" rows="2" placeholder="এখানে নোট লিখুন..."></textarea>
                             <button class="update-btn mt-1.5 text-xs px-3 py-1" data-order-id="${orderId}" data-action="add-note">নোট যোগ করুন</button>
                         </div>`;
 
                     if (order.adminNotes && order.adminNotes.length > 0) {
-                        nonCaptureHTML += `<div class="mt-3"><h4 class="text-base font-semibold mb-1.5 text-lipstick">এডমিন নোটসমূহ</h4><div class="timeline">`;
+                        nonCaptureHTML += `<div class="mt-3"><h4 class="font-semibold mb-1.5 text-lipstick">এডমিন নোটসমূহ</h4><div class="timeline">`;
                         order.adminNotes.slice().reverse().forEach(note => {
                             nonCaptureHTML += `
                                 <div class="timeline-item">
@@ -638,7 +674,7 @@
                         nonCaptureHTML += '</div></div>';
                     }
                     
-                    nonCaptureHTML += '<h4 class="text-base font-semibold mt-3 mb-1.5 text-lipstick">অর্ডার করা প্রোডাক্ট</h4>';
+                    nonCaptureHTML += '<h4 class="font-semibold mt-3 mb-1.5 text-lipstick">অর্ডার করা প্রোডাক্ট</h4>';
                     nonCaptureHTML += '<div class="cart-items">';
                     if (order.cartItems && order.cartItems.length > 0) {
                         order.cartItems.forEach(item => {
@@ -701,7 +737,6 @@
         }
 
         function handleModalButtonClick(e) {
-            // ... (আগের মতো)
             const orderId = e.target.dataset.orderId;
             const action = e.target.dataset.action;
             if (action === 'add-note') addAdminNote(orderId);
@@ -709,7 +744,6 @@
         }
 
         function getStatusText(status) {
-            // ... (আগের মতো)
             const statuses = {
                 processing: 'প্রসেসিং', confirmed: 'কনফার্মড', packaging: 'প্যাকেজিং',
                 shipped: 'ডেলিভারি হয়েছে', delivered: 'সম্পন্ন হয়েছে',
