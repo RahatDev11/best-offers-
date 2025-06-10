@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <script type="module" src="script.js"></script>
+    <!-- <script type="module" src="script.js"></script>  এই লাইনটি সরানো হলো -->
     <link rel="stylesheet" href="styles.css">
     <style>
         .bg-brushstroke { background-color: #F4A7B9; }
@@ -154,63 +154,63 @@
             padding: 8px 16px;
             border-radius: 8px;
             display: none;
-            z-index: 1000;
+            z-index: 10000; /* অন্য সব কিছুর উপরে দেখানোর জন্য z-index বাড়ান */
             font-size: 14px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            transition: opacity 0.3s ease-in-out;
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
         }
     </style>
 </head>
 <body class="bg-gray-100 bg-background">
     <div id="header"></div>
-    <main class="p-4 pt-20">
+    <main class="p-4 pt-24 md:pt-28">
         <div class="bg-white p-6 rounded-lg shadow-lg max-w-4xl mx-auto">
             <!-- ইমেজ গ্যালারি সেকশন -->
             <div class="image-gallery">
                 <div class="main-image-container">
-                    <img id="mainImage" src="" alt="Main Product Image">
+                    <img id="mainImage" src="https://via.placeholder.com/500x400.png?text=Loading..." alt="Main Product Image">
                 </div>
                 <div class="thumbnail-container" id="thumbnailContainer"></div>
             </div>
-            <h1 id="productTitle" class="text-2xl font-bold mb-4"></h1>
-            <p id="productPrice" class="text-[#A52A2A] text-xl font-bold mb-4"></p>
-            <p id="productDescription" class="text-gray-700 mb-6"></p>
-            <div class="flex space-x-4">
-                <!-- Buy বাটন -->
-                <button onclick="buyNow()" class="bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-600">
-                    <i class="fas fa-shopping-bag mr-2"></i>Buy
+            <h1 id="productTitle" class="text-2xl lg:text-3xl font-bold mb-4 text-gray-800">লোড হচ্ছে...</h1>
+            <p id="productPrice" class="text-lipstick text-xl lg:text-2xl font-bold mb-4">লোড হচ্ছে...</p>
+            
+            <div id="productDetailsExtra" class="mb-6">
+                 <!-- স্টক এবং পরিমাণ এখানে লোড হবে -->
+            </div>
+
+            <p id="productDescription" class="text-gray-700 mb-6 leading-relaxed">লোড হচ্ছে...</p>
+            
+            <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                <button id="buyNowBtn" onclick="buyNow()" class="w-full sm:w-auto bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors duration-200 ease-in-out flex items-center justify-center font-semibold opacity-50 cursor-not-allowed" disabled>
+                    <i class="fas fa-credit-card mr-2"></i>এখনই কিনুন
                 </button>
-                <!-- WhatsApp বাটন -->
-                <a id="whatsappBtn" target="_blank" class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 inline-block">
-                    <i class="fab fa-whatsapp mr-2"></i>অর্ডার করুন
+                <button id="addToCartBtn" onclick="addToCartFromDetail()" class="w-full sm:w-auto bg-teal-500 text-white px-6 py-3 rounded-lg hover:bg-teal-600 transition-colors duration-200 ease-in-out flex items-center justify-center font-semibold opacity-50 cursor-not-allowed" disabled>
+                    <i class="fas fa-cart-plus mr-2"></i>কার্টে যোগ করুন
+                </button>
+                 <a id="whatsappBtn" target="_blank" class="w-full sm:w-auto bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors duration-200 ease-in-out inline-flex items-center justify-center font-semibold">
+                    <i class="fab fa-whatsapp mr-2"></i>WhatsApp এ অর্ডার
                 </a>
-                <!-- Add to Cart বাটন -->
-                <button onclick="addToCartFromDetail()" class="bg-teal-500 text-white px-6 py-2 rounded-lg hover:bg-teal-600">
-                    <i class="fas fa-cart-plus mr-2"></i>Add to Cart
-                </button>
             </div>
         </div>
     </main>
     <div id="footer"></div>
 
-    <!-- টোস্ট নোটিফিকেশন -->
+    <!-- টোস্ট নোটিফিকেশন এলিমেন্ট -->
     <div id="toast"></div>
 
     <!-- ফুল-স্ক্রিন মোডাল -->
     <div id="imageModal">
-        <span id="modalCloseBtn">×</span>
-        <span id="modalPrevBtn"><</span>
-        <img id="modalImage" src="" alt="Full Screen Image">
-        <span id="modalNextBtn">></span>
+        <span id="modalCloseBtn" title="বন্ধ করুন">×</span>
+        <span id="modalPrevBtn" title="পূর্ববর্তী ছবি"><i class="fas fa-chevron-left"></i></span>
+        <img id="modalImage" src="" alt="Full Screen Product Image">
+        <span id="modalNextBtn" title="পরবর্তী ছবি"><i class="fas fa-chevron-right"></i></span>
     </div>
 
-    <!-- Firebase SDK -->
     <script type="module">
-        // Firebase SDK ইম্পোর্ট
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-        // Firebase কনফিগারেশন
         const firebaseConfig = {
             apiKey: "AIzaSyCVSzQS1c7H4BLhsDF_fW8wnqUN4B35LPA",
             authDomain: "nahid-6714.firebaseapp.com",
@@ -222,296 +222,358 @@
             measurementId: "G-QZ7CTRKHCW"
         };
 
-        // Firebase ইনিশিয়ালাইজ
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
 
         let currentProduct = null;
-        let images = [];
-        let currentImageIndex = 0;
+        let galleryImages = []; // গ্যালারির জন্য images এর পরিবর্তে galleryImages ব্যবহার করা হলো
+        let currentImageModalIndex = 0;
 
-        // হেডার এবং ফুটার লোড
         $(function(){
-            $("#header").load("header.html", function() {
-                console.log("header.html লোড সম্পন্ন!");
-                const searchInput = document.getElementById('searchInput');
-                const searchInputDesktop = document.getElementById('searchInputDesktop');
-
-                if (searchInput) {
-                    searchInput.addEventListener('input', function(e) {
-                        window.searchProducts();
-                    });
-                }
-
-                if (searchInputDesktop) {
-                    searchInputDesktop.addEventListener('input', function(e) {
-                        window.searchProductsDesktop();
-                    });
+            $("#header").load("header.html", function(response, status, xhr) {
+                if (status === "error") {
+                    console.error("header.html লোড করতে সমস্যা: " + xhr.status + " " + xhr.statusText);
+                } else {
+                    console.log("header.html লোড সম্পন্ন!");
+                    // header.html এর ফাংশনগুলো এখন উপলব্ধ হওয়ার কথা
+                    // যদি header এ সার্চ ফাংশন থাকে, সেগুলো কল করার চেষ্টা করা যেতে পারে
+                    // যেমন: if (typeof window.initializeSearch === 'function') window.initializeSearch();
+                    if (typeof window.loadCartFromFirebase === 'function') { // কার্ট লোড করার জন্য
+                        window.loadCartFromFirebase();
+                    }
                 }
             });
             $("#footer").load("footer.html");
         });
 
-        // ইউনিক userId জেনারেট করা বা লোড করা
         function getUserId() {
-            let userId = localStorage.getItem('userId');
+            // header.html এ থাকা getUserId ফাংশনটি ব্যবহার করার চেষ্টা করা হচ্ছে
+            // যদি সেটি না পাওয়া যায়, তাহলে লোকাল getUserId ব্যবহার করা হবে
+            if (typeof window.getUserId === 'function') {
+                return window.getUserId();
+            }
+            // ফলব্যাক (যদি header.html এর getUserId না পাওয়া যায়)
+            console.warn("Header থেকে getUserId ফাংশন পাওয়া যায়নি, লোকাল getUserId ব্যবহৃত হচ্ছে।");
+            let userId = localStorage.getItem('userId_local_detail'); // আলাদা কী ব্যবহার করা ভালো কনফ্লিক্ট এড়ানোর জন্য
             if (!userId) {
                 userId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('userId', userId);
+                localStorage.setItem('userId_local_detail', userId);
             }
             return userId;
         }
 
-        // কার্টে প্রোডাক্ট যোগ করা
         window.addToCartFromDetail = () => {
+            console.log("addToCartFromDetail ফাংশন কল করা হয়েছে।");
             if (!currentProduct) {
-                console.error('কোনো প্রোডাক্ট পাওয়া যায়নি');
+                console.error('কোনো প্রোডাক্ট পাওয়া যায়নি (currentProduct is null).');
+                showToast('প্রোডাক্ট লোড হয়নি। অনুগ্রহ করে অপেক্ষা করুন।');
+                return;
+            }
+            console.log("বর্তমান প্রোডাক্ট:", currentProduct);
+
+            const quantityInputElement = document.getElementById('quantityInput');
+            if (!quantityInputElement) {
+                console.error('পরিমাণ ইনপুট ক্ষেত্র (quantityInput) DOM-এ পাওয়া যায়নি।');
+                showToast('পরিমাণ ক্ষেত্রটি এখনও লোড হয়নি বা স্টকে নেই।');
+                return;
+            }
+            const quantity = parseInt(quantityInputElement.value);
+            console.log("পরিমাণ:", quantity);
+            if (isNaN(quantity) || quantity < 1) {
+                showToast('অনুগ্রহ করে একটি সঠিক পরিমাণ নির্বাচন করুন।');
                 return;
             }
 
-            const quantity = parseInt(document.getElementById('quantityInput').value);
             const userId = getUserId();
+            console.log("ইউজার আইডি:", userId);
+            if (!userId) {
+                 showToast('ইউজার আইডি পাওয়া যায়নি।');
+                 return;
+            }
+
             const cartRef = ref(database, `carts/${userId}`);
+            console.log("কার্ট রেফারেন্স:", cartRef.toString());
 
             get(cartRef).then((snapshot) => {
                 let cart = snapshot.val() || [];
-                const existingProduct = cart.find((p) => p.id === currentProduct.id);
+                if (!Array.isArray(cart)) cart = []; // নিশ্চিত করুন এটি একটি অ্যারে
+                console.log("বর্তমান কার্ট (Firebase থেকে):", cart);
+                
+                const productForCart = {
+                    id: currentProduct.id,
+                    name: currentProduct.name,
+                    price: currentProduct.price,
+                    image: currentProduct.image ? currentProduct.image.split(',')[0].trim() : 'https://via.placeholder.com/100',
+                    // quantity প্রপার্টি এখানে যোগ হবে না, সেটি হয় existingProduct এ আপডেট হবে অথবা নতুন push করা হবে
+                };
 
-                if (existingProduct) {
-                    existingProduct.quantity += quantity;
+                const existingProductIndex = cart.findIndex((p) => p.id === productForCart.id);
+
+                if (existingProductIndex > -1) {
+                    cart[existingProductIndex].quantity = (Number(cart[existingProductIndex].quantity) || 0) + quantity;
                 } else {
-                    cart.push({ ...currentProduct, quantity });
+                    cart.push({ ...productForCart, quantity: quantity });
                 }
+                console.log("আপডেটেড কার্ট (Firebase-এ পাঠানোর আগে):", cart);
 
                 set(cartRef, cart)
                     .then(() => {
+                        console.log("কার্ট সফলভাবে Firebase-এ সেভ হয়েছে।");
                         showToast('প্রোডাক্ট কার্টে যোগ করা হয়েছে!');
-                        window.openCartSidebar();
+                        if (typeof window.openCartSidebar === 'function') {
+                            window.openCartSidebar();
+                        } else {
+                            console.warn('openCartSidebar ফাংশনটি খুঁজে পাওয়া যায়নি।');
+                        }
+                        // header.html এর কার্ট UI আপডেট করার জন্য
+                        if (typeof window.updateCartUI === 'function') {
+                             // যদি header.html এর window.cartItems একটি গ্লোবাল ভেরিয়েবল হয়
+                            if (typeof window.cartItems !== 'undefined') {
+                                window.cartItems = cart; 
+                            }
+                            window.updateCartUI(); // এটি কল করলে header এর কার্ট কাউন্ট আপডেট হবে
+                        }
                     })
                     .catch((error) => {
-                        console.error("কার্ট আপডেটে সমস্যা: ", error);
+                        console.error("Firebase-এ কার্ট সেভ করতে সমস্যা: ", error);
                         showToast("কার্টে প্রোডাক্ট যোগ করতে সমস্যা হয়েছে!");
                     });
             }).catch((error) => {
-                console.error("কার্ট লোডে সমস্যা: ", error);
+                console.error("Firebase থেকে কার্ট লোড করতে সমস্যা: ", error);
                 showToast("কার্ট লোড করতে সমস্যা হয়েছে!");
             });
         };
 
-// "Buy" বাটনে ক্লিক করলে checkout-form.html এ রিডাইরেক্ট করা
-window.buyNow = () => {
-    if (!currentProduct) {
-        console.error('কোনো প্রোডাক্ট পাওয়া যায়নি');
-        return;
-    }
+        window.buyNow = () => {
+            if (!currentProduct) {
+                showToast('প্রোডাক্ট লোড হয়নি।');
+                return;
+            }
+            const quantityInputElement = document.getElementById('quantityInput');
+            if (!quantityInputElement) {
+                 showToast('পরিমাণ ক্ষেত্রটি এখনও লোড হয়নি বা স্টকে নেই।');
+                return;
+            }
+            const quantity = parseInt(quantityInputElement.value);
+            if (isNaN(quantity) || quantity < 1) {
+                showToast('অনুগ্রহ করে একটি সঠিক পরিমাণ নির্বাচন করুন।');
+                return;
+            }
+             const itemToCheckout = [{
+                id: currentProduct.id, name: currentProduct.name, price: currentProduct.price,
+                image: currentProduct.image ? currentProduct.image.split(',')[0].trim() : 'https://via.placeholder.com/100',
+                quantity: quantity
+            }];
+            try {
+                localStorage.setItem('cartToCheckout', JSON.stringify(itemToCheckout));
+                 window.location.href = `order-form.html?source=buyNow&id=${currentProduct.id}&quantity=${quantity}`;
+            } catch (e) {
+                showToast("অর্ডার করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
+            }
+        };
 
-    const quantity = parseInt(document.getElementById('quantityInput').value);
-    
-    // URL এর মাধ্যমে প্রোডাক্ট আইডি এবং পরিমাণ পাঠানো
-    window.location.href = `order-form.html?id=${currentProduct.id}&quantity=${quantity}`;
-};
-        // টোস্ট দেখানোর ফাংশন
         function showToast(message) {
             const toast = document.getElementById('toast');
+            if (!toast) { // যদি টোস্ট এলিমেন্ট না থাকে, তাহলে কনসোলে লগ করুন
+                console.warn("টোস্ট এলিমেন্ট আইডি 'toast' খুঁজে পাওয়া যায়নি। মেসেজ: ", message);
+                alert(message); // ফলব্যাক হিসেবে alert
+                return;
+            }
             toast.textContent = message;
+            toast.style.opacity = '1';
             toast.style.display = 'block';
+            toast.style.transform = 'translateX(-50%) translateY(0)';
             setTimeout(() => {
-                toast.style.display = 'none';
-            }, 3000);
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(-50%) translateY(20px)';
+                setTimeout(() => {
+                  toast.style.display = 'none';
+                }, 300);
+            }, 2700);
         }
 
-        // ইমেজ গ্যালারি সেটআপ
         function setupImageGallery(imageList) {
-            images = imageList;
+            galleryImages = imageList;
             const mainImage = document.getElementById('mainImage');
             const thumbnailContainer = document.getElementById('thumbnailContainer');
+            thumbnailContainer.innerHTML = ''; 
 
-            // প্রথম ইমেজটি প্রধান ইমেজ হিসেবে সেট করুন
-            if (images.length > 0) {
-                mainImage.src = images[0];
-                currentImageIndex = 0;
+            if (galleryImages.length > 0) {
+                mainImage.src = galleryImages[0];
+                currentImageModalIndex = 0;
             } else {
-                mainImage.src = 'https://via.placeholder.com/300';
+                mainImage.src = 'https://via.placeholder.com/500x400.png?text=No+Image';
             }
 
-            // থাম্বনেইল তৈরি করুন
-            images.forEach((img, index) => {
+            galleryImages.forEach((img, index) => {
                 const thumbnail = document.createElement('img');
-                thumbnail.src = img;
+                thumbnail.src = img; thumbnail.alt = `থাম্বনেইল ${index + 1}`;
                 thumbnail.className = 'thumbnail';
                 if (index === 0) thumbnail.classList.add('active');
                 thumbnail.addEventListener('click', () => {
-                    mainImage.src = img;
-                    currentImageIndex = index;
+                    mainImage.src = img; currentImageModalIndex = index;
                     document.querySelectorAll('.thumbnail').forEach(thumb => thumb.classList.remove('active'));
                     thumbnail.classList.add('active');
                 });
                 thumbnailContainer.appendChild(thumbnail);
             });
-
-            // প্রধান ইমেজে ক্লিক করলে ফুল-স্ক্রিন মোডাল ওপেন করুন
-            mainImage.addEventListener('click', () => {
-                openImageModal();
-            });
+            mainImage.addEventListener('click', openImageModal);
         }
 
-        // ফুল-স্ক্রিন মোডাল ওপেন করুন
         function openImageModal() {
             const modal = document.getElementById('imageModal');
             const modalImage = document.getElementById('modalImage');
-            modalImage.src = images[currentImageIndex];
-            modal.style.display = 'flex';
-
-            // মোডাল বন্ধ করার লজিক
-            document.getElementById('modalCloseBtn').addEventListener('click', () => {
-                modal.style.display = 'none';
-            });
-
-            // পূর্ববর্তী ইমেজ
-            document.getElementById('modalPrevBtn').addEventListener('click', (e) => {
-                e.stopPropagation();
-                currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
-                modalImage.src = images[currentImageIndex];
-            });
-
-            // পরবর্তী ইমেজ
-            document.getElementById('modalNextBtn').addEventListener('click', (e) => {
-                e.stopPropagation();
-                currentImageIndex = (currentImageIndex + 1) % images.length;
-                modalImage.src = images[currentImageIndex];
-            });
-
-            // মোডালের বাইরে ক্লিক করলে বন্ধ হবে
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.style.display = 'none';
-                }
-            });
-
-            // সোয়াইপ ফাংশনালিটি
-            let touchStartX = 0;
-            let isSwiping = false;
-
-            modal.addEventListener('touchstart', e => {
-                touchStartX = e.touches[0].clientX;
-                isSwiping = true;
-            });
-
-            modal.addEventListener('touchmove', e => {
-                if (!isSwiping) return;
-                e.preventDefault();
-            });
-
-            modal.addEventListener('touchend', e => {
-                if (!isSwiping) return;
-                const touchEndX = e.changedTouches[0].clientX;
+            if (galleryImages.length === 0) return;
+            modalImage.src = galleryImages[currentImageModalIndex];
+            modal.style.display = 'flex'; document.body.style.overflow = 'hidden';
+            document.getElementById('modalCloseBtn').onclick = closeImageModal;
+            document.getElementById('modalPrevBtn').onclick = showPrevModalImage;
+            document.getElementById('modalNextBtn').onclick = showNextModalImage;
+            modal.onclick = (e) => { if (e.target === modal) closeImageModal(); };
+            document.addEventListener('keydown', handleModalKeyPress);
+            enableModalSwipe(modalImage);
+        }
+        function closeImageModal() {
+            document.getElementById('imageModal').style.display = 'none';
+            document.body.style.overflow = '';
+            document.removeEventListener('keydown', handleModalKeyPress);
+        }
+        function showPrevModalImage(e) {
+            if(e) e.stopPropagation();
+            currentImageModalIndex = (currentImageModalIndex - 1 + galleryImages.length) % galleryImages.length;
+            document.getElementById('modalImage').src = galleryImages[currentImageModalIndex];
+        }
+        function showNextModalImage(e) {
+            if(e) e.stopPropagation();
+            currentImageModalIndex = (currentImageModalIndex + 1) % galleryImages.length;
+            document.getElementById('modalImage').src = galleryImages[currentImageModalIndex];
+        }
+        function handleModalKeyPress(e) {
+            if (e.key === 'Escape') closeImageModal();
+            if (e.key === 'ArrowLeft') showPrevModalImage();
+            if (e.key === 'ArrowRight') showNextModalImage();
+        }
+        function enableModalSwipe(element) {
+            let touchStartX = 0, touchEndX = 0, isSwiping = false;
+            element.addEventListener('touchstart', e => {
+                if (e.touches.length === 1) { touchStartX = e.touches[0].clientX; isSwiping = true; }
+            }, { passive: true });
+            element.addEventListener('touchmove', e => {
+                if (!isSwiping || e.touches.length !== 1) return;
+                touchEndX = e.touches[0].clientX;
+            }, { passive: true });
+            element.addEventListener('touchend', e => {
+                if (!isSwiping || e.changedTouches.length !== 1) { isSwiping = false; return; }
+                touchEndX = e.changedTouches[0].clientX;
                 const deltaX = touchStartX - touchEndX;
-
-                if (Math.abs(deltaX) > 50) {
-                    if (deltaX > 0) {
-                        currentImageIndex = (currentImageIndex + 1) % images.length;
-                    } else {
-                        currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
-                    }
-                    modalImage.src = images[currentImageIndex];
-                }
+                if (Math.abs(deltaX) > 50) { deltaX > 0 ? showNextModalImage() : showPrevModalImage(); }
                 isSwiping = false;
             });
         }
 
-        // DOM লোড হওয়ার পর প্রোডাক্ট লোড
         document.addEventListener('DOMContentLoaded', async () => {
             const params = new URLSearchParams(window.location.search);
             const productId = params.get('id');
 
             if (!productId) {
-                alert('প্রোডাক্ট আইডি পাওয়া যায়নি!');
-                window.location.href = 'index.html';
+                showToast('প্রোডাক্ট আইডি পাওয়া যায়নি!');
+                setTimeout(() => { window.location.href = 'index.html'; }, 2000);
                 return;
             }
+            
+            console.log("Product Detail Page: DOMContentLoaded. Product ID:", productId);
 
-            // Firebase থেকে প্রোডাক্ট ডেটা লোড
             const productRef = ref(database, 'products/' + productId);
             try {
                 const snapshot = await get(productRef);
                 const product = snapshot.val();
+                console.log("Product Detail Page: Firebase snapshot data:", product);
 
                 if (product) {
                     currentProduct = { ...product, id: productId };
+                    document.getElementById('productTitle').textContent = product.name || "নাম পাওয়া যায়নি";
+                    document.getElementById('productPrice').textContent = `দাম: ${product.price || "N/A"} টাকা`;
+                    document.getElementById('productDescription').textContent = product.description || "বিবরণ পাওয়া যায়নি";
+                    document.title = product.name ? `প্রোডাক্ট বিস্তারিত - ${product.name}` : "প্রোডাক্ট বিস্তারিত";
 
-                    document.getElementById('productTitle').textContent = product.name;
-                    document.getElementById('productPrice').textContent = `দাম: ${product.price} টাকা`;
-                    document.getElementById('productDescription').textContent = product.description;
+                    const detailsExtraContainer = document.getElementById('productDetailsExtra');
+                    detailsExtraContainer.innerHTML = ''; 
 
-                    // স্টক স্ট্যাটাস দেখান
                     const stockElement = document.createElement('p');
-                    stockElement.className = "text-gray-700 mb-2";
-                    stockElement.innerHTML = `<strong>স্টক:</strong> ${product.stockStatus === 'in_stock' ? 'স্টকে আছে' : 'স্টকে নেই'}`;
-                    document.getElementById('productDescription').after(stockElement);
+                    stockElement.className = "text-gray-700 mb-2 font-medium";
+                    let stockText = "স্টকের তথ্য অনুপলব্ধ", stockColor = "text-gray-500";
+                    if (product.stockStatus === 'in_stock') { stockText = "স্টকে আছে"; stockColor = "text-green-600"; }
+                    else if (product.stockStatus === 'out_of_stock') { stockText = "স্টকে নেই"; stockColor = "text-red-600"; }
+                    stockElement.innerHTML = `<strong>স্টক:</strong> <span class="${stockColor} font-semibold">${stockText}</span>`;
+                    detailsExtraContainer.appendChild(stockElement);
+                    
+                    const buyNowButton = document.getElementById('buyNowBtn');
+                    const addToCartButton = document.getElementById('addToCartBtn');
 
-                    // কাউন্টার যোগ করুন
-                    const counterHTML = `
-                        <div class="flex items-center space-x-4 mb-4">
-                            <span class="text-gray-700">পরিমাণ:</span>
-                            <div class="flex items-center border rounded-lg overflow-hidden">
-                                <button id="decreaseBtn" class="bg-lipstick text-white px-3 py-1 hover:bg-lipstick-dark">-</button>
-                                <input type="number" id="quantityInput" value="1" min="1" max="100" class="px-2 py-1 border-0 focus:ring-0 w-16 text-center">
-                                <button id="increaseBtn" class="bg-lipstick text-white px-3 py-1 hover:bg-lipstick-dark">+</button>
-                            </div>
-                        </div>
-                    `;
-                    document.getElementById('productDescription').insertAdjacentHTML('afterend', counterHTML);
-
-                    // কাউন্টার লজিক
-                    const quantityInput = document.getElementById('quantityInput');
-                    const decreaseBtn = document.getElementById('decreaseBtn');
-                    const increaseBtn = document.getElementById('increaseBtn');
-
-                    decreaseBtn.addEventListener('click', () => {
-                        let currentVal = parseInt(quantityInput.value);
-                        if (currentVal > 1) quantityInput.value = currentVal - 1;
+                    if (product.stockStatus === 'in_stock') {
+                        const maxOrderQuantity = parseInt(product.quantity) > 0 ? parseInt(product.quantity) : 100;
+                        const counterHTML = `
+                            <div class="flex items-center space-x-3 my-4">
+                                <span class="text-gray-700 font-medium">পরিমাণ:</span>
+                                <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                                    <button id="decreaseBtn" class="bg-gray-200 text-gray-700 px-4 py-2 hover:bg-gray-300 font-bold">-</button>
+                                    <input type="number" id="quantityInput" value="1" min="1" max="${maxOrderQuantity}" 
+                                        class="px-2 py-2 border-0 focus:ring-0 w-16 text-center appearance-none [-moz-appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                                    <button id="increaseBtn" class="bg-gray-200 text-gray-700 px-4 py-2 hover:bg-gray-300 font-bold">+</button>
+                                </div>
+                            </div>`;
+                        detailsExtraContainer.innerHTML += counterHTML;
+                        
+                        const quantityInput = document.getElementById('quantityInput');
+                        document.getElementById('decreaseBtn').addEventListener('click', () => {
+                            let currentVal = parseInt(quantityInput.value);
+                            if (currentVal > 1) quantityInput.value = currentVal - 1;
+                        });
+                        document.getElementById('increaseBtn').addEventListener('click', () => {
+                            let currentVal = parseInt(quantityInput.value);
+                            if (currentVal < maxOrderQuantity) quantityInput.value = currentVal + 1;
+                            else showToast(`সর্বোচ্চ ${maxOrderQuantity} টি নিতে পারবেন।`);
+                        });
+                        quantityInput.addEventListener('input', () => {
+                            let value = parseInt(quantityInput.value);
+                            if (isNaN(value) || value < 1) quantityInput.value = 1;
+                            if (value > maxOrderQuantity) {
+                                quantityInput.value = maxOrderQuantity;
+                                showToast(`সর্বোচ্চ ${maxOrderQuantity} টি নিতে পারবেন।`);
+                            }
+                        });
+                        buyNowButton.disabled = false;
+                        addToCartButton.disabled = false;
+                        buyNowButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                        addToCartButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                    } else {
+                        // বাটনগুলো আগে থেকেই disabled এবং opacity-50 করা আছে HTML এ
+                    }
+                    
+                    document.getElementById('whatsappBtn').addEventListener('click', (e) => { 
+                        e.preventDefault(); 
+                        const quantity = document.getElementById('quantityInput') ? document.getElementById('quantityInput').value : 1;
+                        let imageListText = '';
+                        if (product.image) imageListText = product.image.split(',').map((img, index) =>`ছবি-${index + 1}: ${img.trim()}`).join('\n');
+                        const message = `প্রোডাক্টের নাম: ${product.name}\nদাম: ${product.price} টাকা\nপরিমাণ: ${quantity} টি\n${imageListText ? imageListText + '\n' : ''}আমি এই প্রোডাক্টটি কিনতে চাই!`.trim();
+                        window.open(`https://wa.me/8801931866636?text=${encodeURIComponent(message)}`, '_blank'); // আপনার WhatsApp নম্বর দিন
                     });
 
-                    increaseBtn.addEventListener('click', () => {
-                        let currentVal = parseInt(quantityInput.value);
-                        if (currentVal < 100) quantityInput.value = currentVal + 1;
-                    });
+                    if (product.image) {
+                        const imageList = product.image.split(',').map(img => img.trim()).filter(img => img);
+                        setupImageGallery(imageList);
+                    } else { setupImageGallery([]); }
 
-                    quantityInput.addEventListener('input', () => {
-                        let value = parseInt(quantityInput.value);
-                        if (value < 1) quantityInput.value = 1;
-                        if (value > 100) quantityInput.value = 100;
-                    });
-
-                    // হোয়াটসঅ্যাপ মেসেজে পরিমাণ যোগ করুন
-                    const whatsappBtn = document.getElementById('whatsappBtn');
-                    whatsappBtn.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const quantity = quantityInput.value;
-                        const imageList = product.image.split(',').map((img, index) =>
-                            `ছবি-${index + 1}: ${img.trim()}`).join('\n');
-
-                        const message = `
-প্রোডাক্টের নাম: ${product.name}
-দাম: ${product.price} টাকা
-পরিমাণ: ${quantity} টি
-${imageList}
-আমি এই প্রোডাক্টটি কিনতে চাই!
-                        `;
-                        window.open(`https://wa.me/8801931866636?text=${encodeURIComponent(message)}`, '_blank');
-                    });
-
-                    // ইমেজ গ্যালারি সেটআপ
-                    const imageList = product.image.split(',').map(img => img.trim());
-                    setupImageGallery(imageList);
                 } else {
-                    alert('প্রোডাক্ট পাওয়া যায়নি!');
-                    window.location.href = 'index.html';
+                    document.getElementById('productTitle').textContent = "প্রোডাক্ট পাওয়া যায়নি";
+                    document.getElementById('productDescription').textContent = "দুঃখিত, এই প্রোডাক্টটি এখন আর উপলব্ধ নেই অথবা লিঙ্কটি সঠিক নয়।";
+                    showToast('প্রোডাক্ট পাওয়া যায়নি!');
                 }
             } catch (error) {
                 console.error("Firebase থেকে ডেটা লোড করতে সমস্যা: ", error);
-                alert('ডেটা লোড করতে সমস্যা হয়েছে!');
-                window.location.href= 'index.html';
+                showToast('ডেটা লোড করতে সমস্যা হয়েছে!');
+                document.getElementById('productTitle').textContent = "ত্রুটি";
+                document.getElementById('productDescription').textContent = "প্রোডাক্টের তথ্য লোড করা সম্ভব হয়নি। অনুগ্রহ করে আবার চেষ্টা করুন।";
             }
         });
     </script>
