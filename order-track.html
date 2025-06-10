@@ -11,7 +11,6 @@
             --lipstick-color: #A52A2A; 
             --lipstick-dark-color: #800020;
             --success-color: #10B981; 
-            /* ... অন্যান্য কালার ভেরিয়েবল ... */
         }
         .text-lipstick { color: var(--lipstick-color); }
         .bg-lipstick { background-color: var(--lipstick-color); }
@@ -62,7 +61,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 0.5rem; /* গ্যাপ কমানো */
+            margin-bottom: 0.5rem;
         }
         .order-item-content .order-id-status .order-id {
             font-size: 0.8rem;
@@ -72,16 +71,15 @@
             color: #374151;
         }
         .order-item-content .product-summary {
-            font-size: 1.05rem; /* প্রোডাক্টের নাম একটু ছোট করা */
+            font-size: 1.05rem;
             font-weight: 600;
             color: var(--lipstick-color);
             margin-bottom: 0.4rem;
             line-height: 1.3;
         }
 
-        /* স্ট্যাটাস ব্যাজ */
         .status-badge {
-            font-size: 0.7rem; /* ব্যাজ একটু ছোট */
+            font-size: 0.7rem;
             font-weight: 600; 
             padding: 0.2rem 0.6rem; 
             border-radius: 9999px; 
@@ -190,6 +188,7 @@
 
         <div id="loadingSpinner" class="flex justify-center items-center py-16" style="display: none;">
             <div class="spinner"></div>
+            <p class="ml-3 text-gray-600">অর্ডার লোড হচ্ছে...</p>
         </div>
 
         <div id="loginPrompt" class="text-center bg-white p-8 md:p-12 rounded-xl shadow-lg max-w-md mx-auto" style="display: none;">
@@ -222,11 +221,11 @@
         import { getDatabase, ref, onValue, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyCVSzQS1c7H4BLhsDF_fW8wnqUN4B35LPA",
+            apiKey: "AIzaSyCVSzQS1c7H4BLhsDF_fW8wnqUN4B35LPA", // আপনার সঠিক কী ব্যবহার করুন
             authDomain: "nahid-6714.firebaseapp.com",
             databaseURL: "https://nahid-6714-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "nahid-6714",
-            storageBucket: "nahid-6714.appspot.com", 
+            storageBucket: "nahid-6714.appspot.com", // এটি আপনার Firebase Console থেকে নিশ্চিত করুন
             messagingSenderId: "505741217147",
             appId: "1:505741217147:web:25ed4e9f0d00e3c4d381de",
             measurementId: "G-QZ7CTRKHCW"
@@ -238,16 +237,11 @@
         const provider = new GoogleAuthProvider();
 
         document.addEventListener("DOMContentLoaded", function() {
+            console.log("DOM Content Loaded");
             $("#header").load("header.html", function(response, status, xhr) {
                 if (status === "success") {
-                    const searchInputDesktop = document.getElementById('searchInputDesktop');
-                    if(searchInputDesktop && typeof window.searchProductsDesktop === 'function') {
-                        searchInputDesktop.addEventListener('input', window.searchProductsDesktop);
-                    }
-                     const mobileSearchInput = document.getElementById('searchInput');
-                    if(mobileSearchInput && typeof window.searchProducts === 'function') {
-                        mobileSearchInput.addEventListener('input', window.searchProducts);
-                    }
+                    console.log("header.html loaded successfully.");
+                    // সার্চ ইনপুট এখানে বাইন্ড করতে পারেন যদি হেডার.html এ থাকে
                 } else {
                     console.error("header.html load error:", xhr.status, xhr.statusText);
                 }
@@ -259,9 +253,12 @@
             const loginButton = document.getElementById('loginButton');
             if (loginButton) {
                 loginButton.addEventListener('click', handleGoogleLogin);
+            } else {
+                console.error("Login button not found!");
             }
 
             onAuthStateChanged(auth, (user) => {
+                console.log("Auth State Changed. User:", user ? user.email : 'No user');
                 const loginPrompt = document.getElementById('loginPrompt');
                 const orderListContainer = document.getElementById('orderListContainer');
                 const loadingSpinner = document.getElementById('loadingSpinner');
@@ -269,6 +266,8 @@
                 if (user) {
                     loginPrompt.style.display = 'none';
                     loadingSpinner.style.display = 'flex';
+                    orderListContainer.style.display = 'none'; // অর্ডার লোড হওয়ার আগে কন্টেইনার হাইড
+                    document.getElementById('orderList').innerHTML = ''; // আগের অর্ডার ক্লিয়ার
                     loadOrders(user.email);
                 } else {
                     loginPrompt.style.display = 'block';
@@ -280,17 +279,20 @@
         });
 
         function handleGoogleLogin() {
+            console.log("handleGoogleLogin called");
             signInWithPopup(auth, provider)
                 .then((result) => {
+                    console.log("Google Sign-In successful:", result.user.email);
                     showToast(`স্বাগতম, ${result.user.displayName}! আপনার অর্ডার লোড হচ্ছে।`, 'success');
+                    // onAuthStateChanged will trigger loadOrders
                 })
                 .catch((error) => {
-                    console.error("Google login error:", error);
+                    console.error("Google login error:", error.code, error.message);
                     let errorMessage = "লগইন করতে সমস্যা হয়েছে।";
                     if (error.code === 'auth/popup-closed-by-user') {
                         errorMessage = "আপনি লগইন পপআপটি বন্ধ করে দিয়েছেন।";
-                    } else if (error.code === 'auth/cancelled-popup-request') {
-                        errorMessage = "একাধিক লগইন চেষ্টার কারণে এটি বাতিল করা হয়েছে।";
+                    } else if (error.code === 'auth/cancelled-popup-request' || error.code === 'auth/popup-blocked') {
+                        errorMessage = "লগইন পপআপ ব্রাউজার দ্বারা ব্লক করা হয়েছে বা বাতিল করা হয়েছে।";
                     }
                     showToast(errorMessage, 'error');
                 });
@@ -312,40 +314,50 @@
         }
 
         function loadOrders(userEmail) {
+            console.log(`Loading orders for user: ${userEmail}`);
             const loadingSpinner = document.getElementById('loadingSpinner');
             const orderListContainer = document.getElementById('orderListContainer');
             const orderListDiv = document.getElementById('orderList');
 
+            // Ensure spinner is visible and list is hidden initially
             loadingSpinner.style.display = 'flex';
-            orderListContainer.style.display = 'none';
+            orderListContainer.style.display = 'none'; 
             orderListDiv.innerHTML = '';
 
             const ordersRef = ref(database, 'orders');
+            // console.log("Querying orders where userEmail equals:", userEmail);
             const userOrdersQuery = query(ordersRef, orderByChild('userEmail'), equalTo(userEmail));
 
             onValue(userOrdersQuery, (snapshot) => {
+                console.log("Snapshot received from Firebase. Exists:", snapshot.exists());
                 const orders = [];
                 if (snapshot.exists()) {
                     snapshot.forEach((childSnapshot) => {
                         const order = childSnapshot.val();
                         order.key = childSnapshot.key;
-                        if (order.orderId && order.orderDate) {
+                        // console.log("Processing order:", order.orderId, order);
+                        if (order.orderId && order.orderDate) { // Basic validation
                             orders.push(order);
+                        } else {
+                            console.warn("Order missing orderId or orderDate:", order.key);
                         }
                     });
+                    console.log(`Found ${orders.length} orders for ${userEmail}`);
+                } else {
+                    console.log(`No orders found for ${userEmail}`);
                 }
                 
                 loadingSpinner.style.display = 'none';
-                orderListContainer.style.display = 'block';
+                orderListContainer.style.display = 'block'; // Show container even if no orders
 
                 if (orders.length > 0) {
-                    orders.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate));
+                    orders.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate)); // Newest first
                     displayOrderList(orders);
                 } else {
                     orderListDiv.innerHTML = '<p class="text-center text-gray-600 text-lg py-10">আপনার কোনো অর্ডার খুঁজে পাওয়া যায়নি।</p>';
                 }
             }, (error) => {
-                console.error("Error loading orders:", error);
+                console.error("Error loading orders:", error.code, error.message);
                 showToast("অর্ডার লোড করতে সমস্যা হয়েছে: " + error.message, 'error');
                 loadingSpinner.style.display = 'none';
                 orderListContainer.style.display = 'block';
@@ -355,7 +367,7 @@
 
         function displayOrderList(orders) {
             const orderListDiv = document.getElementById('orderList');
-            orderListDiv.innerHTML = '';
+            orderListDiv.innerHTML = ''; // Clear previous items
 
             orders.forEach(order => {
                 const productSummary = order.cartItems && order.cartItems.length > 0
@@ -363,9 +375,9 @@
                     : 'প্রোডাক্ট নেই';
                 const currentStatus = order.status || 'processing';
 
-                let firstProductImage = 'https://via.placeholder.com/70?text=ছবি+নেই';
+                let firstProductImage = 'https://via.placeholder.com/70?text=%E0%A6%9B%E0%A6%AC%E0%A6%BF+%E0%A6%A8%E0%A7%87%E0%A6%87';
                 if (order.cartItems && order.cartItems.length > 0 && order.cartItems[0].image) {
-                    const images = order.cartItems[0].image.split(',');
+                    const images = String(order.cartItems[0].image).split(','); // Ensure image is a string
                     if (images.length > 0 && images[0].trim() !== '') {
                         firstProductImage = images[0].trim();
                     }
@@ -374,7 +386,7 @@
                 const orderItemEl = document.createElement('div');
                 orderItemEl.className = 'order-item';
                 orderItemEl.innerHTML = `
-                    <img src="${firstProductImage}" alt="প্রোডাক্টের ছবি" class="order-item-image" onerror="this.style.display='none';">
+                    <img src="${firstProductImage}" alt="প্রোডাক্টের ছবি" class="order-item-image" onerror="this.onerror=null;this.src='https://via.placeholder.com/70?text=ত্রুটি';">
                     <div class="order-item-content">
                         <div class="order-id-status">
                             <p class="order-id">অর্ডার আইডি: <strong>${order.orderId || 'N/A'}</strong></p>
@@ -469,10 +481,10 @@
                 detailsHTML += `<h4 class="section-title">অর্ডার করা প্রোডাক্ট (${order.cartItems ? order.cartItems.length : 0} টি)</h4><div class="cart-items mt-3">`;
                 if (order.cartItems && order.cartItems.length > 0) {
                     order.cartItems.forEach(item => {
-                        const imageUrl = item.image ? item.image.split(',')[0].trim() : 'https://via.placeholder.com/50';
+                        const imageUrl = item.image ? String(item.image).split(',')[0].trim() : 'https://via.placeholder.com/50';
                         detailsHTML += `
                             <div class="cart-item">
-                                <img src="${imageUrl}" alt="${item.name || 'প্রোডাক্ট'}" onerror="this.src='https://via.placeholder.com/50'; this.alt='ছবি নেই';">
+                                <img src="${imageUrl}" alt="${item.name || 'প্রোডাক্ট'}" onerror="this.onerror=null;this.src='https://via.placeholder.com/50?text=ত্রুটি';">
                                 <div class="cart-item-details">
                                     <p class="font-medium">${item.name || 'N/A'}</p>
                                     <p>মূল্য: ${item.price || '0'} টাকা, পরিমাণ: ${item.quantity || 1}</p>
@@ -503,12 +515,19 @@
                 modal.style.display = 'flex';
             }, { onlyOnce: true });
 
+            // Modal close listeners should be setup once, or use event delegation.
+            // Cloning and replacing is a common way if not using delegation.
             const newModalCloseBtn = modalCloseBtn.cloneNode(true);
             modalCloseBtn.parentNode.replaceChild(newModalCloseBtn, modalCloseBtn);
             newModalCloseBtn.addEventListener('click', () => modal.style.display = 'none');
+            
+            // Click outside to close
             modal.addEventListener('click', (e) => {
-                if (e.target === modal) modal.style.display = 'none';
-            });
+                if (e.target === modal) { // Check if the click is on the modal backdrop itself
+                    modal.style.display = 'none';
+                }
+            }, { once: true }); // Add listener once to prevent multiple bindings if modal is reopened.
+
         }
 
         function calculateProgress(status) {
