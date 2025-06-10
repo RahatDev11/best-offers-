@@ -61,158 +61,162 @@ window.getUserId = function() {
         return userId;
     }
 };
-    // লগইন মডাল খোলার ফাংশন
+        // লগইন মডাল খোলার ফাংশন (এখন সরাসরি লগইন শুরু করবে)
     window.openLoginModal = function() {
-        const loginModal = document.getElementById('loginModal');
-        if (loginModal) {
-            loginModal.classList.remove('hidden');
-            loginModal.querySelector('.login-modal-content').classList.add('scale-100');
-            console.log("লগইন মডাল খোলা হয়েছে।");
+        // মডাল খোলার পরিবর্তে সরাসরি loginWithGmail ফাংশন কল করা হবে
+        console.log("লগইন প্রক্রিয়া শুরু হচ্ছে...");
+        if (typeof loginWithGmail === 'function') {
+            loginWithGmail();
         } else {
-            console.error("লগইন মডাল পাওয়া যায়নি।");
-            showToast("লগইন মডাল পাওয়া যায়নি।");
+            console.error("loginWithGmail ফাংশন পাওয়া যায়নি।");
+            if (typeof showToast === 'function') { // showToast ফাংশন থাকলে ব্যবহার করা হবে
+                showToast("লগইন প্রক্রিয়া শুরু করতে সমস্যা হয়েছে।");
+            }
         }
     };
-
-    // মডাল বন্ধ করার ফাংশন
+    
+    // মডাল বন্ধ করার ফাংশন (এখন আর সরাসরি ব্যবহৃত হবে না লগইনের জন্য)
+    // তবে এটি রেখে দেওয়া যেতে পারে যদি অন্য কোনো মডালের জন্য প্রয়োজন হয়
     window.closeModal = function(modalId) {
         const modal = document.getElementById(modalId);
         if (modal) {
             modal.classList.add('hidden');
-            modal.querySelector('.login-modal-content').classList.remove('scale-100');
-            console.log("লগইন মডাল বন্ধ করা হয়েছে।");
+            const modalContent = modal.querySelector('.login-modal-content'); // '.login-modal-content' ক্লাসটি আপনার মডালের কন্টেন্ট ডিভে থাকতে হবে
+            if (modalContent) {
+                 modalContent.classList.remove('scale-100');
+            }
+            console.log(modalId + " মডাল বন্ধ করা হয়েছে।");
         } else {
-            console.error("মডাল পাওয়া যায়নি: ", modalId);
-            showToast("মডাল বন্ধ করতে সমস্যা হয়েছে।");
+            // console.warn("মডাল পাওয়া যায়নি: ", modalId); // লগইন মডাল না থাকলে এটি স্বাভাবিক
         }
     };
-
-// Google দিয়ে লগইন করার ফাংশন
-window.loginWithGmail = function() {
-    if (!auth || !provider) {
-        console.error("Firebase Auth বা Google প্রোভাইডার লোড হয়নি।");
-        showToast("Firebase Auth বা Google প্রোভাইডার লোড হয়নি।");
-        return;
+    
+    // Google দিয়ে লগইন করার ফাংশন
+    window.loginWithGmail = function() {
+        if (!auth || !provider) {
+            console.error("Firebase Auth বা Google প্রোভাইডার লোড হয়নি।");
+            if (typeof showToast === 'function') showToast("Firebase Auth বা Google প্রোভাইডার লোড হয়নি।");
+            return;
+        }
+        
+        signInWithPopup(auth, provider)
+            .then((result) => {
+                const user = result.user;
+                if (typeof showToast === 'function') showToast(`লগইন সফল! স্বাগতম, ${user.displayName}`);
+                // closeModal('loginModal'); // এই লাইনটির আর প্রয়োজন নেই কারণ মডাল ওপেন হচ্ছে না
+                if (typeof updateLoginButton === 'function') updateLoginButton(user);
+                if (typeof checkAdminAndShowUploadForm === 'function') checkAdminAndShowUploadForm(user);
+                if (typeof loadCartFromFirebase === 'function') loadCartFromFirebase();
+                if (typeof saveUserToFirebase === 'function') saveUserToFirebase(user);
+                console.log("ইউজার লগইন সফল: ", user.email);
+            })
+            .catch((error) => {
+                console.error("লগইন ত্রুটি (পপআপ): ", error.message, error.code);
+                if (error.code === 'auth/popup-blocked' || error.code === 'auth/cancelled-popup-request') {
+                    if (typeof showToast === 'function') showToast("পপআপ ব্লক করা হয়েছে। রিডাইরেক্ট মেথড ব্যবহার করা হচ্ছে...");
+                    signInWithRedirect(auth, provider);
+                } else if (error.code === 'auth/popup-closed-by-user'){
+                    if (typeof showToast === 'function') showToast("লগইন প্রক্রিয়া বাতিল করা হয়েছে।");
+                }
+                 else {
+                    if (typeof showToast === 'function') showToast("লগইন ব্যর্থ হয়েছে: " + error.message);
+                }
+            });
+    };
+    
+    // রিডাইরেক্ট থেকে ফিরে এসে লগইন হ্যান্ডল করা
+    if (auth) { // auth অবজেক্ট তৈরি হলেই এই কোড রান করবে
+        getRedirectResult(auth)
+            .then((result) => {
+                if (result && result.user) {
+                    const user = result.user;
+                    if (typeof showToast === 'function') showToast(`লগইন সফল! স্বাগতম, ${user.displayName}`);
+                    // closeModal('loginModal'); // এই লাইনটির আর প্রয়োজন নেই
+                    if (typeof updateLoginButton === 'function') updateLoginButton(user);
+                    if (typeof checkAdminAndShowUploadForm === 'function') checkAdminAndShowUploadForm(user);
+                    if (typeof loadCartFromFirebase === 'function') loadCartFromFirebase();
+                    if (typeof saveUserToFirebase === 'function') saveUserToFirebase(user);
+                    console.log("ইউজার লগইন সফল (রিডাইরেক্ট): ", user.email);
+                }
+            })
+            .catch((error) => {
+                console.error("লগইন ত্রুটি (রিডাইরেক্ট): ", error.message, error.code);
+                // কিছু সাধারণ রিডাইরেক্ট ত্রুটি উপেক্ষা করা যেতে পারে যা ইউজার ইন্টারঅ্যাকশনের কারণে হয়
+                if (error.code !== 'auth/redirect-cancelled-by-user' && error.code !== 'auth/web-storage-unsupported' && error.code !== 'auth/internal-error') {
+                    if (typeof showToast === 'function') showToast("লগইন ব্যর্থ হয়েছে (রিডাইরেক্ট): " + error.message);
+                }
+            });
     }
 
-    signInWithPopup(auth, provider)
-        .then((result) => {
-            const user = result.user;
-            showToast(`লগইন সফল! স্বাগতম, ${user.displayName}`);
-            closeModal('loginModal');
-            updateLoginButton(user);
-            checkAdminAndShowUploadForm(user);
-            loadCartFromFirebase();
-            saveUserToFirebase(user); // নতুন ইউজারের ডাটা Firebase-এ সেভ করা
-            console.log("ইউজার লগইন সফল: ", user.email);
-        })
-        .catch((error) => {
-            console.error("লগইন ত্রুটি (পপআপ): ", error.message);
-            if (error.code === 'auth/popup-blocked') {
-                showToast("পপআপ ব্লক করা হয়েছে। রিডাইরেক্ট মেথড ব্যবহার করা হচ্ছে...");
-                signInWithRedirect(auth, provider);
-            } else {
-                showToast("লগইন ব্যর্থ হয়েছে: " + error.message);
-            }
-        });
-};
-
-// রিডাইরেক্ট থেকে ফিরে এসে লগইন হ্যান্ডল করা
-if (auth) {
-    getRedirectResult(auth)
-        .then((result) => {
-            if (result && result.user) {
-                const user = result.user;
-                showToast(`লগইন সফল! স্বাগতম, ${user.displayName}`);
-                closeModal('loginModal');
-                updateLoginButton(user);
-                checkAdminAndShowUploadForm(user);
-                loadCartFromFirebase();
-                saveUserToFirebase(user); // নতুন ইউজারের ডাটা Firebase-এ সেভ করা
-                console.log("ইউজার লগইন সফল (রিডাইরেক্ট): ", user.email);
-            }
-        })
-        .catch((error) => {
-            console.error("লগইন ত্রুটি (রিডাইরেক্ট): ", error.message);
-            showToast("লগইন ব্যর্থ হয়েছে: " + error.message);
-        });
-}
     // লগইন বাটন আপডেট করার ফাংশন
     window.updateLoginButton = function(user) {
         const mobileLoginButton = document.getElementById('mobileLoginButton');
         const desktopLoginButton = document.getElementById('desktopLoginButton');
         if (user) {
-            const displayName = user.displayName || user.email.split('@')[0];
-            if (mobileLoginButton) {
-                mobileLoginButton.innerHTML = `
-                    <div class="flex flex-col">
-                        <span class="flex items-center"><i class="fas fa-user mr-2"></i>${displayName}</span>
-                        <button onclick="confirmLogout()" class="text-left text-sm text-red-500 hover:text-red-700 mt-1">লগআউট</button>
-                    </div>
-                `;
-            }
-            if (desktopLoginButton) {
-                desktopLoginButton.innerHTML = `
-                    <div class="flex flex-col">
-                        <span class="flex items-center"><i class="fas fa-user mr-2"></i>${displayName}</span>
-                        <button onclick="confirmLogout()" class="text-left text-sm text-red-500 hover:text-red-700 mt-1">লগআউট</button>
-                    </div>
-                `;
-            }
+            const displayName = user.displayName || (user.email ? user.email.split('@')[0] : 'ব্যবহারকারী');
+            const commonHTML = `
+                <div class="flex flex-col">
+                    <span class="flex items-center"><i class="fas fa-user mr-2"></i>${displayName}</span>
+                    <button onclick="confirmLogout()" class="text-left text-sm text-red-500 hover:text-red-700 mt-1">লগআউট</button>
+                </div>
+            `;
+            if (mobileLoginButton) mobileLoginButton.innerHTML = commonHTML;
+            if (desktopLoginButton) desktopLoginButton.innerHTML = commonHTML;
             console.log("লগইন বাটন আপডেট করা হয়েছে: ", displayName);
         } else {
-            if (mobileLoginButton) {
-                mobileLoginButton.innerHTML = `
-                    <button class="flex items-center w-full" onclick="openLoginModal()">
-                        <i class="fas fa-sign-in-alt mr-2"></i>
-                        <span>লগইন</span>
-                    </button>
-                `;
-            }
-            if (desktopLoginButton) {
-                desktopLoginButton.innerHTML = `
-                    <button class="flex items-center" onclick="openLoginModal()">
-                        <i class="fas fa-sign-in-alt mr-2"></i>
-                        <span>লগইন</span>
-                    </button>
-                `;
-            }
+            // যখন ইউজার লগইন করা নেই, তখন onclick="openLoginModal()" কল হবে,
+            // যা এখন সরাসরি loginWithGmail() কল করবে।
+            const commonHTMLMobile = `
+                <button class="flex items-center w-full" onclick="openLoginModal()">
+                    <i class="fas fa-sign-in-alt mr-2"></i>
+                    <span>লগইন</span>
+                </button>
+            `;
+            if (mobileLoginButton) mobileLoginButton.innerHTML = commonHTMLMobile;
+
+            const commonHTMLDesktop = `
+                <button class="flex items-center" onclick="openLoginModal()">
+                    <i class="fas fa-sign-in-alt mr-2"></i>
+                    <span>লগইন</span>
+                </button>
+            `;
+            if (desktopLoginButton) desktopLoginButton.innerHTML = commonHTMLDesktop;
             console.log("লগইন বাটন রিসেট করা হয়েছে।");
         }
     };
-
-    // লগআউট নিশ্চিতকরণ ফাংশন (নতুন যোগ করা হয়েছে)
+    
+    // লগআউট নিশ্চিতকরণ ফাংশন
     window.confirmLogout = function() {
-        const confirmed = confirm("আপনি কি সত্যিই লগআউট করতে চান? আপনার কার্টের ডাটা মুছে যেতে পারে।");
+        const confirmed = confirm("আপনি কি সত্যিই লগআউট করতে চান?");
         if (confirmed) {
             logout();
         } else {
             console.log("লগআউট বাতিল করা হয়েছে।");
         }
     };
-
+    
     // লগআউট ফাংশন
     window.logout = function() {
         if (!auth) {
             console.error("Firebase Auth লোড হয়নি।");
-            showToast("Firebase Auth লোড হয়নি।");
+            if (typeof showToast === 'function') showToast("Firebase Auth লোড হয়নি।");
             return;
         }
-
+        
         signOut(auth).then(() => {
-            showToast("লগআউট সফল হয়েছে।");
-            updateLoginButton(null);
-            updateOrderTrackButton(false);
-            hideUploadForm();
-            cartItems = [];
-            updateCartUI();
+            if (typeof showToast === 'function') showToast("লগআউট সফল হয়েছে।");
+            if (typeof updateLoginButton === 'function') updateLoginButton(null);
+            if (typeof updateOrderTrackButton === 'function') updateOrderTrackButton(false);
+            if (typeof hideUploadForm === 'function') hideUploadForm();
+            // cartItems = []; // আপনি লগআউট করার পর কার্ট খালি করতে না চাইলে এই লাইনটি কমেন্ট করে রাখতে পারেন
+            // if (typeof updateCartUI === 'function') updateCartUI();
+            if (typeof loadCartFromFirebase === 'function') loadCartFromFirebase(); // টেম্পোরারি ইউজারের কার্ট লোড করার চেষ্টা
             console.log("ইউজার লগআউট সফল।");
         }).catch((error) => {
             console.error("লগআউট ত্রুটি: ", error.message);
-            showToast("লগআউট ব্যর্থ হয়েছে: " + error.message);
+            if (typeof showToast === 'function') showToast("লগআউট ব্যর্থ হয়েছে: " + error.message);
         });
     };
-
     // এডমিন চেক করার এবং প্রোডাক্ট আপলোড ফর্ম দেখানোর ফাংশন
     window.checkAdminAndShowUploadForm = function(user) {
         const adminEmail = "mdnahidislam6714@gmail.com";
