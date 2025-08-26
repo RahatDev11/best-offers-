@@ -8,21 +8,7 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
-    <style>
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .loading-spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top: 4px solid #e53e3e;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-    </style>
+
     <script>
         // DOM লোড হওয়ার পরে header এবং footer লোড করা
         document.addEventListener("DOMContentLoaded", function() {
@@ -34,7 +20,6 @@
                         loadProductsFromFirebase();
                     } else {
                         console.error("loadProductsFromFirebase ফাংশন পাওয়া যায়নি।");
-                        showProductLoadError();
                     }
                     if (typeof loadCartFromFirebase === "function") {
                         loadCartFromFirebase();
@@ -53,32 +38,9 @@
         let products = []; // প্রোডাক্ট ডাটা স্টোর করার জন্য
 
         // প্রোডাক্ট লোডিং স্টেট ম্যানেজমেন্ট
-        function showLoadingSpinner() {
-            const productList = document.getElementById("productList");
-            if (productList) {
-                productList.innerHTML = `
-                    <div class="col-span-full text-center py-8">
-                        <div class="loading-spinner"></div>
-                        <p class="mt-4 text-gray-600">প্রোডাক্ট লোড হচ্ছে...</p>
-                    </div>
-                `;
-            }
-        }
 
-        function showProductLoadError() {
-            const productList = document.getElementById("productList");
-            if (productList) {
-                productList.innerHTML = `
-                    <div class="col-span-full text-center py-8">
-                        <i class="fas fa-exclamation-triangle text-4xl text-lipstick mb-4"></i>
-                        <p class="text-gray-600 mb-4">দুঃখিত, প্রোডাক্ট লোড করতে সমস্যা হয়েছে</p>
-                        <button onclick="window.location.reload()" class="bg-lipstick text-white px-4 py-2 rounded hover:bg-lipstick-dark">
-                            পেজ রিলোড করুন
-                        </button>
-                    </div>
-                `;
-            }
-        }
+
+
 
         // টোস্ট নোটিফিকেশন ফাংশন
         function showToast(message) {
@@ -268,8 +230,7 @@
                 }
             }
             
-            // পেজ লোড হওয়ার সাথে সাথে লোডিং স্পিনার দেখাও
-            showLoadingSpinner();
+
         });
     </script>
 </head>
