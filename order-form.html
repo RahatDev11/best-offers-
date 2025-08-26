@@ -115,10 +115,7 @@
             <h2 class="text-2xl font-bold text-center mb-6 text-lipstick">অর্ডার ফর্ম</h2>
 
              <!-- Loading Indicator -->
-            <div id="loadingIndicator" class="text-center p-6 text-gray-600 flex flex-col items-center">
-                <i class="fas fa-spinner fa-spin fa-2x mb-3 text-lipstick"></i>
-                <span>লোড হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...</span>
-            </div>
+            <div id="loadingIndicator" class="hidden"></div>
 
             <!-- Login Prompt -->
              <div id="loginPrompt" class="text-center p-6 text-red-600 hidden">
@@ -300,7 +297,7 @@
 
                 <!-- Submit Button -->
                 <button type="submit" id="submitButton" class="submit-btn" disabled>
-                    <i class="fas fa-spinner fa-spin mr-2"></i> অনুগ্রহ করে অপেক্ষা করুন...
+                    অর্ডার কনফার্ম করুন
                 </button>
 
                 <!-- Order List Link -->
@@ -524,7 +521,7 @@
                 console.log("User Logged In. UID:", user.uid, "Email:", user.email); // Log email too
                 checkoutForm.classList.remove('hidden'); // Show the form
                 submitButton.disabled = true; // Keep disabled until cart loads and is valid
-                submitButton.innerHTML = '<i class="fas fa-shopping-cart mr-2"></i> আইটেম লোড হচ্ছে...';
+                submitButton.textContent = 'আইটেম লোড হচ্ছে...';
 
                 // Prefill user info if available
                 const customerNameInput = document.getElementById('customerName');
@@ -581,13 +578,13 @@
 
             if(checkoutCart.length > 0) {
                  submitButton.disabled = false;
-                 submitButton.innerHTML = '<i class="fas fa-check-circle mr-2"></i> অর্ডার কনফার্ম করুন';
+                 submitButton.textContent = 'অর্ডার কনফার্ম করুন';
                  console.log("Checkout items loaded, submit button enabled.");
                  // Initialize delivery fields based on default selection *after* cart loads
                  handleDeliveryLocationChange();
             } else {
                   submitButton.disabled = true;
-                  submitButton.innerHTML = '<i class="fas fa-times-circle mr-2"></i> কার্টে কোনো আইটেম নেই';
+                  submitButton.textContent = 'কার্টে কোনো আইটেম নেই';
                   console.log("Checkout cart is empty, submit button disabled.");
              }
         }
@@ -802,7 +799,7 @@
             }
 
             submitButton.disabled = true;
-            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> আপনার অর্ডার প্রসেস করা হচ্ছে...';
+            submitButton.textContent = 'আপনার অর্ডার প্রসেস করা হচ্ছে...';
 
             // Get Form Data using FormData for reliability
             const formData = new FormData(checkoutForm);
@@ -841,7 +838,7 @@
                   showToast(`অনুগ্রহ করে ফর্মটি সঠিকভাবে পূরণ করুন: ${errors.join(' ')}`, 'error');
                   // Focus logic can be added here if desired
                   submitButton.disabled = false;
-                  submitButton.innerHTML = '<i class="fas fa-check-circle mr-2"></i> অর্ডার কনফার্ম করুন';
+                  submitButton.textContent = 'অর্ডার কনফার্ম করুন';
                   return; // Stop submission
               }
 
@@ -923,7 +920,7 @@
 
                  // Disable button again after successful submission and reset
                   submitButton.disabled = true;
-                  submitButton.innerHTML = '<i class="fas fa-check-circle mr-2"></i> অর্ডার সফল হয়েছে!';
+                  submitButton.textContent = 'অর্ডার সফল হয়েছে!';
 
 
                  // Optionally redirect after a delay
@@ -936,7 +933,7 @@
                 showToast(`অর্ডার সাবমিট করার সময় একটি ত্রুটি হয়েছে। (${error.code || error.message}) অনুগ্রহ করে আবার চেষ্টা করুন।`, 'error');
                  // Re-enable button on failure to allow retry
                  submitButton.disabled = false;
-                 submitButton.innerHTML = '<i class="fas fa-check-circle mr-2"></i> অর্ডার কনফার্ম করুন';
+                 submitButton.textContent = 'অর্ডার কনফার্ম করুন';
             }
             // The finally block is removed as the button state is handled within try/catch
         }
@@ -961,7 +958,7 @@
         // --- Initial Setup on DOM Load ---
         document.addEventListener("DOMContentLoaded", () => {
             console.log("DOM fully loaded and parsed.");
-            loadingIndicator.classList.remove('hidden'); // Show loading indicator
+            loadingIndicator.classList.add('hidden');
             checkoutForm.classList.add('hidden');    // Hide form initially
             loginPrompt.classList.add('hidden');   // Hide login prompt initially
 

@@ -115,13 +115,7 @@
     <div class="container mx-auto py-8 px-4">
         <h1 class="text-3xl font-bold text-center mb-8 text-lipstick">আপনার অর্ডারসমূহ</h1>
 
-        <!-- লোডিং স্পিনার -->
-        <div id="loadingSpinner" class="flex justify-center items-center" style="display: none;">
-            <svg class="animate-spin h-8 w-8 text-lipstick" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-            </svg>
-        </div>
+        <!-- Loading UI removed -->
 
         <!-- লগইন প্রম্পট -->
         <div id="loginPrompt" class="text-center" style="display: none;">
@@ -238,7 +232,7 @@
                     // ইউজার লগইন করা নেই
                     document.getElementById('loginPrompt').style.display = 'block';
                     document.getElementById('orderListContainer').style.display = 'none';
-                    document.getElementById('loadingSpinner').style.display = 'none';
+                    const ls = document.getElementById('loadingSpinner'); if (ls) ls.style.display = 'none';
                 }
             });
         });
@@ -263,7 +257,7 @@
             const orderListContainer = document.getElementById('orderListContainer');
 
             // লোডিং স্পিনার দেখানো
-            loadingSpinner.style.display = 'block';
+            if (loadingSpinner) loadingSpinner.style.display = 'block';
             orderListContainer.style.display = 'none';
 
             // Firebase থেকে ইউজারের Gmail এর উপর ভিত্তি করে অর্ডার খুঁজে বের করা
@@ -283,7 +277,7 @@
                 }
 
                 // লোডিং স্পিনার বন্ধ করা
-                loadingSpinner.style.display = 'none';
+                if (loadingSpinner) loadingSpinner.style.display = 'none';
 
                 if (orders.length > 0) {
                     // অর্ডারগুলো সর্ট করা (নতুন অর্ডার উপরে)
@@ -297,7 +291,7 @@
             }, (error) => {
                 console.error("অর্ডার লোড করতে সমস্যা হয়েছে: ", error.message, error.code);
                 showToast(`অর্ডার লোড করতে সমস্যা হয়েছে: ${error.message}`);
-                loadingSpinner.style.display = 'none';
+                if (loadingSpinner) loadingSpinner.style.display = 'none';
                                 orderListContainer.style.display = 'none';
             }, { onlyOnce: true });
         }

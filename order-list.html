@@ -256,11 +256,6 @@
                     <option value="all">সব অর্ডার</option>
                 </select>
             </div>
-
-            <div id="loadingSpinner" class="loading-spinner">
-                <div class="spinner"></div>
-                <p class="text-gray-600 mt-2 text-sm">লোড হচ্ছে...</p>
-            </div>
             
             <div class="table-container">
                 <table class="order-table hidden" id="orderTable">
@@ -404,7 +399,7 @@
             const loadingSpinner = document.getElementById('loadingSpinner');
             const orderTable = document.getElementById('orderTable');
 
-            loadingSpinner.style.display = 'block';
+            if (loadingSpinner) loadingSpinner.style.display = 'block';
             orderTable.classList.add('hidden');
 
             onValue(ordersRef, (snapshot) => {
@@ -425,7 +420,7 @@
                 
                 filterAndDisplayOrders();
                 
-                loadingSpinner.style.display = 'none';
+                if (loadingSpinner) loadingSpinner.style.display = 'none';
                 // Check if orderList has content, not just allOrders.length, because filters might result in empty list
                 const orderListEl = document.getElementById('orderList');
                 if (orderListEl.innerHTML.includes('clickable-row')) { // A bit of a hack, better to check filtered list length
@@ -439,7 +434,7 @@
             }, (error) => {
                 console.error("অর্ডার লোড করতে সমস্যা:", error);
                 showToast("অর্ডার লোড করতে সমস্যা হয়েছে।", 'error');
-                loadingSpinner.style.display = 'none';
+                if (loadingSpinner) loadingSpinner.style.display = 'none';
                 const orderListEl = document.getElementById('orderList');
                 orderListEl.innerHTML = `<tr><td colspan="5" class="text-center text-red-600 py-6">অর্ডার লোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।</td></tr>`;
                 orderTable.classList.remove('hidden');

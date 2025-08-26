@@ -161,19 +161,18 @@
                  const emailInput = newsletterForm.querySelector('#newsletterEmail');
                  const submitBtn = newsletterForm.querySelector('button[type="submit"]');
                  const messageDiv = document.getElementById('newsletterMessage');
-                 const loadingSpinner = submitBtn.querySelector('.loading-spinner');
-                 const buttonText = submitBtn.querySelector('.button-text');
+                 const buttonText = submitBtn ? submitBtn.querySelector('.button-text') : null;
 
                  newsletterForm.addEventListener('submit', function(e) {
                     e.preventDefault(); const email = emailInput.value.trim();
                     if (email && /\S+@\S+\.\S+/.test(email)) {
-                        submitBtn.disabled = true; buttonText.classList.add('hidden'); loadingSpinner.classList.remove('hidden'); messageDiv.textContent = '';
+                        if (submitBtn) submitBtn.disabled = true; if (buttonText) buttonText.classList.add('hidden'); messageDiv.textContent = '';
                         setTimeout(() => {
                             const isSuccess = Math.random() > 0.2;
                             messageDiv.textContent = isSuccess ? 'ধন্যবাদ! সাবস্ক্রিপশন সফল হয়েছে।' : 'সাবস্ক্রাইব করতে সমস্যা হয়েছে।';
                             messageDiv.className = `text-xs mt-2 h-4 ${isSuccess ? 'text-green-400' : 'text-red-400'}`;
                             if (isSuccess) newsletterForm.reset();
-                            submitBtn.disabled = false; buttonText.classList.remove('hidden'); loadingSpinner.classList.add('hidden');
+                            if (submitBtn) submitBtn.disabled = false; if (buttonText) buttonText.classList.remove('hidden');
                             setTimeout(() => { messageDiv.textContent = ''; }, 5000);
                         }, 1200);
                     } else { messageDiv.textContent = 'সঠিক ইমেইল ঠিকানা দিন।'; messageDiv.className = 'text-xs mt-2 h-4 text-red-400'; setTimeout(() => { messageDiv.textContent = ''; }, 3000); } });
