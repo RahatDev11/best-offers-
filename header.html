@@ -492,29 +492,73 @@ window.increaseQuantity = function(index, event) {
             return;
         }
 
-        productList.innerHTML = '<p class="text-center text-gray-600">প্রোডাক্ট লোড হচ্ছে...</p>';
+        // Try render from cache immediately for instant paint
+        try {
+            const cached = localStorage.getItem('aj_products_cache');
+            if (cached) {
+                const parsed = JSON.parse(cached);
+                if (Array.isArray(parsed) && parsed.length) {
+                    products = parsed;
+                    loadProducts(parsed);
+                }
+            }
+        } catch (e) {
+            console.warn('Cache read failed:', e);
+        }
+
+        // Show skeletons if nothing visible yet
+        if (!productList.children.length) {
+            const skeletonGrid = document.createDocumentFragment();
+            for (let i = 0; i < 6; i++) {
+                const card = document.createElement('div');
+                card.className = 'bg-white p-4 rounded-lg shadow-lg';
+                card.innerHTML = `
+                    <div class="skeleton skeleton-image w-full mb-4"></div>
+                    <div class="skeleton skeleton-text long"></div>
+                    <div class="skeleton skeleton-text short"></div>
+                    <div class="skeleton skeleton-text medium"></div>
+                `;
+                skeletonGrid.appendChild(card);
+            }
+            productList.innerHTML = '';
+            productList.appendChild(skeletonGrid);
+        }
 
         const productsRef = ref(database, 'products');
         onValue(productsRef, (snapshot) => {
-            products = [];
-            productList.innerHTML = '';
-
             const data = snapshot.val();
+            const freshProducts = [];
             if (data) {
                 Object.keys(data).forEach(key => {
-                    products.push({ id: key, ...data[key] });
+                    freshProducts.push({ id: key, ...data[key] });
                 });
             }
+            products = freshProducts;
 
-            if (products.length === 0) {
+            // Persist to cache for next visit
+            try {
+                localStorage.setItem('aj_products_cache', JSON.stringify(freshProducts));
+            } catch (e) {
+                console.warn('Cache write failed:', e);
+            }
+
+            const listNow = document.getElementById('productList');
+            if (listNow) {
+                listNow.innerHTML = '';
+            }
+
+            if (freshProducts.length === 0) {
                 productList.innerHTML = '<p class="text-center text-gray-600">কোনো প্রোডাক্ট পাওয়া যায়নি।</p>';
             } else {
-                loadProducts(products);
+                loadProducts(freshProducts);
             }
             console.log("প্রোডাক্ট লোড হয়েছে। মোট প্রোডাক্ট: ", products.length);
         }, (error) => {
             console.error("প্রোডাক্ট লোড করতে ত্রুটি: ", error.message);
-            productList.innerHTML = '<p class="text-center text-red-600">প্রোডাক্ট লোড করতে ত্রুটি হয়েছে: ' + error.message + '</p>';
+            // Keep cache-rendered view if exists; otherwise show message
+            if (!productList.children.length) {
+                productList.innerHTML = '<p class="text-center text-red-600">প্রোডাক্ট লোড করতে ত্রুটি হয়েছে: ' + error.message + '</p>';
+            }
             showToast("প্রোডাক্ট লোড করতে ত্রুটি হয়েছে: " + error.message);
         });
     };
@@ -546,7 +590,7 @@ ${imageLinks}
             `);
 
             card.innerHTML = `
-                <img src="${product.image ? product.image.split(',')[0] : 'https://via.placeholder.com/300'}" class="w-full h-48 object-cover mb-4 rounded-lg" onerror="this.src='https://via.placeholder.com/300'; this.alt='ছবি লোড হয়নি';">
+                <img src="${product.image ? product.image.split(',')[0] : 'https://via.placeholder.com/300'}" class="w-full h-48 object-cover mb-4 rounded-lg" onerror="this.src='https://via.placeholder.com/300'; this.alt='ছবি লোড হয়নি';" loading="lazy" decoding="async">
                 <h3 class="text-lg font-bold mb-2">${product.name || 'নাম পাওয়া যায়নি'}</h3>
                 <p class="text-lipstick font-bold mb-2">দাম: ${product.price || '0'} টাকা</p>
                 <p class="text-gray-600 mb-4">${product.description ? product.description.substring(0, 80) + '...' : 'বিবরণ পাওয়া যায়নি'}</p>
@@ -649,7 +693,7 @@ ${imageLinks}
 
                 card.innerHTML = `
                     <div class="flex items-center">
-                        <img src="${product.image ? product.image.split(',')[0] : 'https://via.placeholder.com/50'}" class="w-12 h-12 object-cover rounded-lg mr-4" onerror="this.src='https://via.placeholder.com/50'; this.alt='ছবি লোড হয়নি';">
+                        <img src="${product.image ? product.image.split(',')[0] : 'https://via.placeholder.com/50'}" class="w-12 h-12 object-cover rounded-lg mr-4" onerror="this.src='https://via.placeholder.com/50'; this.alt='ছবি লোড হয়নি';" loading="lazy" decoding="async">
                         <div>
                             <h3 class="text-lg font-bold">${product.name || 'নাম পাওয়া যায়নি'}</h3>
                             <p class="text-lipstick font-bold">দাম: ${product.price || '0'} টাকা</p>
