@@ -528,16 +528,6 @@ window.loadProducts = function(filteredProducts = products) {
         card.setAttribute("data-product-id", product.id);
         card.onclick = () => showProductDetail(product.id);
 
-        const imageLinks = (product.image || '').split(',').map((img, index) =>
-            `ছবি-${index + 1}: ${img.trim()}`).join('\n');
-
-        const whatsappMessage = encodeURIComponent(`
-প্রোডাক্টের নাম: ${product.name || 'নাম পাওয়া যায়নি'}
-দাম: ${product.price || '0'} টাকা
-${imageLinks}
-আমি এই প্রোডাক্টটি কিনতে চাই!
-        `);
-
         card.innerHTML = `
             <img src="${product.image ? product.image.split(',')[0] : 'https://via.placeholder.com/300'}" class="w-full h-48 object-cover mb-4 rounded-lg" onerror="this.src='https://via.placeholder.com/300'; this.alt='ছবি লোড হয়নি';">
             <h3 class="text-lg font-bold mb-2">${product.name || 'নাম পাওয়া যায়নি'}</h3>
@@ -546,11 +536,9 @@ ${imageLinks}
             <div class="flex justify-between items-center">
                 <button onclick="event.stopPropagation(); showProductDetail('${product.id}')" class="text-blue-500 hover:underline">বিস্তারিত দেখুন</button>
                 <div class="flex space-x-2">
-                    <a href="https://wa.me/8801931866636?text=${whatsappMessage}" 
-                       target="_blank" 
-                       class="bg-lipstick text-white px-3 py-1 rounded text-sm hover:bg-lipstick-dark">
+                    <button onclick="event.stopPropagation(); buyNowFromHome('${product.id}')" class="bg-lipstick text-white px-3 py-1 rounded text-sm hover:bg-lipstick-dark">
                       কিনুন
-                    </a>
+                    </button>
                     <button onclick="event.stopPropagation(); addToCart('${product.id}')" class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600">
                       Add to Cart
                     </button>
@@ -560,6 +548,15 @@ ${imageLinks}
         productList.appendChild(card);
     });
     console.log("প্রোডাক্ট লোড করা হয়েছে। ফিল্টার করা প্রোডাক্ট: ", filteredProducts.length);
+};
+
+window.buyNowFromHome = function(productId) {
+    const product = products.find(p => p.id === productId);
+    if (product) {
+        window.location.href = `order-form.html?source=buyNow&id=${productId}&quantity=1`;
+    } else {
+        showToast("প্রোডাক্টটি খুঁজে পাওয়া যায়নি।");
+    }
 };
 
 // প্রোডাক্ট ডিটেইল পেজে রিডাইরেক্ট

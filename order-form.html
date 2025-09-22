@@ -682,19 +682,50 @@
                     const itemTotal = (item.price * item.quantity).toFixed(2);
 
                     const itemDiv = document.createElement('div');
-                    itemDiv.className = 'checkout-item bg-white rounded-md shadow-sm'; // Added some background/shadow
+                    itemDiv.className = 'checkout-item bg-white rounded-md shadow-sm p-3';
                     itemDiv.innerHTML = `
-                        <img src="${imageUrl}" alt="${item.name}" class="w-16 h-16 object-cover rounded-l-md flex-shrink-0" onerror="this.onerror=null; this.src='https://via.placeholder.com/60'; this.alt='ছবি লোড হয়নি';">
-                        <div class="checkout-item-details px-3 py-2">
-                            <p class="item-name text-sm md:text-base">${item.name}</p>
-                            <p class="text-xs md:text-sm text-gray-600">${item.quantity} x ${price}৳</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <img src="${imageUrl}" alt="${item.name}" class="w-16 h-16 object-cover rounded-md" onerror="this.onerror=null; this.src='https://via.placeholder.com/60'; this.alt='ছবি লোড হয়নি';">
+                                <div class="ml-4">
+                                    <p class="item-name text-sm md:text-base">${item.name}</p>
+                                    <p class="text-sm md:text-base text-lipstick font-bold">${item.price} * ${item.quantity} = ${itemTotal}৳</p>
+                                </div>
+                            </div>
                         </div>
-                        <p class="font-semibold text-sm md:text-base text-gray-800 px-3 py-2 text-right flex-shrink-0">${itemTotal}৳</p>
+                        <div class="flex items-center justify-end mt-2">
+                            <button type="button" onclick="decreaseQuantity('${item.id}')" class="bg-lipstick text-white px-2 py-1 rounded">-</button>
+                            <span class="text-gray-800 mx-2">${item.quantity}</span>
+                            <button type="button" onclick="increaseQuantity('${item.id}')" class="bg-lipstick text-white px-2 py-1 rounded">+</button>
+                        </div>
                     `;
                     checkoutItemsContainer.appendChild(itemDiv);
                 });
             } else {
                 checkoutItemsContainer.innerHTML = '<p class="text-center text-gray-500 italic p-4">আপনার শপিং কার্ট খালি। হোম পেজ থেকে প্রোডাক্ট যোগ করুন।</p>';
+            }
+        }
+
+        window.increaseQuantity = function(productId) {
+            const item = checkoutCart.find(p => p.id === productId);
+            if (item) {
+                item.quantity++;
+                displayCheckoutItems();
+                updateCartTotal();
+            }
+        }
+
+        window.decreaseQuantity = function(productId) {
+            const item = checkoutCart.find(p => p.id === productId);
+            if (item && item.quantity > 1) {
+                item.quantity--;
+                displayCheckoutItems();
+                updateCartTotal();
+            } else if (item && item.quantity === 1) {
+                const itemIndex = checkoutCart.findIndex(p => p.id === productId);
+                checkoutCart.splice(itemIndex, 1);
+                displayCheckoutItems();
+                updateCartTotal();
             }
         }
 
