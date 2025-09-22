@@ -363,22 +363,22 @@ window.updateCartUI = function() {
   cartItems.forEach((item, index) => {
     totalPrice += (parseFloat(item.price) || 0) * (item.quantity || 1);
     const cartItem = document.createElement('div');
-    cartItem.className = 'flex items-center justify-between bg-gray-100 p-3 rounded-lg mb-2';
+    cartItem.className = 'flex flex-col bg-gray-100 p-3 rounded-lg mb-2';
     cartItem.innerHTML = `
-            <div class="flex items-center space-x-4">
-                <img src="${item.image ? item.image.split(',')[0] : 'https://via.placeholder.com/50'}" class="w-16 h-16 object-cover rounded-lg" alt="${item.name}" onerror="this.src='https://via.placeholder.com/50'; this.alt='ছবি লোড হয়নি';">
-                <div>
-                    <h3 class="text-lg font-bold text-gray-800">${item.name || 'নাম পাওয়া যায়নি'}</h3>
+            <h3 class="text-lg font-bold text-gray-800 mb-2">${item.name || 'নাম পাওয়া যায়নি'}</h3>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <img src="${item.image ? item.image.split(',')[0] : 'https://via.placeholder.com/50'}" class="w-16 h-16 object-cover rounded-lg" alt="${item.name}" onerror="this.src='https://via.placeholder.com/50'; this.alt='ছবি লোড হয়নি';">
                     <p class="text-lipstick font-bold">দাম: ${(parseFloat(item.price) || 0) * (item.quantity || 1)} টাকা</p>
                 </div>
-            </div>
-            <div class="flex items-center space-x-2">
-                <button onclick="decreaseQuantity(${index}, event)" class="bg-lipstick text-white px-2 py-1 rounded">-</button>
-                <span class="text-gray-800">${item.quantity || 1}</span>
-                <button onclick="increaseQuantity(${index}, event)" class="bg-lipstick text-white px-2 py-1 rounded">+</button>
-                <button onclick="removeFromCart(${index}, event)" class="text-red-500 hover:text-red-700">
-                    <i class="fas fa-trash"></i>
-                </button>
+                <div class="flex items-center space-x-2">
+                    <button onclick="decreaseQuantity(${index}, event)" class="bg-lipstick text-white px-2 py-1 rounded">-</button>
+                    <span class="text-gray-800">${item.quantity || 1}</span>
+                    <button onclick="increaseQuantity(${index}, event)" class="bg-lipstick text-white px-2 py-1 rounded">+</button>
+                    <button onclick="removeFromCart(${index}, event)" class="text-red-500 hover:text-red-700">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
             </div>
         `;
     cartItemsContainer.appendChild(cartItem);

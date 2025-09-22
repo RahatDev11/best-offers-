@@ -516,12 +516,13 @@
             currentUser = user;
             loadingIndicator.classList.add('hidden'); // Always hide loading indicator once checked
 
+            loginPrompt.classList.add('hidden'); // Always hide login prompt
+            checkoutForm.classList.remove('hidden'); // Always show the form
+            submitButton.disabled = true; // Keep disabled until cart loads and is valid
+            submitButton.textContent = 'আইটেম লোড হচ্ছে...';
+
             if (user) {
-                loginPrompt.classList.add('hidden'); // Ensure login prompt is hidden
                 console.log("User Logged In. UID:", user.uid, "Email:", user.email); // Log email too
-                checkoutForm.classList.remove('hidden'); // Show the form
-                submitButton.disabled = true; // Keep disabled until cart loads and is valid
-                submitButton.textContent = 'আইটেম লোড হচ্ছে...';
 
                 // Prefill user info if available
                 const customerNameInput = document.getElementById('customerName');
@@ -535,22 +536,13 @@
                      console.error("Background FCM token request failed:", err); // Log errors from the async request
                  });
 
-                // Load checkout data (checks URL params first, then localStorage)
-                await loadCheckoutData(); // This will enable button if cart has items
-
             } else {
-                console.log("User Not Logged In / Logged Out.");
-                checkoutForm.classList.add('hidden'); // Hide form
-                loginPrompt.classList.remove('hidden'); // Show login prompt
-                 // Redirect to login after a short delay
-                 setTimeout(() => {
-                     const currentUrl = encodeURIComponent(window.location.href); // Pass current page back
-                     // Prevent redirect loop if already on login page
-                     if (!window.location.pathname.includes('login.html')) {
-                         window.location.href = `login.html?redirect=${currentUrl}`;
-                     }
-                 }, 3000);
+                console.log("User Not Logged In. Proceeding as guest.");
+                // For guest users, we can pre-fill from localStorage if we want, but for now, we'll just let them fill the form.
             }
+
+            // Load checkout data for both logged-in users and guests
+            await loadCheckoutData(); // This will enable button if cart has items
         });
 
         // Load Checkout Data (Decides between Buy Now or Cart)
@@ -789,10 +781,6 @@
         // Order Form Submit Handler - **Aligned Data Structure**
         async function handleOrderSubmit(event) {
             event.preventDefault(); // Prevent default form submission
-            if (!currentUser) {
-                showToast('অর্ডার করার জন্য লগইন আবশ্যক।', 'error');
-                return;
-            }
             if (checkoutCart.length === 0) {
                 showToast('আপনার কার্ট খালি। অর্ডার করার জন্য অনুগ্রহ করে আইটেম যোগ করুন।', 'error');
                 return;
@@ -848,6 +836,18 @@
             const cartSubTotal = checkoutCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             const totalAmount = cartSubTotal + deliveryFee;
 
+            const getGuestUserId = () => {
+                let userId = localStorage.getItem('tempUserId');
+                if (!userId) {
+                    userId = 'guest_' + Date.now().toString() + Math.random().toString(36).substr(2, 9);
+                    localStorage.setItem('tempUserId', userId);
+                }
+                return userId;
+            };
+
+            const userId = currentUser ? currentUser.uid : getGuestUserId();
+            const userEmail = currentUser ? currentUser.email : null;
+
             const orderData = {
                 // --- Fields from User's Simpler Structure ---
                 customerName,
@@ -876,8 +876,8 @@
                 advancePayment: deliveryLocation === 'outsideDhaka' ? deliveryFee : 0,
 
                 // --- Essential Fields from Complex Structure (for rules/queries) ---
-                userEmail: currentUser.email,
-                userId: currentUser.uid,
+                userEmail: userEmail,
+                userId: userId,
                 status: 'pending' // Initial status is crucial
             };
 
