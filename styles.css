@@ -467,3 +467,50 @@ select#productQuantity {
 #toast.hidden {
     opacity: 0;
 }
+
+/* Skeleton Loader Styles */
+.skeleton {
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    animation: shimmer 1.5s infinite linear;
+}
+
+.skeleton-img {
+    height: 192px; /* h-48 */
+    width: 100%;
+}
+
+.skeleton-title {
+    height: 28px; /* text-lg */
+    width: 75%;
+    margin-bottom: 0.5rem;
+}
+
+.skeleton-price {
+    height: 24px; /* text-lipstick */
+    width: 50%;
+    margin-bottom: 1rem;
+}
+
+.skeleton-desc {
+    height: 40px; /* description */
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.skeleton-button {
+    height: 20px;
+    width: 30%;
+}
+
+@keyframes shimmer {
+    0% {
+        background-color: #e0e0e0;
+    }
+    50% {
+        background-color: #f0f0f0;
+    }
+    100% {
+        background-color: #e0e0e0;
+    }
+}

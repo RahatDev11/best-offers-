@@ -8,31 +8,15 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="script.js" type="module"></script>
+
     <style>
     </style>
     <script>
         // DOM লোড হওয়ার পরে header এবং footer লোড করা
         document.addEventListener("DOMContentLoaded", function() {
-            $("#header").load("header.html", function() {
-                console.log("header.html লোড হয়েছে");
-                // header লোড হওয়ার পরে প্রয়োজনীয় ফাংশন কল করার জন্য ডিলে যোগ করা
-                setTimeout(() => {
-                    if (typeof loadProductsFromFirebase === "function") {
-                        loadProductsFromFirebase();
-                    } else {
-                        console.error("loadProductsFromFirebase ফাংশন পাওয়া যায়নি।");
-                        showProductLoadError();
-                    }
-                    if (typeof loadCartFromFirebase === "function") {
-                        loadCartFromFirebase();
-                    } else {
-                        console.error("loadCartFromFirebase ফাংশন পাওয়া যায়নি।");
-                    }
-                }, 500); // 500ms ডিলে যোগ করা হয়েছে যাতে header.html-এর স্ক্রিপ্ট লোড হওয়ার সময় পায়
-            });
-            $("#footer").load("footer.html", function() {
-                console.log("footer.html লোড হয়েছে");
-            });
+            $("#header").load("header.html");
+            $("#footer").load("footer.html");
         });
 
         // গ্লোবাল ভেরিয়েবল
@@ -43,22 +27,25 @@
         function showLoadingSpinner() {
             const productList = document.getElementById("productList");
             if (productList) {
-                productList.innerHTML = "";
-            }
-        }
-
-        function showProductLoadError() {
-            const productList = document.getElementById("productList");
-            if (productList) {
-                productList.innerHTML = `
-                    <div class="col-span-full text-center py-8">
-                        <i class="fas fa-exclamation-triangle text-4xl text-lipstick mb-4"></i>
-                        <p class="text-gray-600 mb-4">দুঃখিত, প্রোডাক্ট লোড করতে সমস্যা হয়েছে</p>
-                        <button onclick="window.location.reload()" class="bg-lipstick text-white px-4 py-2 rounded hover:bg-lipstick-dark">
-                            পেজ রিলোড করুন
-                        </button>
-                    </div>
-                `;
+                productList.innerHTML = ""; // Clear previous content
+                for (let i = 0; i < 6; i++) {
+                    const skeletonCard = document.createElement('div');
+                    skeletonCard.className = 'bg-white p-4 rounded-lg shadow-lg';
+                    skeletonCard.innerHTML = `
+                        <div class="skeleton skeleton-img mb-4"></div>
+                        <div class="skeleton skeleton-title"></div>
+                        <div class="skeleton skeleton-price"></div>
+                        <div class="skeleton skeleton-desc"></div>
+                        <div class="flex justify-between items-center">
+                            <div class="skeleton skeleton-button"></div>
+                            <div class="flex space-x-2">
+                                <div class="skeleton skeleton-button"></div>
+                                <div class="skeleton skeleton-button"></div>
+                            </div>
+                        </div>
+                    `;
+                    productList.appendChild(skeletonCard);
+                }
             }
         }
 
@@ -105,7 +92,6 @@
                 return;
             }
 
-            // সার্চ বারের মাধ্যমে লগইন সিস্টেম বাদ দেওয়া হয়েছে
             const filtered = products.filter(product =>
                 (product.name && product.name.toLowerCase().includes(searchTerm)) ||
                 (product.tags && product.tags.toLowerCase().includes(searchTerm))
@@ -126,7 +112,6 @@
                 return;
             }
 
-            // সার্চ বারের মাধ্যমে লগইন সিস্টেম বাদ দেওয়া হয়েছে
             const filtered = products.filter(product =>
                 (product.name && product.name.toLowerCase().includes(searchTerm)) ||
                 (product.tags && product.tags.toLowerCase().includes(searchTerm))
@@ -249,12 +234,8 @@
                     quantitySelect.appendChild(option);
                 }
             }
-            
-            // পেজ লোড হওয়ার সাথে সাথে লোডিং স্পিনার দেখাও
-            showLoadingSpinner();
         });
     </script>
-</head>
 <body class="bg-background">
     <div id="header"></div>
 
