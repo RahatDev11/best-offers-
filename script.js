@@ -147,28 +147,31 @@ window.updateLoginButton = function(user) {
     if (user) {
         const displayName = user.displayName || (user.email ? user.email.split('@')[0] : 'ব্যবহারকারী');
         const commonHTML = `
-            <div class="flex flex-col">
-                <span class="flex items-center"><i class="fas fa-user mr-2"></i>${displayName}</span>
-                <button onclick="confirmLogout()" class="text-left text-sm text-red-500 hover:text-red-700 mt-1">লগআউট</button>
+            <div class=\"flex flex-col\">
+                <span class=\"flex items-center\">
+                    ${user.photoURL ? `<img src=\"${user.photoURL}\" alt=\"User Profile\" class=\"w-6 h-6 rounded-full mr-2\">` : `<i class=\"fas fa-user mr-2 bg-red-500 text-white p-1 rounded-full\"></i>`}
+                    ${displayName}
+                </span>
+                <button onclick=\"confirmLogout()\" class=\"text-left text-sm text-red-500 hover:text-red-700 mt-1\">লগআউট</button>
             </div>
         `;
         if (mobileLoginButton) mobileLoginButton.innerHTML = commonHTML;
         if (desktopLoginButton) desktopLoginButton.innerHTML = commonHTML;
         console.log("লগইন বাটন আপডেট করা হয়েছে: ", displayName);
     } else {
-        // যখন ইউজার লগইন করা নেই, তখন onclick="openLoginModal()" কল হবে,
+        // যখন ইউজার লগইন করা নেই, তখন onclick=\"openLoginModal()\" কল হবে,
         // যা এখন সরাসরি loginWithGmail() কল করবে।
         const commonHTMLMobile = `
-            <button class="flex items-center w-full" onclick="openLoginModal()">
-                <i class="fas fa-sign-in-alt mr-2"></i>
+            <button class=\"flex items-center w-full\" onclick=\"openLoginModal()\">
+                <i class=\"fas fa-sign-in-alt mr-2\"></i>
                 <span>লগইন</span>
             </button>
         `;
         if (mobileLoginButton) mobileLoginButton.innerHTML = commonHTMLMobile;
 
         const commonHTMLDesktop = `
-            <button class="flex items-center" onclick="openLoginModal()">
-                <i class="fas fa-sign-in-alt mr-2"></i>
+            <button class=\"flex items-center\" onclick=\"openLoginModal()\">
+                <i class=\"fas fa-sign-in-alt mr-2\"></i>
                 <span>লগইন</span>
             </button>
         `;
@@ -179,10 +182,11 @@ window.updateLoginButton = function(user) {
 
 // লগআউট নিশ্চিতকরণ ফাংশন
 window.confirmLogout = function() {
-    const confirmed = confirm("আপনি কি সত্যিই লগআউট করতে চান?");
+    const confirmed = confirm("আপনার অ্যাকাউন্ট থেকে লগআউট করতে নিশ্চিত করুন?");
     if (confirmed) {
         logout();
     } else {
+        if (typeof showToast === 'function') showToast("লগআউট বাতিল করা হয়েছে।");
         console.log("লগআউট বাতিল করা হয়েছে।");
     }
 };
@@ -229,7 +233,8 @@ window.showUploadForm = function() {
     if (productUpdateSection) {
         productUpdateSection.classList.remove('hidden');
         console.log("প্রোডাক্ট আপলোড ফর্ম দেখানো হয়েছে।");
-    } else {
+    }
+    else {
         console.error("প্রোডাক্ট আপলোড ফর্ম পাওয়া যায়নি।");
         showToast("প্রোডাক্ট আপলোড ফর্ম পাওয়া যায়নি।");
     }
@@ -241,7 +246,8 @@ window.hideUploadForm = function() {
     if (productUpdateSection) {
         productUpdateSection.classList.add('hidden');
         console.log("প্রোডাক্ট আপলোড ফর্ম লুকানো হয়েছে।");
-    } else {
+    }
+    else {
         console.error("প্রোডাক্ট আপলোড ফর্ম পাওয়া যায়নি।");
     }
 };
@@ -249,7 +255,7 @@ window.hideUploadForm = function() {
 // অর্ডার ট্র্যাক বাটন আপডেট করার ফাংশন
 window.updateOrderTrackButton = function(isAdmin) {
     const mobileOrderTrackButton = document.getElementById('mobileOrderTrackButton');
-    const desktopOrderTrackButton = document.getElementById('desktopOrderTrackButton');
+    const desktopOrderTrackButton = document.getElementById('desktopLoginButton');
     if (isAdmin) {
         if (mobileOrderTrackButton) {
             mobileOrderTrackButton.href = "order-list.html";
@@ -258,7 +264,8 @@ window.updateOrderTrackButton = function(isAdmin) {
             desktopOrderTrackButton.href = "order-list.html";
         }
         console.log("অর্ডার ট্র্যাক বাটন এডমিন মোডে আপডেট করা হয়েছে।");
-    } else {
+    }
+    else {
         if (mobileOrderTrackButton) {
             mobileOrderTrackButton.href = "order-track.html";
         }
@@ -290,7 +297,8 @@ window.showToast = function(message) {
             toast.classList.add('hidden');
         }, 3000);
         console.log("টোস্ট মেসেজ দেখানো হয়েছে: ", message);
-    } else {
+    }
+    else {
         console.error("টোস্ট এলিমেন্ট পাওয়া যায়নি।");
         console.log("টোস্ট মেসেজ: ", message);
     }
@@ -310,6 +318,7 @@ window.saveUserToFirebase = function(user) {
             set(userRef, {
                 name: user.displayName || "নাম পাওয়া যায়নি",
                 email: user.email,
+                photoURL: user.photoURL || null, // Add photoURL here
                 createdAt: new Date().toISOString()
             })
             .then(() => {
@@ -319,7 +328,8 @@ window.saveUserToFirebase = function(user) {
                 console.error("ইউজারের ডাটা সেভ করতে ত্রুটি: ", error.message);
                 showToast("ইউজারের ডাটা সেভ করতে ত্রুটি হয়েছে: " + error.message);
             });
-        } else {
+        }
+        else {
             console.log("ইউজার ইতিমধ্যে ডাটাবেসে আছে: ", user.email);
         }
     }, { onlyOnce: true });
@@ -339,7 +349,8 @@ window.addToCart = function(productId) {
         showToast("প্রোডাক্ট কার্টে যোগ করা হয়েছে!");
         openCartSidebar();
         console.log("কার্টে আইটেম যোগ করা হয়েছে: ", product);
-    } else {
+    }
+    else {
         console.error("প্রোডাক্ট পাওয়া যায়নি: ", productId);
         showToast("প্রোডাক্ট পাওয়া যায়নি!");
     }
@@ -365,18 +376,18 @@ window.updateCartUI = function() {
     const cartItem = document.createElement('div');
     cartItem.className = 'flex flex-col bg-gray-100 p-3 rounded-lg mb-2';
     cartItem.innerHTML = `
-            <h3 class="text-lg font-bold text-gray-800 mb-2">${item.name || 'নাম পাওয়া যায়নি'}</h3>
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <img src="${item.image ? item.image.split(',')[0] : 'https://via.placeholder.com/50'}" class="w-16 h-16 object-cover rounded-lg" alt="${item.name}" onerror="this.src='https://via.placeholder.com/50'; this.alt='ছবি লোড হয়নি';">
-                    <p class="text-lipstick font-bold">দাম: ${(parseFloat(item.price) || 0) * (item.quantity || 1)} টাকা</p>
+            <h3 class=\"text-lg font-bold text-gray-800 mb-2\">${item.name || 'নাম পাওয়া যায়নি'}</h3>
+            <div class=\"flex items-center justify-between\">
+                <div class=\"flex items-center space-x-4\">
+                    <img src=\"${item.image ? item.image.split(',')[0] : 'https://via.placeholder.com/50'}\" class=\"w-16 h-16 object-cover rounded-lg\" alt=\"${item.name}\" onerror=\"this.src='https://via.placeholder.com/50'; this.alt='ছবি লোড হয়নি';\">
+                    <p class=\"text-lipstick font-bold\">দাম: ${(parseFloat(item.price) || 0) * (item.quantity || 1)} টাকা</p>
                 </div>
-                <div class="flex items-center space-x-2">
-                    <button onclick="decreaseQuantity(${index}, event)" class="bg-lipstick text-white px-2 py-1 rounded">-</button>
-                    <span class="text-gray-800">${item.quantity || 1}</span>
-                    <button onclick="increaseQuantity(${index}, event)" class="bg-lipstick text-white px-2 py-1 rounded">+</button>
-                    <button onclick="removeFromCart(${index}, event)" class="text-red-500 hover:text-red-700">
-                        <i class="fas fa-trash"></i>
+                <div class=\"flex items-center space-x-2\">
+                    <button onclick=\"decreaseQuantity(${index}, event)\" class=\"bg-lipstick text-white px-2 py-1 rounded\">-</button>
+                    <span class=\"text-gray-800\">${item.quantity || 1}</span>
+                    <button onclick=\"increaseQuantity(${index}, event)\" class=\"bg-lipstick text-white px-2 py-1 rounded\">+</button>
+                    <button onclick=\"removeFromCart(${index}, event)\" class=\"text-red-500 hover:text-red-700\">
+                        <i class=\"fas fa-trash\"></i>
                     </button>
                 </div>
             </div>
@@ -406,7 +417,8 @@ window.decreaseQuantity = function(index, event) {
     }
     if (cartItems[index].quantity > 1) {
         cartItems[index].quantity--;
-    } else {
+    }
+    else {
         cartItems.splice(index, 1);
     }
     updateCartUI();
@@ -458,7 +470,8 @@ window.loadCartFromFirebase = function() {
         const data = snapshot.val();
         if (data) {
             cartItems = data;
-        } else {
+        }
+        else {
             cartItems = [];
         }
         updateCartUI();
@@ -501,7 +514,8 @@ window.loadProductsFromFirebase = function() {
 
         if (products.length === 0) {
             productList.innerHTML = '<p class="text-center text-gray-600">কোনো প্রোডাক্ট পাওয়া যায়নি।</p>';
-        } else {
+        }
+        else {
             loadProducts(products);
         }
         console.log("প্রোডাক্ট লোড হয়েছে। মোট প্রোডাক্ট: ", products.length);
@@ -529,20 +543,20 @@ window.loadProducts = function(filteredProducts = products) {
         card.onclick = () => showProductDetail(product.id);
 
         card.innerHTML = `
-            <img src="${product.image ? product.image.split(',')[0] : 'https://via.placeholder.com/300'}" class="w-full h-48 object-cover mb-4 rounded-lg" onerror="this.src='https://via.placeholder.com/300'; this.alt='ছবি লোড হয়নি';">
-            <h3 class="text-lg font-bold mb-2">${product.name || 'নাম পাওয়া যায়নি'}</h3>
-            <p class="text-lipstick font-bold mb-2">দাম: ${product.price || '0'} টাকা</p>
-            <p class="text-gray-600 mb-4">${product.description ? product.description.substring(0, 80) + '...' : 'বিবরণ পাওয়া যায়নি'}</p>
-            <div class="flex justify-between items-center">
-                <button onclick="event.stopPropagation(); showProductDetail('${product.id}')" class="text-blue-500 hover:underline">বিস্তারিত দেখুন</button>
-                <div class="flex space-x-2">
-                    <button onclick="event.stopPropagation(); buyNowFromHome('${product.id}')" class="bg-lipstick text-white px-3 py-1 rounded text-sm hover:bg-lipstick-dark">
-                      কিনুন
-                    </button>
-                    <button onclick="event.stopPropagation(); addToCart('${product.id}')" class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600">
-                      Add to Cart
-                    </button>
-                </div>
+            <img src=\"${product.image ? product.image.split(',')[0] : 'https://via.placeholder.com/300'}\" class=\"w-full h-48 object-cover mb-4 rounded-lg\" onerror=\"this.src='https://via.placeholder.com/300'; this.alt='ছবি লোড হয়নি';\">
+            <h3 class=\"text-lg font-bold mb-2\">${product.name || 'নাম পাওয়া যায়নি'}</h3>
+            <p class=\"text-lipstick font-bold mb-2\">দাম: ${(parseFloat(product.price) || 0)} টাকা</p>
+            <p class=\"text-gray-600 mb-4\">${product.description ? product.description.substring(0, 80) + '...' : 'বিবরণ পাওয়া যায়নি'}</p>
+            <div class=\"flex justify-between items-center\">\
+                <button onclick=\"event.stopPropagation(); showProductDetail('${product.id}')\" class=\"text-blue-500 hover:underline\">বিস্তারিত দেখুন</button>
+                <div class=\"flex space-x-2\">\
+                    <button onclick=\"event.stopPropagation(); buyNowFromHome('${product.id}')\" class=\"bg-lipstick text-white px-3 py-1 rounded text-sm hover:bg-lipstick-dark\">\
+                      কিনুন\
+                    </button>\
+                    <button onclick=\"event.stopPropagation(); addToCart('${product.id}')\" class=\"bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600\">\
+                      Add to Cart\
+                    </button>\
+                </div>\
             </div>
         `;
         productList.appendChild(card);
@@ -554,7 +568,8 @@ window.buyNowFromHome = function(productId) {
     const product = products.find(p => p.id === productId);
     if (product) {
         window.location.href = `order-form.html?source=buyNow&id=${productId}&quantity=1`;
-    } else {
+    }
+    else {
         showToast("প্রোডাক্টটি খুঁজে পাওয়া যায়নি।");
     }
 };
@@ -570,7 +585,8 @@ window.filterProducts = function(category) {
     let filteredProducts;
     if (category === 'all') {
         filteredProducts = products;
-    } else {
+    }
+    else {
         filteredProducts = products.filter(product => product.category === category);
     }
     loadProducts(filteredProducts);
@@ -630,19 +646,20 @@ window.displaySearchResults = function(filteredProducts, searchResults) {
     searchResults.innerHTML = "";
 
     if (filteredProducts.length === 0) {
-        searchResults.innerHTML = `<div class="p-2 text-gray-600">কোনো প্রোডাক্ট পাওয়া যায়নি</div>`;
-    } else {
+        searchResults.innerHTML = `<div class=\"p-2 text-gray-600\">কোনো প্রোডাক্ট পাওয়া যায়নি</div>`;
+    }
+    else {
         filteredProducts.forEach(product => {
             const card = document.createElement("div");
             card.className = "p-2 hover:bg-gray-100 cursor-pointer";
             card.onclick = () => showProductDetail(product.id);
 
             card.innerHTML = `
-                <div class="flex items-center">
-                    <img src="${product.image ? product.image.split(',')[0] : 'https://via.placeholder.com/50'}" class="w-12 h-12 object-cover rounded-lg mr-4" onerror="this.src='https://via.placeholder.com/50'; this.alt='ছবি লোড হয়নি';">
+                <div class=\"flex items-center\">
+                    <img src=\"${product.image ? product.image.split(',')[0] : 'https://via.placeholder.com/50'}\" class=\"w-12 h-12 object-cover rounded-lg mr-4\" onerror=\"this.src='https://via.placeholder.com/50'; this.alt='ছবি লোড হয়নি';\">
                     <div>
-                        <h3 class="text-lg font-bold">${product.name || 'নাম পাওয়া যায়নি'}</h3>
-                        <p class="text-lipstick font-bold">দাম: ${product.price || '0'} টাকা</p>
+                        <h3 class=\"text-lg font-bold\">${product.name || 'নাম পাওয়া যায়নি'}</h3>
+                        <p class=\"text-lipstick font-bold\">দাম: ${product.price || '0'} টাকা</p>
                     </div>
                 </div>
             `;
@@ -674,7 +691,8 @@ if (auth) {
             checkAdminAndShowUploadForm(user);
             loadCartFromFirebase();
             console.log("ইউজার লগইন অবস্থা: লগইন করা আছে।", user.email);
-        } else {
+        }
+        else {
             updateLoginButton(null);
             checkAdminAndShowUploadForm(null);
             cartItems = [];
