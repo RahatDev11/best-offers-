@@ -17,10 +17,9 @@
             theme: {
                 extend: {
                     colors: {
-                        // **রঙ পরিবর্তন করা হয়েছে**
-                        lipstick: 'rgb(232, 232, 232)',      // হালকা পিঙ্ক (হেডারের সাথে মিল রেখে)
+                        lipstick: 'rgb(232, 232, 232)',
                         'lipstick-dark': '#D92C66',
-                        background: '#FFF5F7',     // হালকা পিঙ্ক ব্যাকগ্রাউন্ড
+                        background: '#FFF5F7',
                     }
                 }
             }
@@ -33,13 +32,9 @@
     <!-- মোবাইল সার্চ বার -->
     <div class="md:hidden p-2 w-full fixed top-20 left-0 z-40 hidden bg-transparent" id="mobileSearchBar">
         <div class="relative">
-            <input type="text" id="searchInput" 
-                   class="w-full p-2 pl-10 border-0 rounded-full text-gray-800 focus:outline-none focus:ring-2 focus:ring-lipstick bg-white/50 backdrop-blur-sm placeholder:text-gray-400/80" 
-                   placeholder="প্রোডাক্ট সার্চ করুন..." 
-                   oninput="searchProductsMobile()">
+            <input type="text" id="searchInput" class="w-full p-2 pl-10 border-0 rounded-full text-gray-800 focus:outline-none focus:ring-2 focus:ring-lipstick bg-white/50 backdrop-blur-sm placeholder:text-gray-400/80" placeholder="প্রোডাক্ট সার্চ করুন..." oninput="searchProductsMobile()">
             <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400/80"></i>
         </div>
-        <!-- সার্চ রেজাল্ট -->
         <div id="searchResults" class="mt-2 max-h-60 overflow-y-auto absolute bg-white/50 backdrop-blur-sm w-full shadow-lg rounded-lg z-50"></div>
     </div>
 
@@ -53,40 +48,60 @@
         </section>
 
         <section id="products" class="mb-6">
-            <h2 class="text-xl font-bold text-center mb-4 pink-text" style="color: rgb(232, 232, 232);">All Products</h2>
-            <div id="productList" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div class="mb-10">
+                <h2 class="text-2xl font-bold text-center mb-4" style="color: #D92C66;">Upcoming Events</h2>
+                <div class="swiper event-slider rounded-lg">
+                    <div class="swiper-wrapper" id="event-slider-wrapper"></div>
+                    <div class="swiper-pagination !bottom-2"></div>
                 </div>
+            </div>
+            <h2 class="text-2xl font-bold text-center mb-4" style="color: #D92C66;">All Products</h2>
+            <div id="productList" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
         </section>
 
-        <!-- এডমিন সেকশন -->
-        <section id="product-update" class="hidden">
-            <h2 class="text-xl font-bold text-center mb-4 text-lipstick">প্রোডাক্ট আপডেট</h2>
-            <form id="productForm" class="bg-white p-6 rounded-lg shadow-lg">
-                <div class="mb-4">
-                    <label for="productName" class="block text-gray-700">পণ্যের নাম</label>
-                    <input type="text" id="productName" class="w-full p-2 border rounded" required>
-                </div>
-                <div class="mb-4">
-                    <label for="productPrice" class="block text-gray-700">দাম</label>
-                    <input type="number" id="productPrice" class="w-full p-2 border rounded" required>
-                </div>
-                <div class="mb-4">
-                    <label for="productCategory" class="block text-gray-700">ক্যাটাগরি</label>
-                    <select id="productCategory" class="w-full p-2 border rounded">
-                        <option value="health">স্বাস্থ্য</option>
-                        <option value="cosmetics">মেকআপ</option>
-                        <option value="skincare">স্কিনকেয়ার</option>
-                        <option value="haircare">হেয়ারকেয়ার</option>
-                        <option value="mehandi">মেহেদী</option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label for="productImages" class="block text-gray-700">ছবি URL (কমা দিয়ে আলাদা করুন)</label>
-                    <div id="imageInputs">
-                        <input type="text" class="w-full p-2 border rounded mb-2" placeholder="ছবির লিংক">
+        <!-- ======================= অ্যাডমিন সেকশন ======================= -->
+        
+        <!-- প্রোডাক্ট ম্যানেজমেন্ট -->
+        <section id="product-management" class="hidden p-4 bg-white rounded-lg shadow-lg mb-8">
+            <h2 class="text-xl font-bold text-center mb-4 text-lipstick-dark">প্রোডাক্ট ম্যানেজমেন্ট</h2>
+            
+            <!-- প্রোডাক্ট যোগ/এডিট করার ফর্ম -->
+            <form id="productForm" class="mb-6 border-b pb-6">
+                <input type="hidden" id="productId">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="mb-4">
+                        <label for="productName" class="block text-gray-700">পণ্যের নাম</label>
+                        <input type="text" id="productName" class="w-full p-2 border rounded" required>
                     </div>
-                    <button type="button" onclick="addImageField()" class="bg-lipstick text-white px-3 py-1 rounded mt-2 hover:bg-lipstick-dark">
-                        <i class="fas fa-plus"></i> আরেকটি ছবি যোগ করুন
+                    <div class="mb-4">
+                        <label for="productPrice" class="block text-gray-700">দাম</label>
+                        <input type="number" id="productPrice" class="w-full p-2 border rounded" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="productCategory" class="block text-gray-700">ক্যাটাগরি</label>
+                        <select id="productCategory" class="w-full p-2 border rounded">
+                            <option value="health">স্বাস্থ্য</option>
+                            <option value="cosmetics">মেকআপ</option>
+                            <option value="skincare">স্কিনকেয়ার</option>
+                            <option value="haircare">হেয়ারকেয়ার</option>
+                            <option value="mehandi">মেহেদী</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label for="productStockStatus" class="block text-gray-700">স্টক স্ট্যাটাস</label>
+                        <select id="productStockStatus" class="w-full p-2 border rounded">
+                            <option value="in_stock">স্টকে আছে</option>
+                            <option value="out_of_stock">স্টকে নেই</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700">ছবি URL</label>
+                    <div id="imageInputs">
+                        <input type="text" class="w-full p-2 border rounded mb-2 image-input" placeholder="ছবির লিংক ১">
+                    </div>
+                    <button type="button" onclick="addImageField()" class="bg-lipstick-dark text-white px-3 py-1 rounded-sm mt-2 text-sm hover:bg-opacity-80">
+                        <i class="fas fa-plus"></i> আরেকটি ছবি
                     </button>
                 </div>
                 <div class="mb-4">
@@ -97,89 +112,93 @@
                     <label for="productDescription" class="block text-gray-700">বিবরণ</label>
                     <textarea id="productDescription" class="w-full p-2 border rounded" rows="4" required></textarea>
                 </div>
-                <div class="mb-4">
-                    <label for="productStockStatus" class="block text-gray-700">স্টক স্ট্যাটাস</label>
-                    <select id="productStockStatus" class="w-full p-2 border rounded">
-                        <option value="in_stock">স্টকে আছে</option>
-                        <option value="out_of_stock">স্টকে নেই</option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label for="productQuantity" class="block text-gray-700">পরিমাণ</label>
-                    <select id="productQuantity" class="w-full p-2 border rounded"></select>
-                </div>
-                <button type="submit" class="bg-lipstick text-white px-4 py-2 rounded hover:bg-lipstick-dark">পোস্ট করুন</button>
+                <button type="submit" class="bg-lipstick-dark text-white px-4 py-2 rounded hover:bg-opacity-90">প্রোডাক্ট সেভ করুন</button>
+                <button type="button" onclick="resetProductForm()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-opacity-90">ফর্ম রিসেট</button>
             </form>
-        </section>
-    </main>
 
-    <!-- সোশ্যাল মিডিয়া ফ্লোটিং বাটন -->
+            <!-- সব প্রোডাক্টের তালিকা -->
+            <h3 class="text-lg font-bold mb-2 text-lipstick-dark">সকল প্রোডাক্টের তালিকা</h3>
+            <div id="productListAdmin" class="space-y-2 max-h-96 overflow-y-auto"></div>
+        </section>
+
+        <!-- হেডার স্লাইডার ম্যানেজমেন্ট -->
+        <section id="slider-management" class="hidden p-4 bg-white rounded-lg shadow-lg mb-8">
+            <h2 class="text-xl font-bold text-center mb-4 text-lipstick-dark">হেডার স্লাইডার ম্যানেজমেন্ট</h2>
+            <p class="text-center text-sm text-gray-600 mb-4">এখান থেকে সিলেক্ট করুন কোন প্রোডাক্টগুলো হোমপেজের উপরের স্লাইডারে দেখাবে এবং তাদের সিরিয়াল দিন।</p>
+            <div id="sliderProductListAdmin" class="space-y-2 max-h-96 overflow-y-auto"></div>
+        </section>
+        
+        <!-- ইভেন্ট ব্যানার ম্যানেজমেন্ট ফর্ম -->
+        <section id="event-update" class="hidden p-4 bg-white rounded-lg shadow-lg">
+            <h2 class="text-xl font-bold text-center mb-4 text-lipstick-dark">ইভেন্ট ব্যানার ম্যানেজমেন্ট</h2>
+            <form id="eventForm" class="mb-6 border-b pb-6">
+                <p class="text-center text-sm text-gray-500 mb-4">যেকোনো একটি তথ্য দিলেই ব্যানার পোস্ট করা যাবে।</p>
+                <input type="hidden" id="eventId">
+                <div class="mb-4">
+                    <label for="eventTitle" class="block text-gray-700">শিরোনাম (ঐচ্ছিক)</label>
+                    <input type="text" id="eventTitle" class="w-full p-2 border rounded">
+                </div>
+                <div class="mb-4">
+                    <label for="eventDescription" class="block text-gray-700">বিবরণ (ঐচ্ছিক)</label>
+                    <textarea id="eventDescription" class="w-full p-2 border rounded" rows="2"></textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="eventImageUrl" class="block text-gray-700">ছবির URL (ঐচ্ছিক)</label>
+                    <input type="text" id="eventImageUrl" class="w-full p-2 border rounded" placeholder="https://example.com/image.jpg">
+                </div>
+                <div class="mb-4">
+                    <label class="flex items-center">
+                        <input type="checkbox" id="eventIsActive" class="form-checkbox h-5 w-5 text-lipstick-dark">
+                        <span class="ml-2 text-gray-700">হোমপেজে দেখান</span>
+                    </label>
+                    <p class="text-xs text-gray-500 mt-1">সর্বোচ্চ ৩টি ব্যানার হোমপেজে দেখানো যাবে।</p>
+                </div>
+                <button type="submit" class="bg-lipstick-dark text-white px-4 py-2 rounded hover:bg-opacity-90">ব্যানার সেভ করুন</button>
+                <button type="button" onclick="resetEventForm()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-opacity-90">ফর্ম রিসেট</button>
+            </form>
+            <h3 class="text-lg font-bold mb-2 text-lipstick-dark">সকল ব্যানার</h3>
+            <div id="eventListAdmin" class="space-y-2"></div>
+        </section>
+
+    </main>
+    
+    <!-- বাকি HTML (আগের মতোই থাকবে) -->
     <div class="fixed bottom-4 right-4 z-10">
-        <!-- শেয়ার বাটন -->
-        <button id="shareButton" class="bg-lipstick text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center">
-            <i class="fas fa-user-circle"></i>
-        </button>
-        <!-- সোশ্যাল মিডিয়া আইকনগুলি (লুকানো অবস্থায়) -->
+        <button id="shareButton" class="bg-lipstick text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center"><i class="fas fa-user-circle"></i></button>
         <div id="socialIcons" class="hidden space-y-2 mt-2">
-            <a href="https://www.facebook.com/share/1PyLUzGE9P/" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
-                <i class="fab fa-facebook"></i>
-            </a>
-            <a href="https://www.instagram.com/anysbeautycorner/?utm_medium=copy_link" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
-                <i class="fab fa-instagram"></i>
-            </a>
-            <a href="https://www.tiktok.com/@anysbeautycorner" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
-                <i class="fab fa-tiktok"></i>
-            </a>
-            <a href="https://youtube.com/@anysbeautycorner?si=oXGtEuakP_SIPH_Q" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
-                <i class="fab fa-youtube"></i>
-            </a>
+            <a href="https://www.facebook.com/share/1PyLUzGE9P/" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center"><i class="fab fa-facebook"></i></a>
+            <a href="https://www.instagram.com/anysbeautycorner/?utm_medium=copy_link" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/@anysbeautycorner" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center"><i class="fab fa-tiktok"></i></a>
+            <a href="https://youtube.com/@anysbeautycorner?si=oXGtEuakP_SIPH_Q" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center"><i class="fab fa-youtube"></i></a>
         </div>
     </div>
-
     <div id="place-order-bar" class="fixed bottom-0 left-0 w-full bg-white p-3 shadow-lg z-40 hidden" style="box-shadow: 0 -2px 10px rgba(0,0,0,0.1);">
         <div class="flex justify-between items-center">
             <div>
                 <span class="text-gray-600">Total Items: <span id="bar-item-count" class="font-bold pink-text" style="color: rgb(232, 232, 232);">0</span></span>
                 <p class="font-bold text-lg text-lipstick">BDT <span id="bar-total-price">0.00</span></p>
             </div>
-            <button onclick="checkout()" class="font-bold py-3 px-6 rounded-lg bg-[#FF99CC] text-lipstick hover:bg-lipstick hover:text-lipstick-dark transition-colors">
-                Place Order
-            </button>
+            <button onclick="checkout()" class="font-bold py-3 px-6 rounded-lg bg-[#FF99CC] text-lipstick hover:bg-lipstick hover:text-lipstick-dark transition-colors">Place Order</button>
         </div>
     </div>
-    
-    <!-- ফুটার -->
     <div id="footer"></div>
-
-    <!-- লগইন মোডাল -->
     <div id="loginModal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm">
         <div class="login-modal-content bg-white/20 backdrop-blur-lg rounded-lg p-6 max-w-md mx-auto mt-20 shadow-lg border border-white/20">
             <span class="close text-gray-600 hover:text-gray-900 cursor-pointer text-2xl absolute top-4 right-4" onclick="closeModal('loginModal')">×</span>
             <h2 class="text-xl font-bold mb-4 text-lipstick">লগইন</h2>
             <div class="text-center">
-                <button onclick="loginWithGmail()" class="bg-lipstick text-white px-4 py-2 rounded w-full hover:bg-lipstick-dark transition-colors">
-                    Gmail দিয়ে লগইন করুন
-                </button>
+                <button onclick="loginWithGmail()" class="bg-lipstick text-white px-4 py-2 rounded w-full hover:bg-lipstick-dark transition-colors">Gmail দিয়ে লগইন করুন</button>
             </div>
         </div>
     </div>
-
-    <!-- সোশ্যাল মিডিয়া শেয়ার বাটনের জন্য স্ক্রিপ্ট -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const shareButton = document.getElementById('shareButton');
             const socialIcons = document.getElementById('socialIcons');
-
             if (shareButton && socialIcons) {
-                shareButton.addEventListener('click', () => {
-                    socialIcons.classList.toggle('hidden');
-                });
-
-                // বাইরে ক্লিক করলে সোশ্যাল আইকন বন্ধ হবে
+                shareButton.addEventListener('click', () => socialIcons.classList.toggle('hidden'));
                 document.addEventListener('click', (event) => {
-                    if (!shareButton.contains(event.target) && !socialIcons.contains(event.target)) {
-                        socialIcons.classList.add('hidden');
-                    }
+                    if (!shareButton.contains(event.target) && !socialIcons.contains(event.target)) socialIcons.classList.add('hidden');
                 });
             }
         });
