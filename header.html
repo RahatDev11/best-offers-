@@ -5,18 +5,18 @@
 <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
 
 <!-- হেডার -->
-<header class="bg-brushstroke text-white py-2 px-4 flex justify-between items-center fixed top-0 left-0 w-full z-50">
+<header class="bg-brushstroke text-white py-2 px-2 md:px-4 flex justify-between items-center fixed top-0 left-0 w-full z-50">
     <!-- লোগো -->
     <a class="flex items-center" href="index.html">
         <div class="flex items-center">
             <img alt="Any's Beauty Corner লোগো" class="h-10 w-10 rounded-full mr-2 border-2 border-lipstick flex-shrink-0" height="40" src="img.jpg" width="40" onerror="this.src='https://via.placeholder.com/40'; this.alt='লোগো লোড হয়নি';">
-            <span class="text-lg font-bold whitespace-nowrap">Any's Beauty Corner</span>
+            <span class="text-base md:text-lg font-bold whitespace-nowrap">Any's Beauty Corner</span>
         </div>
     </a>
 
-    <div class="flex items-center space-x-4">
+    <div class="flex items-center space-x-2 md:space-x-2">
         <!-- ডেস্কটপ সার্চ বার -->
-        <div class="hidden md:block p-2 w-80 relative">
+        <div class="hidden md:block p-2 md:flex-grow relative">
             <div class="relative">
                 <input class="w-full p-2 pl-10 border-0 rounded-full text-gray-800 focus:outline-none focus:ring-2 focus:ring-lipstick bg-white/50 backdrop-blur-sm placeholder:text-gray-400/80" id="searchInputDesktop" oninput="searchProductsDesktop()" placeholder="প্রোডাক্ট সার্চ করুন..." type="text" />
                 <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400/80"></i>
@@ -27,7 +27,7 @@
 
         <!-- মোবাইল সার্চ আইকন -->
         <div class="md:hidden cursor-pointer" onclick="focusMobileSearch()">
-            <i class="fas fa-search text-white text-xl"></i>
+            <i class="fas fa-search text-xl text-white"></i>
         </div>
 
         <!-- শপিং ব্যাগ আইকন -->
@@ -62,7 +62,7 @@
         <div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg hidden z-50"></div>
 
         <!-- মোবাইল মেনু বাটন -->
-        <button class="bg-white text-lipstick px-4 py-2 rounded md:hidden" onclick="openSidebar()">☰</button>
+        <button class="bg-white text-lipstick w-10 h-10 rounded md:hidden flex items-center justify-center" onclick="openSidebar()"><i class="fas fa-bars text-xl"></i></button>
 
         <!-- মোবাইল সাইডবার ওভারলে -->
         <div class="fixed inset-0 z-40 hidden" id="sidebarOverlay">
@@ -141,175 +141,3 @@
         </div>
     </div>
 </header>
-
-<!-- হেডারের জাভাস্ক্রিপ্ট -->
-<script>
-    // মোবাইল সাইডবার খোলার ফাংশন
-    window.openSidebar = function() {
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
-        const sidebar = document.getElementById('sidebar');
-        if (sidebarOverlay && sidebar) {
-            sidebarOverlay.classList.remove('hidden');
-            sidebarOverlay.classList.add('active');
-            sidebar.classList.remove('-translate-x-full');
-            sidebar.classList.add('slide-in');
-            console.log("মোবাইল সাইডবার খোলা হয়েছে।");
-        } else {
-            console.error("সাইডবার এলিমেন্ট পাওয়া যায়নি।");
-        }
-    };
-
-    // মোবাইল সাইডবার বন্ধ করার ফাংশন
-    window.closeSidebar = function() {
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
-        const sidebar = document.getElementById('sidebar');
-        if (sidebarOverlay && sidebar) {
-            sidebar.classList.add('-translate-x-full');
-            sidebarOverlay.classList.remove('active');
-            sidebarOverlay.classList.add('hidden');
-            const subMenuMobile = document.getElementById('subMenuMobile');
-            const arrowIcon = document.getElementById('arrowIcon');
-            if (subMenuMobile && arrowIcon) {
-                subMenuMobile.classList.add('hidden');
-                arrowIcon.classList.remove('rotate-180');
-                arrowIcon.classList.add('fa-chevron-down');
-                arrowIcon.classList.remove('fa-chevron-up');
-            }
-            console.log("মোবাইল সাইডবার বন্ধ করা হয়েছে।");
-        } else {
-            console.error("সাইডবার এলিমেন্ট পাওয়া যায়নি।");
-        }
-    };
-
-    // মেনু আইটেম ক্লিক করার ফাংশন
-    window.handleMenuItemClick = function() {
-        closeSidebar();
-        console.log("মেনু আইটেম ক্লিক করা হয়েছে।");
-    };
-
-        // সাবমেনু আইটেম ক্লিক করার ফাংশন
-    window.handleSubMenuItemClick = function(category) {
-        filterProducts(category);
-        const subMenuMobile = document.getElementById('subMenuMobile');
-        if (subMenuMobile) {
-            subMenuMobile.classList.add('hidden');
-        }
-        closeSidebar();
-        console.log("সাবমেনু আইটেম ক্লিক করা হয়েছে। ক্যাটাগরি: ", category);
-    };
-
-    // সাবমেনু টগল করার ফাংশন
-    window.toggleSubMenuMobile = function(event) {
-        event.stopPropagation();
-        const subMenuMobile = document.getElementById('subMenuMobile');
-        const arrowIcon = document.getElementById('arrowIcon');
-        if (subMenuMobile && arrowIcon) {
-            subMenuMobile.classList.toggle('hidden');
-            arrowIcon.classList.toggle('rotate-180');
-            arrowIcon.classList.toggle('fa-chevron-down');
-            arrowIcon.classList.toggle('fa-chevron-up');
-            console.log("মোবাইল সাবমেনু টগল করা হয়েছে।");
-        } else {
-            console.error("মোবাইল সাবমেনু এলিমেন্ট পাওয়া যায়নি।");
-        }
-    };
-
-    // ডেস্কটপ সাবমেনু টগল করার ফাংশন
-    window.toggleSubMenuDesktop = function() {
-        const desktopSubMenuBar = document.getElementById('desktopSubMenuBar');
-        const desktopArrowIcon = document.getElementById('desktopArrowIcon');
-        if (desktopSubMenuBar && desktopArrowIcon) {
-            desktopSubMenuBar.classList.toggle('hidden');
-            desktopSubMenuBar.classList.toggle('slide-down');
-            desktopArrowIcon.classList.toggle('rotate-180');
-            desktopArrowIcon.classList.toggle('fa-chevron-down');
-            desktopArrowIcon.classList.toggle('fa-chevron-up');
-            console.log("ডেস্কটপ সাবমেনু টগল করা হয়েছে।");
-        } else {
-            console.error("ডেস্কটপ সাবমেনু এলিমেন্ট পাওয়া যায়নি।");
-        }
-    };
-
-    // কার্ট সাইডবার কন্ট্রোল
-    window.openCartSidebar = function() {
-        const cartSidebar = document.getElementById('cartSidebar');
-        const cartOverlay = document.getElementById('cartOverlay');
-        if (cartSidebar && cartOverlay) {
-            cartSidebar.classList.remove('translate-x-full');
-            cartOverlay.classList.remove('hidden');
-            console.log("কার্ট সাইডবার খোলা হয়েছে।");
-        } else {
-            console.error("কার্ট সাইডবার এলিমেন্ট পাওয়া যায়নি।");
-        }
-    };
-
-    window.closeCartSidebar = function() {
-        const cartSidebar = document.getElementById('cartSidebar');
-        const cartOverlay = document.getElementById('cartOverlay');
-        if (cartSidebar && cartOverlay) {
-            cartSidebar.classList.add('translate-x-full');
-            cartOverlay.classList.add('hidden');
-            console.log("কার্ট সাইডবার বন্ধ করা হয়েছে।");
-        } else {
-            console.error("কার্ট সাইডবার এলিমেন্ট পাওয়া যায়নি।");
-        }
-    };
-
-    // মোবাইল সার্চ বার ফোকাস
-    window.focusMobileSearch = function() {
-        const mobileSearchBar = document.getElementById('mobileSearchBar');
-        if (mobileSearchBar) {
-            mobileSearchBar.classList.toggle('hidden');
-            mobileSearchBar.classList.toggle('show');
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput) {
-                searchInput.focus();
-                console.log("মোবাইল সার্চ বার ফোকাস করা হয়েছে।");
-            }
-        } else {
-            console.error("মোবাইল সার্চ বার এলিমেন্ট পাওয়া যায়নি।");
-        }
-    };
-
-    // ডকুমেন্টে ক্লিক ইভেন্ট লিসেনার
-    document.addEventListener("click", (event) => {
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
-        const subMenuMobile = document.getElementById('subMenuMobile');
-        const desktopSubMenuBar = document.getElementById('desktopSubMenuBar');
-        const cartSidebar = document.getElementById('cartSidebar');
-        const cartButton = document.getElementById('cartButton');
-
-        // মোবাইল সাইডবার বন্ধ করুন
-        if (sidebarOverlay && !event.target.closest('#sidebar') && !event.target.closest('button[onclick="openSidebar()"]')) {
-            closeSidebar();
-        }
-
-        // মোবাইল সাবমেনু বন্ধ করুন
-        if (subMenuMobile && !event.target.closest('#subMenuMobile') && !event.target.closest('button[onclick="toggleSubMenuMobile(event)"]')) {
-            subMenuMobile.classList.add('hidden');
-            const arrowIcon = document.getElementById('arrowIcon');
-            if (arrowIcon) {
-                arrowIcon.classList.remove('rotate-180');
-                arrowIcon.classList.add('fa-chevron-down');
-                arrowIcon.classList.remove('fa-chevron-up');
-            }
-        }
-
-        // ডেস্কটপ সাবমেনু বন্ধ করুন
-        if (desktopSubMenuBar && !event.target.closest('#desktopSubMenuBar') && !event.target.closest('button[onclick="toggleSubMenuDesktop()"]')) {
-            desktopSubMenuBar.classList.add('hidden');
-            desktopSubMenuBar.classList.remove('slide-down');
-            const desktopArrowIcon = document.getElementById('desktopArrowIcon');
-            if (desktopArrowIcon) {
-                desktopArrowIcon.classList.remove('rotate-180');
-                desktopArrowIcon.classList.add('fa-chevron-down');
-                desktopArrowIcon.classList.remove('fa-chevron-up');
-            }
-        }
-
-        // কার্ট সাইডবার বন্ধ করুন
-        if (cartSidebar && !event.target.closest('#cartSidebar') && !event.target.closest('#cartButton')) {
-            closeCartSidebar();
-        }
-    });
-</script>

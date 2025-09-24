@@ -8,234 +8,25 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     <script src="script.js" type="module"></script>
 
-    <style>
-    </style>
     <script>
-        // DOM লোড হওয়ার পরে header এবং footer লোড করা
-        document.addEventListener("DOMContentLoaded", function() {
-            $("#header").load("header.html");
-            $("#footer").load("footer.html");
-        });
-
-        // গ্লোবাল ভেরিয়েবল
-        let isAdmin = false;
-        let products = []; // প্রোডাক্ট ডাটা স্টোর করার জন্য
-
-        // প্রোডাক্ট লোডিং স্টেট ম্যানেজমেন্ট
-        function showLoadingSpinner() {
-            const productList = document.getElementById("productList");
-            if (productList) {
-                productList.innerHTML = ""; // Clear previous content
-                for (let i = 0; i < 6; i++) {
-                    const skeletonCard = document.createElement('div');
-                    skeletonCard.className = 'bg-white p-4 rounded-lg shadow-lg';
-                    skeletonCard.innerHTML = `
-                        <div class="skeleton skeleton-img mb-4"></div>
-                        <div class="skeleton skeleton-title"></div>
-                        <div class="skeleton skeleton-price"></div>
-                        <div class="skeleton skeleton-desc"></div>
-                        <div class="flex justify-between items-center">
-                            <div class="skeleton skeleton-button"></div>
-                            <div class="flex space-x-2">
-                                <div class="skeleton skeleton-button"></div>
-                                <div class="skeleton skeleton-button"></div>
-                            </div>
-                        </div>
-                    `;
-                    productList.appendChild(skeletonCard);
-                }
-            }
-        }
-
-        // টোস্ট নোটিফিকেশন ফাংশন
-        function showToast(message) {
-            const toast = document.createElement('div');
-            toast.id = 'toast';
-            toast.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-lipstick text-white px-4 py-2 rounded-lg shadow-lg z-50';
-            toast.textContent = message;
-            document.body.appendChild(toast);
-
-            setTimeout(() => {
-                toast.classList.add('hidden');
-                toast.remove();
-            }, 3000);
-        }
-
-        // মোডাল ওপেন করার ফাংশন
-        function openModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.classList.remove("hidden");
-            }
-        }
-
-        // মোডাল ক্লোজ করার ফাংশন
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.classList.add("hidden");
-            }
-        }
-
-        // সার্চ ফাংশনালিটি (মোবাইল)
-        function searchProducts() {
-            const searchTerm = document.getElementById("searchInput").value.toLowerCase();
-            const searchResults = document.getElementById("searchResults");
-
-            if (!searchResults) return;
-
-            if (searchTerm.trim() === "") {
-                searchResults.innerHTML = "";
-                searchResults.classList.add("hidden");
-                return;
-            }
-
-            const filtered = products.filter(product =>
-                (product.name && product.name.toLowerCase().includes(searchTerm)) ||
-                (product.tags && product.tags.toLowerCase().includes(searchTerm))
-            );
-            displaySearchResults(filtered, searchResults);
-        }
-
-        // সার্চ ফাংশনালিটি (ডেস্কটপ)
-        function searchProductsDesktop() {
-            const searchTerm = document.getElementById("searchInputDesktop").value.toLowerCase();
-            const searchResults = document.getElementById("searchResultsDesktop");
-
-            if (!searchResults) return;
-
-            if (searchTerm.trim() === "") {
-                searchResults.innerHTML = "";
-                searchResults.classList.add("hidden");
-                return;
-            }
-
-            const filtered = products.filter(product =>
-                (product.name && product.name.toLowerCase().includes(searchTerm)) ||
-                (product.tags && product.tags.toLowerCase().includes(searchTerm))
-            );
-            displaySearchResults(filtered, searchResults);
-        }
-
-        // সার্চ রেজাল্ট ডিসপ্লে ফাংশন
-        function displaySearchResults(filteredProducts, searchResults) {
-            searchResults.innerHTML = "";
-
-            if (filteredProducts.length === 0) {
-                searchResults.innerHTML = `<div class="p-2 text-gray-600">কোনো প্রোডাক্ট পাওয়া যায়নি</div>`;
-            } else {
-                filteredProducts.forEach(product => {
-                    const card = document.createElement("div");
-                    card.className = "p-2 hover:bg-gray-100 cursor-pointer";
-                    card.onclick = () => showProductDetail(product.id);
-
-                    card.innerHTML = `
-                        <div class="flex items-center">
-                            <img src="${product.image ? product.image.split(',')[0] : 'https://via.placeholder.com/50'}" class="w-12 h-12 object-cover rounded-lg mr-4" onerror="this.src='https://via.placeholder.com/50'; this.alt='ছবি লোড হয়নি';">
-                            <div>
-                                <h3 class="text-lg font-bold">${product.name || 'নাম পাওয়া যায়নি'}</h3>
-                                <p class="text-lipstick font-bold">দাম: ${product.price || '0'} টাকা</p>
-                            </div>
-                        </div>
-                    `;
-                    searchResults.appendChild(card);
-                });
-            }
-
-            searchResults.classList.remove("hidden");
-        }
-
-        // প্রোডাক্ট ডিটেইল পেজে রিডাইরেক্ট
-        function showProductDetail(productId) {
-            window.location.href = `product-detail.html?id=${productId}`;
-        }
-
-        // পণ্য সেকশনে স্ক্রল করার ফাংশন
-        function scrollToProducts() {
-            const productsSection = document.getElementById("products");
-            if (productsSection) {
-                productsSection.scrollIntoView({ behavior: "smooth" });
-            }
-        }
-
-        // প্রোডাক্ট আপলোড ফর্ম সাবমিট হ্যান্ডলার
-        document.addEventListener('DOMContentLoaded', () => {
-            const productForm = document.getElementById("productForm");
-            if (productForm) {
-                productForm.addEventListener("submit", function(e) {
-                    e.preventDefault();
-
-                    // ফর্ম থেকে ডাটা সংগ্রহ
-                    const productName = document.getElementById("productName").value;
-                    const productPrice = document.getElementById("productPrice").value;
-                    const productCategory = document.getElementById("productCategory").value;
-                    const productImages = Array.from(document.querySelectorAll("#imageInputs input"))
-                        .map(input => input.value.trim())
-                        .filter(value => value !== "")
-                        .join(",");
-                    const productTags = document.getElementById("productTags").value;
-                    const productDescription = document.getElementById("productDescription").value;
-                    const productStockStatus = document.getElementById("productStockStatus").value;
-                    const productQuantity = document.getElementById("productQuantity").value;
-
-                    // Firebase-এ ডাটা পাঠানো
-                    if (typeof database !== "undefined" && typeof firebaseDatabase !== "undefined") {
-                        const productsRef = firebaseDatabase.ref(database, 'products');
-                        const newProductRef = firebaseDatabase.push(productsRef);
-
-                        firebaseDatabase.set(newProductRef, {
-                            name: productName,
-                            price: productPrice,
-                            category: productCategory,
-                            image: productImages,
-                            tags: productTags,
-                            description: productDescription,
-                            stockStatus: productStockStatus,
-                            quantity: productQuantity
-                        }).then(() => {
-                            showToast("প্রোডাক্ট সফলভাবে আপলোড হয়েছে!");
-                            productForm.reset();
-                            document.querySelectorAll("#imageInputs input:not(:first-child)").forEach(input => input.parentElement.removeChild(input));
-                            if (typeof loadProductsFromFirebase === "function") {
-                                loadProductsFromFirebase();
-                            }
-                        }).catch((error) => {
-                            console.error("প্রোডাক্ট আপলোডে ত্রুটি: ", error.message);
-                            showToast("প্রোডাক্ট আপলোডে ত্রুটি হয়েছে: " + error.message);
-                        });
-                    } else {
-                        console.error("Firebase Database লোড হয়নি।");
-                        showToast("Firebase Database লোড হয়নি।");
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // **রঙ পরিবর্তন করা হয়েছে**
+                        lipstick: 'rgb(232, 232, 232)',      // হালকা পিঙ্ক (হেডারের সাথে মিল রেখে)
+                        'lipstick-dark': '#D92C66',
+                        background: '#FFF5F7',     // হালকা পিঙ্ক ব্যাকগ্রাউন্ড
                     }
-                });
-            }
-        });
-
-        // ইমেজ ফিল্ড যোগ করার ফাংশন
-        function addImageField() {
-            const imageInputs = document.getElementById("imageInputs");
-            const newInput = document.createElement("input");
-            newInput.type = "text";
-            newInput.className = "w-full p-2 border rounded mb-2";
-            newInput.placeholder = "ছবির লিংক";
-            imageInputs.appendChild(newInput);
-        }
-
-        // কোয়ান্টিটি অপশন জেনারেট করার ফাংশন
-        document.addEventListener('DOMContentLoaded', () => {
-            const quantitySelect = document.getElementById("productQuantity");
-            if (quantitySelect) {
-                for (let i = 1; i <= 100; i++) {
-                    const option = document.createElement("option");
-                    option.value = i;
-                    option.textContent = i;
-                    quantitySelect.appendChild(option);
                 }
             }
-        });
+        }
     </script>
+</head>
 <body class="bg-background">
     <div id="header"></div>
 
@@ -245,7 +36,7 @@
             <input type="text" id="searchInput" 
                    class="w-full p-2 pl-10 border-0 rounded-full text-gray-800 focus:outline-none focus:ring-2 focus:ring-lipstick bg-white/50 backdrop-blur-sm placeholder:text-gray-400/80" 
                    placeholder="প্রোডাক্ট সার্চ করুন..." 
-                   oninput="searchProducts()">
+                   oninput="searchProductsMobile()">
             <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400/80"></i>
         </div>
         <!-- সার্চ রেজাল্ট -->
@@ -253,41 +44,18 @@
     </div>
 
     <!-- মূল কন্টেন্ট -->
-    <main class="p-4 pt-20">
-        <!-- হোম সেকশন -->
-        <section id="home" class="bg-white/20 backdrop-blur-md border border-white/30 rounded-lg shadow-lg text-center p-6 mb-6">
-            <div class="glass-effect">
-                <h1 class="text-2xl font-bold mb-4 text-lipstick">Welcome to Any's Beauty Corner</h1>
-                <p class="mb-4">আমরা বিভিন্ন ধরনের জামা, প্যান্ট, পাঞ্জাবি ইত্যাদি সরবরাহ করি।</p>
-                <button class="bg-lipstick text-white px-4 py-2 rounded hover:bg-lipstick-dark" onclick="scrollToProducts()">পণ্য দেখুন</button>
+    <main class="p-4 pt-20 pb-24">
+        <section id="new-arrivals" class="mb-8">
+            <div class="swiper new-product-slider rounded-lg shadow-md">
+                <div class="swiper-wrapper" id="new-product-slider-wrapper"></div>
+                <div class="swiper-pagination"></div>
             </div>
         </section>
 
-        <!-- পণ্য সমূহ -->
         <section id="products" class="mb-6">
-            <h2 class="text-xl font-bold text-center mb-4 text-lipstick">পণ্য সমূহ</h2>
-            <div id="productList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- লোডিং স্পিনার এখানে দেখাবে -->
-            </div>
-        </section>
-
-        <!-- আমাদের সম্পর্কে -->
-        <section id="about" class="mb-6">
-            <h2 class="text-xl font-bold text-center mb-4 text-lipstick">আমাদের সম্পর্কে</h2>
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <p class="text-gray-700 mb-4">Any's Beauty Corner হলো একটি অনলাইন প্ল্যাটফর্ম যেখানে আপনি পাবেন উচ্চমানের প্রোডাক্ট এবং সেরা সেবা। আমরা আমাদের গ্রাহকদের সন্তুষ্টি নিশ্চিত করতে সর্বদা সচেষ্ট।</p>
-                <p class="text-gray-700 mb-4">আমাদের লক্ষ্য হলো সবার জন্য সুন্দর এবং মানসম্মত প্রোডাক্ট সহজলভ্য করা।</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-gray-100 p-4 rounded-lg">
-                        <h3 class="text-lg font-bold text-lipstick mb-2">আমাদের মিশন</h3>
-                        <p class="text-gray-700">সবার জন্য স্টাইলিশ এবং মানসম্মত প্রোডাক্ট সরবরাহ করা।</p>
-                    </div>
-                    <div class="bg-gray-100 p-4 rounded-lg">
-                        <h3 class="text-lg font-bold text-lipstick mb-2">আমাদের ভিশন</h3>
-                        <p class="text-gray-700">বাংলাদেশের সেরা অনলাইন শপ হিসেবে প্রতিষ্ঠিত হওয়া।</p>
-                    </div>
+            <h2 class="text-xl font-bold text-center mb-4 pink-text" style="color: rgb(232, 232, 232);">All Products</h2>
+            <div id="productList" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 </div>
-            </div>
         </section>
 
         <!-- এডমিন সেকশন -->
@@ -346,7 +114,7 @@
     </main>
 
     <!-- সোশ্যাল মিডিয়া ফ্লোটিং বাটন -->
-    <div class="fixed bottom-4 right-4 z-50">
+    <div class="fixed bottom-4 right-4 z-10">
         <!-- শেয়ার বাটন -->
         <button id="shareButton" class="bg-lipstick text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center">
             <i class="fas fa-user-circle"></i>
@@ -368,6 +136,18 @@
         </div>
     </div>
 
+    <div id="place-order-bar" class="fixed bottom-0 left-0 w-full bg-white p-3 shadow-lg z-40 hidden" style="box-shadow: 0 -2px 10px rgba(0,0,0,0.1);">
+        <div class="flex justify-between items-center">
+            <div>
+                <span class="text-gray-600">Total Items: <span id="bar-item-count" class="font-bold pink-text" style="color: rgb(232, 232, 232);">0</span></span>
+                <p class="font-bold text-lg text-lipstick">BDT <span id="bar-total-price">0.00</span></p>
+            </div>
+            <button onclick="checkout()" class="font-bold py-3 px-6 rounded-lg bg-[#FF99CC] text-lipstick hover:bg-lipstick hover:text-lipstick-dark transition-colors">
+                Place Order
+            </button>
+        </div>
+    </div>
+    
     <!-- ফুটার -->
     <div id="footer"></div>
 

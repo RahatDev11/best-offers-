@@ -1,11 +1,11 @@
 /* কাস্টম কালার */
 .bg-brushstroke { background-color: #F4A7B9; }
-.text-lipstick { color: #A52A2A; }
+.text-lipstick { color: black; }
 .bg-lipstick { background-color: #A52A2A; }
 .border-lipstick { border-color: #A52A2A; }
 .hover\:bg-lipstick-dark:hover { background-color: #8B1A1A; }
 .bg-highlight { background-color: #FFD700; }
-.text-highlight { color: #FFD700; }
+.text-highlight { color: black; }
 .bg-background { background-color: #FFF5F7; }
 
 /* হোম সেকশন */
@@ -74,11 +74,11 @@
     right: 10px;
     font-size: 24px;
     cursor: pointer;
-    color: #6b7280;
+    color: black;
 }
 
 .close:hover {
-    color: #1f2937;
+    color: black;
 }
 
 /* সার্চ বার স্টাইল */
@@ -95,13 +95,13 @@
     border: 1px solid #e2e8f0;
     border-radius: 4px;
     font-size: 14px;
-    color: #4a5568;
+    color: black;
     outline: none;
     background-color: white;
 }
 
 .search-bar input::placeholder {
-    color: #a0aec0;
+    color: #808080;
 }
 
 .search-bar .fa-search {
@@ -109,7 +109,7 @@
     top: 50%;
     left: 10px;
     transform: translateY(-50%);
-    color: #a0aec0;
+    color: #808080;
     pointer-events: none;
 }
 
@@ -139,7 +139,7 @@
     padding: 8px 12px;
     border-bottom: 1px solid #e2e8f0;
     cursor: pointer;
-    color: #4a5568;
+    color: black;
 }
 
 #searchResultsDesktop .search-item:hover {
@@ -160,9 +160,8 @@
     top: 0;
     left: 0;
     width: 80%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(20px);
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
     transform: translateX(-100%);
     transition: transform 0.5s ease-in-out;
@@ -181,8 +180,7 @@
     margin: 8px;
     background: rgba(255, 255, 255, 0.3);
     backdrop-filter: blur(5px);
-    border-radius: 12px;
-    color: #333;
+    color: #1a202c;
     text-decoration: none;
     transition: all 0.3s ease-in-out;
     width: 100%;
@@ -212,7 +210,7 @@
     display: block;
     padding: 8px 12px;
     margin: 4px 0;
-    background: rgba(255, 255, 255, 0.3);
+    background: #FF99CC;
     backdrop-filter: blur(3px);
     border-radius: 8px;
     color: #333;
@@ -262,8 +260,7 @@
     padding: 8px 12px;
     color: #2d3748;
     border-radius: 6px;
-    text-decoration: none;
-    background: rgba(255, 255, 255, 0.3);
+    background: #FF99CC;
     backdrop-filter: blur(5px);
     transition: background 0.3s ease;
 }
@@ -346,11 +343,11 @@ select#productQuantity {
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
-    color: #6b7280;
+    color: black;
 }
 
 .close-btn:hover {
-    color: #1f2937;
+    color: black;
 }
 
 .cart-items {
@@ -364,8 +361,7 @@ select#productQuantity {
     align-items: center;
     justify-content: space-between;
     padding: 1rem;
-    margin-bottom: 1rem;
-    background: rgba(255, 255, 255, 0.9);
+    background: #FF99CC;
     backdrop-filter: blur(5px);
     border-radius: 12px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -403,22 +399,22 @@ select#productQuantity {
     background: #dc2626;
 }
 
-.cart-footer {
+    .cart-footer {
     padding: 1rem;
     border-top: 1px solid #e5e7eb;
     text-align: center;
     margin-top: 20px;
+    background-color: #f4a7b9;
 }
-
 .cart-footer p {
     font-size: 1.125rem;
     font-weight: bold;
-    color: #1f2937;
+    color: #ffffff;
     margin-bottom: 1rem;
 }
 
 .checkout-btn {
-    background: #A52A2A;
+    background: #f4a7b9;
     color: white;
     border: none;
     padding: 0.75rem 1.5rem;
@@ -430,7 +426,7 @@ select#productQuantity {
 }
 
 .checkout-btn:hover {
-    background: #8B1A1A;
+    background: #E093A5;
 }
 
 .cart-overlay {
@@ -512,4 +508,12 @@ select#productQuantity {
     100% {
         background-color: #e0e0e0;
     }
+}
+
+body {
+    color: black;
+}
+
+footer {
+    background-color: #FF69B4;
 }
