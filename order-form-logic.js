@@ -1,12 +1,13 @@
 // =================================================================
 // order-form-logic.js
-// সমস্ত JavaScript লজিক এই ফাইলে থাকবে
+// এখন লগইন না করেও অর্ডার করা যাবে (Guest Checkout Enabled)
 // =================================================================
 
 // Firebase SDK Imports
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, set, push, get, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+// Auth imports are now used for optional session check and data pre-filling
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"; 
 import { getMessaging, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
 
 // --- Firebase Configuration ---
@@ -27,7 +28,7 @@ const VAPID_KEY = 'YJmRy7RwHDamT_Wq9GSpJQm3Iexnkq1K9zvRFu3H_oI'; // Replace
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
-const auth = getAuth(app);
+const auth = getAuth(app); 
 let messaging = null;
 
 isSupported().then((supported) => {
@@ -48,14 +49,14 @@ isSupported().then((supported) => {
 
 // Global Variables
 let checkoutCart = [];
-let currentUser = null;
-let authInitialized = false;
 let isBuyNowMode = false;
+// Default Guest ID and Email, will be overwritten if user is logged in
+window.currentUserId = 'GUEST_' + Date.now(); 
+window.currentUserEmail = 'guest@checkout.com'; 
 
 // --- UI Elements ---
 const checkoutForm = document.getElementById('checkoutForm');
 const loadingIndicator = document.getElementById('loadingIndicator');
-const loginPrompt = document.getElementById('loginPrompt');
 const submitButton = document.getElementById('submitButton');
 const checkoutItemsContainer = document.getElementById('checkoutItems');
 const subTotalDisplay = document.getElementById('subTotalDisplay');
@@ -121,9 +122,10 @@ function calculateAndDisplayPrices(items) {
     const deliveryFee = deliveryLocation === 'outsideDhaka' ? 160 : 70;
     const totalAmount = subTotal + deliveryFee;
 
-    subTotalDisplay.textContent = `${totalAmount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')} টাকা`; // Added comma formatting for clarity
-    deliveryFeeDisplay.textContent = `${deliveryFee.toFixed(2)} টাকা`;
-    totalAmountDisplay.textContent = `${totalAmount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')} টাকা`;
+    // Use toLocaleString('bn-BD') for Bangladeshi number formatting
+    subTotalDisplay.textContent = `${subTotal.toLocaleString('bn-BD', { minimumFractionDigits: 2 })} টাকা`;
+    deliveryFeeDisplay.textContent = `${deliveryFee.toLocaleString('bn-BD', { minimumFractionDigits: 2 })} টাকা`;
+    totalAmountDisplay.textContent = `${totalAmount.toLocaleString('bn-BD', { minimumFractionDigits: 2 })} টাকা`;
 
     return { subTotal, deliveryFee, totalAmount };
 }
@@ -154,6 +156,12 @@ function renderCheckoutItems(items) {
 
 // Fetch cart items from Firebase
 async function fetchCart(uid) {
+    // Only fetch cart if UID is provided (logged-in user)
+    if (!uid) {
+         checkoutItemsContainer.innerHTML = '<p class="text-center text-gray-500 italic p-4">আপনি লগইন করেননি। কার্ট লোড করা যাচ্ছে না।</p>';
+         return;
+    }
+
     loadingIndicator.classList.remove('hidden');
     const cartRef = ref(database, `carts/${uid}`);
     try {
@@ -188,7 +196,7 @@ async function fetchBuyNowProduct(productId, quantity, variant) {
          const productData = snapshot.val();
 
          if (productData) {
-             const variantData = productData.variants.find(v => v.name === variant);
+             const variantData = productData.variants?.find(v => v.name === variant);
              const price = variantData ? variantData.price : productData.price;
 
              checkoutCart = [{
@@ -216,7 +224,7 @@ async function fetchBuyNowProduct(productId, quantity, variant) {
  }
 
 // Initialize checkout based on URL parameters
-function initializeCheckout() {
+function initializeCheckout(uid) {
     const urlParams = new URLSearchParams(window.location.search);
     const mode = urlParams.get('mode');
 
@@ -234,10 +242,36 @@ function initializeCheckout() {
         }
     } else {
         isBuyNowMode = false;
-        if (currentUser) {
-            fetchCart(currentUser.uid);
-        }
+        fetchCart(uid); // Load cart if UID is available
     }
+}
+
+// Fetch user profile data to pre-fill the form
+async function fetchUserProfile(uid) {
+    const profileRef = ref(database, `users/${uid}/profile`);
+    try {
+        const snapshot = await get(profileRef);
+        const profile = snapshot.val();
+        if (profile) {
+             document.getElementById('customerName').value = profile.name || '';
+             document.getElementById('phoneNumber').value = profile.phone || '';
+             document.getElementById('address').value = profile.address || '';
+
+             const savedLocation = profile.deliveryLocation || 'insideDhaka';
+             const radio = document.querySelector(`input[name="deliveryLocation"][value="${savedLocation}"]`);
+             if (radio) radio.checked = true;
+
+             handleDeliveryLocationChange();
+
+             if (savedLocation === 'outsideDhaka' && profile.outsideDhakaLocation) {
+                 document.getElementById('outsideDhakaLocation').value = profile.outsideDhakaLocation;
+             }
+        }
+    } catch (err) {
+        console.error("Error fetching user profile:", err);
+    }
+    // Always call this to ensure fees are calculated and form state is correct
+    handleDeliveryLocationChange();
 }
 
 // --- UI Event Handlers ---
@@ -326,6 +360,7 @@ async function handleOrderSubmit(event) {
         deliveryPaymentMethod: isOutsideDhaka ? document.getElementById('deliveryPaymentMethod').value : null,
         paymentNumber: isOutsideDhaka ? document.getElementById('paymentNumber').value : null,
         transactionId: isOutsideDhaka ? document.getElementById('transactionId').value : null,
+        isGuest: window.currentUserId.startsWith('GUEST_') // New field to track guest orders
     };
 
     // 2. Calculate Prices
@@ -345,8 +380,8 @@ async function handleOrderSubmit(event) {
         subTotal: subTotal,
         deliveryFee: deliveryFee,
         totalAmount: totalAmount,
-        userId: currentUser.uid,
-        userEmail: currentUser.email,
+        userId: window.currentUserId, // Use global ID
+        userEmail: window.currentUserEmail, // Use global Email
         orderStatus: 'Pending',
         isBuyNow: isBuyNowMode,
         timestamp: Date.now()
@@ -367,17 +402,20 @@ async function handleOrderSubmit(event) {
         await update(newOrderRef, { orderId: orderId });
 
         // === Telegram Notification Call ===
-        // IMPORTANT: For security, ideally this should be moved to a Firebase Cloud Function.
         sendTelegramNotification(orderData);
         // ==================================
 
-        // 5. Clear Cart (if not Buy Now)
-        if (!isBuyNowMode) {
-            await set(ref(database, `carts/${currentUser.uid}`), null);
+        // 5. Clear Cart (if not Buy Now AND if logged in)
+        if (!isBuyNowMode && !orderData.isGuest) {
+            // Only clear the cart if the user was logged in (not a GUEST)
+            await set(ref(database, `carts/${window.currentUserId}`), null);
         }
-
+        
         // 6. Success Feedback and Redirect
         showToast(`অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে! অর্ডার আইডি: ${orderId}`, "success");
+
+        // Save orderId to localStorage for guest tracking if needed, then redirect
+        localStorage.setItem('lastGuestOrderId', orderId);
 
         setTimeout(() => {
             window.location.href = `order-track.html?orderId=${orderId}`;
@@ -419,10 +457,12 @@ function formatOrderForTelegram(orderData) {
     }
     paymentDetails += `   • প্রোডাক্ট মূল্য: ক্যাশ অন ডেলিভারি (COD)`;
 
+    const guestMarker = orderData.isGuest ? '🔴 গেস্ট (লগইন ছাড়া) অর্ডার' : '🟢 লগইন করা অর্ডার';
 
     const message = `
 🌟 **নতুন অনলাইন অর্ডার** 🌟
 -----------------------------------
+${guestMarker}
 🆔 অর্ডার আইডি: **${orderData.orderId}**
 👤 গ্রাহক: ${orderData.customerName}
 📞 ফোন: ${orderData.phoneNumber}
@@ -477,54 +517,33 @@ async function sendTelegramNotification(orderData) {
     }
 }
 
-// --- Authentication/Main Setup ---
+// --- Initialization without Auth Check ---
 
-onAuthStateChanged(auth, (user) => {
-    authInitialized = true;
+function initializeOrderForm() {
     loadingIndicator.classList.add('hidden');
+    checkoutForm.classList.remove('hidden');
 
-    if (user) {
-        currentUser = user;
-        loginPrompt.classList.add('hidden');
-        checkoutForm.classList.remove('hidden');
+    // Check if user is logged in (optional, for data retrieval/pre-filling only)
+    onAuthStateChanged(auth, user => {
+        if (user) {
+            // User is logged in, use their details
+            window.currentUserId = user.uid;
+            window.currentUserEmail = user.email;
 
-        get(ref(database, `users/${user.uid}/profile`)).then(snapshot => {
-            const profile = snapshot.val();
-            if (profile) {
-                 document.getElementById('customerName').value = profile.name || '';
-                 document.getElementById('phoneNumber').value = profile.phone || '';
-                 document.getElementById('address').value = profile.address || '';
+            // Fetch profile to pre-fill form
+            fetchUserProfile(user.uid);
+            // Initialize checkout (loads cart for logged-in user)
+            initializeCheckout(user.uid);
 
-                 const savedLocation = profile.deliveryLocation || 'insideDhaka';
-                 const radio = document.querySelector(`input[name="deliveryLocation"][value="${savedLocation}"]`);
-                 if (radio) radio.checked = true;
-
-                 handleDeliveryLocationChange();
-
-                 if (savedLocation === 'outsideDhaka' && profile.outsideDhakaLocation) {
-                     document.getElementById('outsideDhakaLocation').value = profile.outsideDhakaLocation;
-                 }
-            } else {
-                handleDeliveryLocationChange();
-            }
-        }).catch(err => {
-            console.error("Error fetching user profile:", err);
+        } else {
+            // User is NOT logged in (Guest). Use default GUEST_ID.
+            // Initialize checkout (loads Buy Now product, or shows empty cart for guests)
+            initializeCheckout(null);
+            // Fallback for form initialization if no profile was fetched
             handleDeliveryLocationChange();
-        });
-
-        initializeCheckout();
-
-
-    } else {
-        currentUser = null;
-        loginPrompt.classList.remove('hidden');
-        checkoutForm.classList.add('hidden');
-        setTimeout(() => {
-            window.location.href = 'login.html';
-        }, 3000);
-    }
-});
-
+        }
+    });
+}
 
 // --- Initial Setup on DOM Load ---
 
@@ -545,6 +564,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Setup other UI interactions
     setupShareButton();
+
+    // Start form initialization process
+    initializeOrderForm();
 });
 
 // --- Social Share Button Logic ---
