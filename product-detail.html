@@ -7,66 +7,197 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- <script type="module" src="script.js"></script>  এই লাইনটি সরানো হলো -->
     <link rel="stylesheet" href="styles.css">
-    <!-- মূল script.js ফাইলটি লোড করা হচ্ছে -->
-    <script type="module" src="script.js"></script> 
     <style>
+        .bg-brushstroke { background-color: #F4A7B9; }
         .text-lipstick { color: #A52A2A; }
+        .bg-lipstick { background-color: #A52A2A; }
+        .border-lipstick { border-color: #A52A2A; }
+        .hover\:bg-lipstick-dark:hover { background-color: #8B1A1A; }
+        .bg-highlight { background-color: #FFD700; }
+        .text-highlight { color: #FFD700; }
         .bg-background { background-color: #FFF5F7; }
 
         /* ইমেজ গ্যালারি স্টাইল */
-        .image-gallery { display: flex; gap: 15px; margin-bottom: 20px; }
-        .main-image-container { flex: 1; max-width: 500px; }
-        #mainImage { width: 100%; max-height: 400px; object-fit: contain; border: 1px solid #e5e7eb; border-radius: 4px; cursor: pointer; }
-        .thumbnail-container { display: flex; flex-direction: column; gap: 10px; max-height: 400px; overflow-y: auto; }
-        .thumbnail { width: 70px; height: 70px; object-fit: cover; border: 2px solid transparent; border-radius: 4px; cursor: pointer; transition: border-color 0.3s ease; }
-        .thumbnail.active { border-color: #A52A2A; }
+        .image-gallery {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .main-image-container {
+            flex: 1;
+            max-width: 500px;
+        }
+
+        #mainImage {
+            width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .thumbnail-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #A52A2A #f1f1f1;
+        }
+
+        .thumbnail-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .thumbnail-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .thumbnail-container::-webkit-scrollbar-thumb {
+            background: #A52A2A;
+            border-radius: 4px;
+        }
+
+        .thumbnail {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .thumbnail.active {
+            border: 2px solid #A52A2A;
+        }
+
+        /* মোবাইল ভিউ */
         @media (max-width: 768px) {
-            .image-gallery { flex-direction: column; }
-            .thumbnail-container { flex-direction: row; overflow-x: auto; max-height: none; padding-bottom: 5px; }
+            .image-gallery {
+                flex-direction: column;
+            }
+
+            .thumbnail-container {
+                flex-direction: row;
+                overflow-x: auto;
+                max-height: none;
+                padding-bottom: 5px;
+            }
+
+            .thumbnail {
+                width: 60px;
+                height: 60px;
+            }
         }
 
         /* ফুল-স্ক্রিন মোডাল স্টাইল */
-        #imageModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.9); z-index: 1000; display: none; justify-content: center; align-items: center; }
-        #modalImage { max-width: 90%; max-height: 80%; }
-        #modalCloseBtn { position: absolute; top: 20px; right: 20px; color: white; font-size: 24px; cursor: pointer; }
-        #modalPrevBtn, #modalNextBtn { position: absolute; top: 50%; transform: translateY(-50%); color: white; font-size: 30px; cursor: pointer; padding: 10px; }
-        #modalPrevBtn { left: 20px; }
-        #modalNextBtn { right: 20px; }
+        #imageModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #modalImage {
+            max-width: 90%;
+            max-height: 80%;
+            border-radius: 4px;
+        }
+
+        #modalCloseBtn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        #modalPrevBtn, #modalNextBtn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        #modalPrevBtn {
+            left: 20px;
+        }
+
+        #modalNextBtn {
+            right: 20px;
+        }
+
+        /* টোস্ট স্টাইল */
+        #toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            display: none;
+            z-index: 10000; /* অন্য সব কিছুর উপরে দেখানোর জন্য z-index বাড়ান */
+            font-size: 14px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
     </style>
 </head>
-<body class="bg-background">
+<body class="bg-gray-100 bg-background">
     <div id="header"></div>
     <main class="p-4 pt-24 md:pt-28">
         <div class="bg-white p-6 rounded-lg shadow-lg max-w-4xl mx-auto">
-            <!-- Loading Spinner -->
-            <div id="loadingSpinner" class="text-center p-10">
-                <div class="animate-spin inline-block w-8 h-8 border-4 rounded-full border-t-lipstick" role="status">
-                    <span class="visually-hidden"></span>
+            <!-- ইমেজ গ্যালারি সেকশন -->
+            <div class="image-gallery">
+                <div class="main-image-container">
+                    <img id="mainImage" src="https://via.placeholder.com/500x400.png?text=No+Image" alt="Main Product Image">
                 </div>
-                <p class="mt-2 text-gray-600"></p>
+                <div class="thumbnail-container" id="thumbnailContainer"></div>
+            </div>
+            <h1 id="productTitle" class="text-2xl lg:text-3xl font-bold mb-4 text-gray-800">প্রোডাক্ট</h1>
+            <p id="productPrice" class="text-lipstick text-xl lg:text-2xl font-bold mb-4">দাম</p>
+            
+            <div id="productDetailsExtra" class="mb-6">
+                 <!-- স্টক এবং পরিমাণ এখানে লোড হবে -->
             </div>
 
-            <!-- Product Content (Initially Hidden) -->
-            <div id="productContent" class="hidden">
-                <div class="image-gallery">
-                    <div class="main-image-container">
-                        <img id="mainImage" src="https://via.placeholder.com/500x400.png?text=Loading..." alt="Main Product Image">
-                    </div>
-                    <div class="thumbnail-container" id="thumbnailContainer"></div>
-                </div>
-                <h1 id="productTitle" class="text-2xl lg:text-3xl font-bold mb-4 text-gray-800">প্রোডাক্ট</h1>
-                <p id="productPrice" class="text-lipstick text-xl lg:text-2xl font-bold mb-4">দাম</p>
-                <div id="productDetailsExtra" class="mb-6"></div>
-                <p id="productDescription" class="text-gray-700 mb-6 leading-relaxed">বিবরণ</p>
-                
-                <div id="actionButtons" class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
-                    <!-- Buttons will be generated by script -->
-                </div>
+            <p id="productDescription" class="text-gray-700 mb-6 leading-relaxed">বিবরণ</p>
+            
+            <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                <button id="buyNowBtn" onclick="window.buyNowFromHome(currentProduct.id, parseInt(document.getElementById('quantityInput').value))" class="w-full sm:w-auto bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors duration-200 ease-in-out flex items-center justify-center font-semibold opacity-50 cursor-not-allowed" disabled>
+                    <i class="fas fa-credit-card mr-2"></i>এখনই কিনুন
+                </button>
+                <button id="addToCartBtn" onclick="window.addToCart(currentProduct.id, parseInt(document.getElementById('quantityInput').value))" class="w-full sm:w-auto bg-teal-500 text-white px-6 py-3 rounded-lg hover:bg-teal-600 transition-colors duration-200 ease-in-out flex items-center justify-center font-semibold opacity-50 cursor-not-allowed" disabled>
+                    <i class="fas fa-cart-plus mr-2"></i>কার্টে যোগ করুন
+                </button>
+                 <a id="whatsappBtn" target="_blank" class="w-full sm:w-auto bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors duration-200 ease-in-out inline-flex items-center justify-center font-semibold">
+                    <i class="fab fa-whatsapp mr-2"></i>WhatsApp এ অর্ডার
+                </a>
             </div>
         </div>
     </main>
     <div id="footer"></div>
+
+    <!-- টোস্ট নোটিফিকেশন এলিমেন্ট -->
+    <div id="toast"></div>
 
     <!-- ফুল-স্ক্রিন মোডাল -->
     <div id="imageModal">
@@ -76,5 +207,462 @@
         <span id="modalNextBtn" title="পরবর্তী ছবি"><i class="fas fa-chevron-right"></i></span>
     </div>
 
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVSzQS1c7H4BLhsDF_fW8wnqUN4B35LPA",
+            authDomain: "nahid-6714.firebaseapp.com",
+            databaseURL: "https://nahid-6714-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "nahid-6714",
+            storageBucket: "nahid-6714.firebasestorage.app",
+            messagingSenderId: "505741217147",
+            appId: "1:505741217147:web:25ed4e9f0d00e3c4d381de",
+            measurementId: "G-QZ7CTRKHCW"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        let currentProduct = null;
+        let galleryImages = []; // গ্যালারির জন্য images এর পরিবর্তে galleryImages ব্যবহার করা হলো
+        let currentImageModalIndex = 0;
+
+        $(function(){
+            $("#header").load("header.html", function(response, status, xhr) {
+                if (status === "error") {
+                    console.error("header.html লোড করতে সমস্যা: " + xhr.status + " " + xhr.statusText);
+                } else {
+                    console.log("header.html লোড সম্পন্ন!");
+                    // header.html এর ফাংশনগুলো এখন উপলব্ধ হওয়ার কথা
+                    // যদি header এ সার্চ ফাংশন থাকে, সেগুলো কল করার চেষ্টা করা যেতে পারে
+                    // যেমন: if (typeof window.initializeSearch === 'function') window.initializeSearch();
+                    if (typeof window.loadCartFromFirebase === 'function') { // কার্ট লোড করার জন্য
+                        window.loadCartFromFirebase();
+                    }
+                }
+            });
+            $("#footer").load("footer.html");
+        });
+
+        function getUserId() {
+            // header.html এ থাকা getUserId ফাংশনটি ব্যবহার করার চেষ্টা করা হচ্ছে
+            // যদি সেটি না পাওয়া যায়, তাহলে লোকাল getUserId ব্যবহার করা হবে
+            if (typeof window.getUserId === 'function') {
+                return window.getUserId();
+            }
+            // ফলব্যাক (যদি header.html এর getUserId না পাওয়া যায়)
+            console.warn("Header থেকে getUserId ফাংশন পাওয়া যায়নি, লোকাল getUserId ব্যবহৃত হচ্ছে।");
+            let userId = localStorage.getItem('userId_local_detail'); // আলাদা কী ব্যবহার করা ভালো কনফ্লিক্ট এড়ানোর জন্য
+            if (!userId) {
+                userId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('userId_local_detail', userId);
+            }
+            return userId;
+        }
+
+        window.addToCartFromDetail = () => {
+            console.log("addToCartFromDetail ফাংশন কল করা হয়েছে।");
+            if (!currentProduct) {
+                console.error('কোনো প্রোডাক্ট পাওয়া যায়নি (currentProduct is null).');
+                showToast('প্রোডাক্ট লোড হয়নি। অনুগ্রহ করে অপেক্ষা করুন।');
+                return;
+            }
+            console.log("বর্তমান প্রোডাক্ট:", currentProduct);
+
+            const quantityInputElement = document.getElementById('quantityInput');
+            if (!quantityInputElement) {
+                console.error('পরিমাণ ইনপুট ক্ষেত্র (quantityInput) DOM-এ পাওয়া যায়নি।');
+                showToast('পরিমাণ ক্ষেত্রটি এখনও লোড হয়নি বা স্টকে নেই।');
+                return;
+            }
+            const quantity = parseInt(quantityInputElement.value);
+            console.log("পরিমাণ:", quantity);
+            if (isNaN(quantity) || quantity < 1) {
+                showToast('অনুগ্রহ করে একটি সঠিক পরিমাণ নির্বাচন করুন।');
+                return;
+            }
+
+            const userId = getUserId();
+            console.log("ইউজার আইডি:", userId);
+            if (!userId) {
+                 showToast('ইউজার আইডি পাওয়া যায়নি।');
+                 return;
+            }
+
+            const cartRef = ref(database, `carts/${userId}`);
+            console.log("কার্ট রেফারেন্স:", cartRef.toString());
+
+            get(cartRef).then((snapshot) => {
+                let cart = snapshot.val() || [];
+                if (!Array.isArray(cart)) cart = []; // নিশ্চিত করুন এটি একটি অ্যারে
+                console.log("বর্তমান কার্ট (Firebase থেকে):", cart);
+                
+                const productForCart = {
+                    id: currentProduct.id,
+                    name: currentProduct.name,
+                    price: currentProduct.price,
+                    image: currentProduct.image ? currentProduct.image.split(',')[0].trim() : 'https://via.placeholder.com/100',
+                    // quantity প্রপার্টি এখানে যোগ হবে না, সেটি হয় existingProduct এ আপডেট হবে অথবা নতুন push করা হবে
+                };
+
+                const existingProductIndex = cart.findIndex((p) => p.id === productForCart.id);
+
+                if (existingProductIndex > -1) {
+                    cart[existingProductIndex].quantity = (Number(cart[existingProductIndex].quantity) || 0) + quantity;
+                } else {
+                    cart.push({ ...productForCart, quantity: quantity });
+                }
+                console.log("আপডেটেড কার্ট (Firebase-এ পাঠানোর আগে):", cart);
+
+                set(cartRef, cart)
+                    .then(() => {
+                        console.log("কার্ট সফলভাবে Firebase-এ সেভ হয়েছে।");
+                        showToast('প্রোডাক্ট কার্টে যোগ করা হয়েছে!');
+                        if (typeof window.openCartSidebar === 'function') {
+                            window.openCartSidebar();
+                        } else {
+                            console.warn('openCartSidebar ফাংশনটি খুঁজে পাওয়া যায়নি।');
+                        }
+                        // header.html এর কার্ট UI আপডেট করার জন্য
+                        if (typeof window.updateCartUI === 'function') {
+                             // যদি header.html এর window.cartItems একটি গ্লোবাল ভেরিয়েবল হয়
+                            if (typeof window.cartItems !== 'undefined') {
+                                window.cartItems = cart; 
+                            }
+                            window.updateCartUI(); // এটি কল করলে header এর কার্ট কাউন্ট আপডেট হবে
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Firebase-এ কার্ট সেভ করতে সমস্যা: ", error);
+                        showToast("কার্টে প্রোডাক্ট যোগ করতে সমস্যা হয়েছে!");
+                    });
+            }).catch((error) => {
+                console.error("Firebase থেকে কার্ট লোড করতে সমস্যা: ", error);
+                showToast("কার্ট লোড করতে সমস্যা হয়েছে!");
+            });
+        };
+
+        window.buyNow = () => {
+            if (!currentProduct) {
+                showToast('প্রোডাক্ট লোড হয়নি।');
+                return;
+            }
+            const quantityInputElement = document.getElementById('quantityInput');
+            if (!quantityInputElement) {
+                 showToast('পরিমাণ ক্ষেত্রটি এখনও লোড হয়নি বা স্টকে নেই।');
+                return;
+            }
+            const quantity = parseInt(quantityInputElement.value);
+            if (isNaN(quantity) || quantity < 1) {
+                showToast('অনুগ্রহ করে একটি সঠিক পরিমাণ নির্বাচন করুন।');
+                return;
+            }
+             const itemToCheckout = [{
+                id: currentProduct.id, name: currentProduct.name, price: currentProduct.price,
+                image: currentProduct.image ? currentProduct.image.split(',')[0].trim() : 'https://via.placeholder.com/100',
+                quantity: quantity
+            }];
+            try {
+                localStorage.setItem('cartToCheckout', JSON.stringify(itemToCheckout));
+                 window.location.href = `order-form.html?source=buyNow&id=${currentProduct.id}&quantity=${quantity}`;
+            } catch (e) {
+                showToast("অর্ডার করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
+            }
+        };
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            if (!toast) { // যদি টোস্ট এলিমেন্ট না থাকে, তাহলে কনসোলে লগ করুন
+                console.warn("টোস্ট এলিমেন্ট আইডি 'toast' খুঁজে পাওয়া যায়নি। মেসেজ: ", message);
+                alert(message); // ফলব্যাক হিসেবে alert
+                return;
+            }
+            toast.textContent = message;
+            toast.style.opacity = '1';
+            toast.style.display = 'block';
+            toast.style.transform = 'translateX(-50%) translateY(0)';
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(-50%) translateY(20px)';
+                setTimeout(() => {
+                  toast.style.display = 'none';
+                }, 300);
+            }, 2700);
+        }
+
+        function setupImageGallery(imageList) {
+            galleryImages = imageList;
+            const mainImage = document.getElementById('mainImage');
+            const thumbnailContainer = document.getElementById('thumbnailContainer');
+            thumbnailContainer.innerHTML = ''; 
+
+            if (galleryImages.length > 0) {
+                mainImage.src = galleryImages[0];
+                currentImageModalIndex = 0;
+            } else {
+                mainImage.src = 'https://via.placeholder.com/500x400.png?text=No+Image';
+            }
+
+            galleryImages.forEach((img, index) => {
+                const thumbnail = document.createElement('img');
+                thumbnail.src = img; thumbnail.alt = `থাম্বনেইল ${index + 1}`;
+                thumbnail.className = 'thumbnail';
+                if (index === 0) thumbnail.classList.add('active');
+                thumbnail.addEventListener('click', () => {
+                    mainImage.src = img; currentImageModalIndex = index;
+                    document.querySelectorAll('.thumbnail').forEach(thumb => thumb.classList.remove('active'));
+                    thumbnail.classList.add('active');
+                });
+                thumbnailContainer.appendChild(thumbnail);
+            });
+            mainImage.addEventListener('click', openImageModal);
+        }
+
+        function openImageModal() {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            if (galleryImages.length === 0) return;
+            modalImage.src = galleryImages[currentImageModalIndex];
+            modal.style.display = 'flex'; document.body.style.overflow = 'hidden';
+            document.getElementById('modalCloseBtn').onclick = closeImageModal;
+            document.getElementById('modalPrevBtn').onclick = showPrevModalImage;
+            document.getElementById('modalNextBtn').onclick = showNextModalImage;
+            modal.onclick = (e) => { if (e.target === modal) closeImageModal(); };
+            document.addEventListener('keydown', handleModalKeyPress);
+            enableModalSwipe(modalImage);
+        }
+        function closeImageModal() {
+            document.getElementById('imageModal').style.display = 'none';
+            document.body.style.overflow = '';
+            document.removeEventListener('keydown', handleModalKeyPress);
+        }
+        function showPrevModalImage(e) {
+            if(e) e.stopPropagation();
+            currentImageModalIndex = (currentImageModalIndex - 1 + galleryImages.length) % galleryImages.length;
+            document.getElementById('modalImage').src = galleryImages[currentImageModalIndex];
+        }
+        function showNextModalImage(e) {
+            if(e) e.stopPropagation();
+            currentImageModalIndex = (currentImageModalIndex + 1) % galleryImages.length;
+            document.getElementById('modalImage').src = galleryImages[currentImageModalIndex];
+        }
+        function handleModalKeyPress(e) {
+            if (e.key === 'Escape') closeImageModal();
+            if (e.key === 'ArrowLeft') showPrevModalImage();
+            if (e.key === 'ArrowRight') showNextModalImage();
+        }
+        function enableModalSwipe(element) {
+            let touchStartX = 0, touchEndX = 0, isSwiping = false;
+            element.addEventListener('touchstart', e => {
+                if (e.touches.length === 1) { touchStartX = e.touches[0].clientX; isSwiping = true; }
+            }, { passive: true });
+            element.addEventListener('touchmove', e => {
+                if (!isSwiping || e.touches.length !== 1) return;
+                touchEndX = e.touches[0].clientX;
+            }, { passive: true });
+            element.addEventListener('touchend', e => {
+                if (!isSwiping || e.changedTouches.length !== 1) { isSwiping = false; return; }
+                touchEndX = e.changedTouches[0].clientX;
+                const deltaX = touchStartX - touchEndX;
+                if (Math.abs(deltaX) > 50) { deltaX > 0 ? showNextModalImage() : showPrevModalImage(); }
+                isSwiping = false;
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            const productId = params.get('id');
+
+            if (!productId) {
+                showToast('প্রোডাক্ট আইডি পাওয়া যায়নি!');
+                setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+                return;
+            }
+            
+            console.log("Product Detail Page: DOMContentLoaded. Product ID:", productId);
+
+            const productRef = ref(database, 'products/' + productId);
+            try {
+                const snapshot = await get(productRef);
+                const product = snapshot.val();
+                console.log("Product Detail Page: Firebase snapshot data:", product);
+
+                if (product) {
+                    currentProduct = { ...product, id: productId };
+                    document.getElementById('productTitle').textContent = product.name || "নাম পাওয়া যায়নি";
+                    document.getElementById('productPrice').textContent = `দাম: ${product.price || "N/A"} টাকা`;
+                    document.getElementById('productDescription').textContent = product.description || "বিবরণ পাওয়া যায়নি";
+                    document.title = product.name ? `প্রোডাক্ট বিস্তারিত - ${product.name}` : "প্রোডাক্ট বিস্তারিত";
+
+                    const detailsExtraContainer = document.getElementById('productDetailsExtra');
+                    detailsExtraContainer.innerHTML = ''; 
+
+                    const stockElement = document.createElement('p');
+                    stockElement.className = "text-gray-700 mb-2 font-medium";
+                    let stockText = "স্টকের তথ্য অনুপলব্ধ", stockColor = "text-gray-500";
+                    if (product.stockStatus === 'in_stock') { stockText = "স্টকে আছে"; stockColor = "text-green-600"; }
+                    else if (product.stockStatus === 'out_of_stock') { stockText = "স্টকে নেই"; stockColor = "text-red-600"; }
+                    stockElement.innerHTML = `<strong>স্টক:</strong> <span class="${stockColor} font-semibold">${stockText}</span>`;
+                    detailsExtraContainer.appendChild(stockElement);
+                    
+                    const buyNowButton = document.getElementById('buyNowBtn');
+                    const addToCartButton = document.getElementById('addToCartBtn');
+
+                    if (product.stockStatus === 'in_stock') {
+                        const maxOrderQuantity = parseInt(product.quantity) > 0 ? parseInt(product.quantity) : 100;
+                        const counterHTML = `
+                            <div class="flex items-center space-x-3 my-4">
+                                <span class="text-gray-700 font-medium">পরিমাণ:</span>
+                                <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                                    <button id="decreaseBtn" class="bg-gray-200 text-gray-700 px-4 py-2 hover:bg-gray-300 font-bold">-</button>
+                                    <input type="number" id="quantityInput" value="1" min="1" max="${maxOrderQuantity}" 
+                                        class="px-2 py-2 border-0 focus:ring-0 w-16 text-center appearance-none [-moz-appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                                    <button id="increaseBtn" class="bg-gray-200 text-gray-700 px-4 py-2 hover:bg-gray-300 font-bold">+</button>
+                                </div>
+                            </div>`;
+                        detailsExtraContainer.innerHTML += counterHTML;
+                        
+                        const quantityInput = document.getElementById('quantityInput');
+                        document.getElementById('decreaseBtn').addEventListener('click', () => {
+                            let currentVal = parseInt(quantityInput.value);
+                            if (currentVal > 1) quantityInput.value = currentVal - 1;
+                        });
+                        document.getElementById('increaseBtn').addEventListener('click', () => {
+                            let currentVal = parseInt(quantityInput.value);
+                            if (currentVal < maxOrderQuantity) quantityInput.value = currentVal + 1;
+                            else showToast(`সর্বোচ্চ ${maxOrderQuantity} টি নিতে পারবেন।`);
+                        });
+                        quantityInput.addEventListener('input', () => {
+                            let value = parseInt(quantityInput.value);
+                            if (isNaN(value) || value < 1) quantityInput.value = 1;
+                            if (value > maxOrderQuantity) {
+                                quantityInput.value = maxOrderQuantity;
+                                showToast(`সর্বোচ্চ ${maxOrderQuantity} টি নিতে পারবেন।`);
+                            }
+                        });
+                        buyNowButton.disabled = false;
+                        addToCartButton.disabled = false;
+                        buyNowButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                        addToCartButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                    } else {
+                        // বাটনগুলো আগে থেকেই disabled এবং opacity-50 করা আছে HTML এ
+                    }
+                    
+                    document.getElementById('whatsappBtn').addEventListener('click', (e) => { 
+                        e.preventDefault(); 
+                        const quantity = document.getElementById('quantityInput') ? document.getElementById('quantityInput').value : 1;
+                        let imageListText = '';
+                        if (product.image) imageListText = product.image.split(',').map((img, index) =>`ছবি-${index + 1}: ${img.trim()}`).join('\n');
+                        const message = `প্রোডাক্টের নাম: ${product.name}\nদাম: ${product.price} টাকা\nপরিমাণ: ${quantity} টি\n${imageListText ? imageListText + '\n' : ''}আমি এই প্রোডাক্টটি কিনতে চাই!`.trim();
+                        window.open(`https://wa.me/8801931866636?text=${encodeURIComponent(message)}`, '_blank'); // আপনার WhatsApp নম্বর দিন
+                    });
+
+                    if (product.image) {
+                        const imageList = product.image.split(',').map(img => img.trim()).filter(img => img);
+                        setupImageGallery(imageList);
+                    } else { setupImageGallery([]); }
+
+                } else {
+                    document.getElementById('productTitle').textContent = "প্রোডাক্ট পাওয়া যায়নি";
+                    document.getElementById('productDescription').textContent = "দুঃখিত, এই প্রোডাক্টটি এখন আর উপলব্ধ নেই অথবা লিঙ্কটি সঠিক নয়।";
+                    showToast('প্রোডাক্ট পাওয়া যায়নি!');
+                }
+            } catch (error) {
+                console.error("Firebase থেকে ডেটা লোড করতে সমস্যা: ", error);
+                showToast('ডেটা লোড করতে সমস্যা হয়েছে!');
+                document.getElementById('productTitle').textContent = "ত্রুটি";
+                document.getElementById('productDescription').textContent = "প্রোডাক্টের তথ্য লোড করা সম্ভব হয়নি। অনুগ্রহ করে আবার চেষ্টা করুন।";
+            }
+        });
+    </script>
+    <!-- সোশ্যাল মিডিয়া ফ্লোটিং বাটন -->
+    <div class="fixed bottom-4 right-4 z-50">
+        <!-- শেয়ার বাটন -->
+        <button id="shareButton" class="bg-lipstick text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center">
+            <i class="fas fa-user-circle"></i>
+        </button>
+        <!-- সোশ্যাল মিডিয়া আইকনগুলি (লুকানো অবস্থায়) -->
+        <div id="socialIcons" class="hidden space-y-2 mt-2">
+            <a href="https://www.facebook.com/share/1PyLUzGE9P/" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
+                <i class="fab fa-facebook"></i>
+            </a>
+            <a href="https://www.instagram.com/anysbeautycorner/?utm_medium=copy_link" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://www.tiktok.com/@anysbeautycorner" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
+                <i class="fab fa-tiktok"></i>
+            </a>
+            <a href="https://youtube.com/@anysbeautycorner?si=oXGtEuakP_SIPH_Q" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
+                <i class="fab fa-youtube"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- সোশ্যাল মিডিয়া শেয়ার বাটনের জন্য স্ক্রিপ্ট -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const shareButton = document.getElementById('shareButton');
+            const socialIcons = document.getElementById('socialIcons');
+
+            if (shareButton && socialIcons) {
+                shareButton.addEventListener('click', () => {
+                    socialIcons.classList.toggle('hidden');
+                });
+
+                // বাইরে ক্লিক করলে সোশ্যাল আইকন বন্ধ হবে
+                document.addEventListener('click', (event) => {
+                    if (!shareButton.contains(event.target) && !socialIcons.contains(event.target)) {
+                        socialIcons.classList.add('hidden');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>টিং বাটন -->
+    <div class="fixed bottom-4 right-4 z-50">
+        <!-- শেয়ার বাটন -->
+        <button id="shareButton" class="bg-lipstick text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center">
+            <i class="fas fa-user-circle"></i>
+        </button>
+        <!-- সোশ্যাল মিডিয়া আইকনগুলি (লুকানো অবস্থায়) -->
+        <div id="socialIcons" class="hidden space-y-2 mt-2">
+            <a href="https://www.facebook.com/share/1PyLUzGE9P/" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
+                <i class="fab fa-facebook"></i>
+            </a>
+            <a href="https://www.instagram.com/anysbeautycorner/?utm_medium=copy_link" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://www.tiktok.com/@anysbeautycorner" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
+                <i class="fab fa-tiktok"></i>
+            </a>
+            <a href="https://youtube.com/@anysbeautycorner?si=oXGtEuakP_SIPH_Q" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center">
+                <i class="fab fa-youtube"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- সোশ্যাল মিডিয়া শেয়ার বাটনের জন্য স্ক্রিপ্ট -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const shareButton = document.getElementById('shareButton');
+            const socialIcons = document.getElementById('socialIcons');
+
+            if (shareButton && socialIcons) {
+                shareButton.addEventListener('click', () => {
+                    socialIcons.classList.toggle('hidden');
+                });
+
+                // বাইরে ক্লিক করলে সোশ্যাল আইকন বন্ধ হবে
+                document.addEventListener('click', (event) => {
+                    if (!shareButton.contains(event.target) && !socialIcons.contains(event.target)) {
+                        socialIcons.classList.add('hidden');
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
