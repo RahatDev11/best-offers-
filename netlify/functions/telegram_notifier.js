@@ -1,11 +1,10 @@
 // ফাইল: netlify/functions/telegram_notifier.js
-// Netlify Functions-এর জন্য Node.js কোড
+// Netlify Function হিসেবে কাজ করবে
 
-const fetch = require('node-fetch'); // Netlify Functions-এ এটি ডিফল্টভাবে উপলব্ধ
+const fetch = require('node-fetch'); 
 
 // ===============================================
-// ১. আপনার টেলিগ্রামের তথ্য (Environment Variables ব্যবহার করা নিরাপদ)
-// টেস্টিংয়ের জন্য সরাসরি Token ও Chat ID এখানে দিচ্ছি
+// ১. আপনার টেলিগ্রামের তথ্য
 // ===============================================
 const BOT_TOKEN = '7516151873:AAESiHvoSJovELfQ_9HrDv-25BQuBFNYnCs'; 
 const CHAT_ID = '6247184686';
@@ -15,6 +14,7 @@ function formatCartItems(cartItems) {
     let details = "";
     let index = 1;
     for (const item of cartItems) {
+        // এখানে নিশ্চিত করা হয়েছে যে cartItems-এর স্ট্রাকচার ঠিক আছে
         const itemName = item.name || 'N/A';
         const quantity = item.quantity || 1;
         const price = item.price || 0;
@@ -30,19 +30,18 @@ function formatCartItems(cartItems) {
 // ২. Netlify Function handler
 // ===============================================
 exports.handler = async (event) => {
-    // শুধুমাত্র POST রিকোয়েস্ট গ্রহণ
     if (event.httpMethod !== 'POST') {
         return { statusCode: 405, body: 'Method Not Allowed' };
     }
 
     let orderData;
     try {
-        orderData = JSON.parse(event.body); // JSON ডেটা গ্রহণ
+        orderData = JSON.parse(event.body); 
     } catch (error) {
         return { statusCode: 400, body: JSON.stringify({ success: false, message: 'Invalid JSON format.' }) };
     }
 
-    // ডেটা এক্সট্র্যাক্ট করা
+    // ডেটা এক্সট্র্যাক্ট করা (আপনার Firebase এবং অর্ডার ফর্ম থেকে আসা ডেটা)
     const customerName = orderData.customerName || 'N/A';
     const phoneNumber = orderData.phoneNumber || 'N/A';
     const address = orderData.address || 'N/A';
@@ -111,4 +110,3 @@ exports.handler = async (event) => {
         };
     }
 };
-      
