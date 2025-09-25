@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram নোটিফিকেশন টেস্টার</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .bg-lipstick { background-color: #A52A2A; }
+        .text-lipstick { color: #A52A2A; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-4">
+
+    <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-xl p-6 md:p-10 mt-8">
+        <h1 class="text-3xl font-bold mb-6 text-lipstick border-b pb-2">Telegram নোটিফিকেশন টেস্টার 🚀</h1>
+        <p class="mb-6 text-gray-600">নিচের ফর্মে তথ্য পূরণ করে "অর্ডার প্লেস করুন" বাটনে ক্লিক করুন। এটি আপনার <b>send_telegram_notification.php</b> ফাইলে ডেটা পাঠাবে।</p>
+        
+        <form id="checkoutForm">
+            
+            <div class="mb-8 border border-gray-200 rounded-lg p-4 bg-background" id="cartSummarySection">
+                <h2 class="text-xl font-bold mb-3 text-gray-700">🛒 মক কার্ট আইটেম</h2>
+                <div id="orderCartSummary" class="space-y-2">
+                    </div>
+                <div class="border-t pt-2 mt-4 text-right space-y-1">
+                    <p class="text-gray-600">সাব-টোটাল: <span id="cartTotal" class="font-semibold">0.00</span> টাকা</p>
+                    <p class="text-gray-600">ডেলিভারি ফি: <span id="deliveryFeeDisplay" class="font-semibold">0.00</span> টাকা</p>
+                    <p class="text-2xl font-bold text-lipstick">গ্র্যান্ড টোটাল: <span id="grandTotal">0.00</span> টাকা</p>
+                    <input type="hidden" id="totalAmountInput" value="0">
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h2 class="text-xl font-bold mb-4 text-gray-700">১. গ্রাহকের তথ্য</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="customerName" class="block text-sm font-medium text-gray-700 mb-1">গ্রাহকের নাম *</label>
+                        <input type="text" id="customerName" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-lipstick focus:border-lipstick" required value="পরীক্ষামূলক গ্রাহক">
+                    </div>
+                    <div>
+                        <label for="phoneNumber" class="block text-sm font-medium text-gray-700 mb-1">মোবাইল নম্বর *</label>
+                        <input type="tel" id="phoneNumber" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-lipstick focus:border-lipstick" required value="01711223344">
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <label for="shippingAddress" class="block text-sm font-medium text-gray-700 mb-1">পূর্ণ ঠিকানা *</label>
+                    <textarea id="shippingAddress" rows="3" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-lipstick focus:border-lipstick" required>বাড়ী-৪, রাস্তা-৫, গুলশান-২, ঢাকা।</textarea>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h2 class="text-xl font-bold mb-4 text-gray-700">২. ডেলিভারি ও পেমেন্ট</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">ডেলিভারি এরিয়া *</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center space-x-3">
+                                <input type="radio" name="deliveryLocation" value="inside_dhaka" checked class="form-radio text-lipstick focus:ring-lipstick">
+                                <span class="text-gray-700">ঢাকার ভিতরে (৮০ টাকা)</span>
+                            </label>
+                            <label class="flex items-center space-x-3">
+                                <input type="radio" name="deliveryLocation" value="outside_dhaka" class="form-radio text-lipstick focus:ring-lipstick">
+                                <span class="text-gray-700">ঢাকার বাইরে (১২০ টাকা)</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="deliveryPaymentMethod" class="block text-sm font-medium text-gray-700 mb-2">পেমেন্ট পদ্ধতি *</label>
+                        <select id="deliveryPaymentMethod" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-lipstick focus:border-lipstick">
+                            <option value="Cash_On_Delivery">ক্যাশ অন ডেলিভারি (COD)</option>
+                            <option value="bKash">bKash</option>
+                            <option value="Bank_Transfer">ব্যাংক ট্রান্সফার</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="w-full bg-lipstick text-white py-4 rounded-lg font-bold text-lg hover:bg-red-700 transition-colors flex items-center justify-center">
+                <i class="fas fa-paper-plane mr-2"></i> নোটিফিকেশন পাঠিয়ে পরীক্ষা করুন
+            </button>
+        </form>
+    </div>
+
+    <div id="toastContainer" class="fixed bottom-0 right-0 p-4 space-y-2"></div>
+    
+    <script type="module" src="test_script.js"></script>
+
+</body>
+</html>
