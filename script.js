@@ -49,6 +49,43 @@ function showToast(message, type = "success") {
     setTimeout(() => { toast.remove() }, 3000);
 };
 
+// === START: TELEGRAM NOTIFICATION FUNCTION (NEW CODE) ===
+/**
+ * Netlify Function কে কল করে Telegram এ নোটিফিকেশন পাঠায়।
+ * @param {object} orderData - অর্ডারের সমস্ত তথ্য
+ */
+async function sendTelegramNotification(orderData) {
+    // Netlify Function কে কল করা হচ্ছে, যেটি Telegram এ মেসেজ পাঠাবে
+    try {
+        const response = await fetch('/.netlify/functions/telegram_notifier', { 
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(orderData) 
+        });
+
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+            console.log("Telegram notification sent successfully.");
+            // showToast(`নোটিফিকেশন পাঠানো হয়েছে (ID: ${orderData.orderId})`, "success"); 
+            return { success: true };
+        } else {
+            console.error("Failed to send Telegram notification. Error:", result.message || "Unknown error");
+            // showToast(`নোটিফিকেশন পাঠানো যায়নি। Error: ${result.message}`, "error"); 
+            return { success: false, message: result.message };
+        }
+
+    } catch (error) {
+        console.error("Network error calling Netlify Function:", error);
+        // showToast("নোটিফিকেশন সিস্টেমে নেটওয়ার্ক ত্রুটি।", "error"); 
+        return { success: false, message: "Network or Server error" };
+    }
+}
+// === END: TELEGRAM NOTIFICATION FUNCTION (NEW CODE) ===
+
+
 // =================================================================
 // SECTION: CART MANAGEMENT
 // =================================================================
@@ -510,7 +547,7 @@ function getStatusText(status) { const statuses = { processing: 'প্রসে
 function getStatusColor(status) { const colors = { processing: { text: 'text-yellow-800', bg: 'bg-yellow-100' }, confirmed: { text: 'text-blue-800', bg: 'bg-blue-100' }, packaging: { text: 'text-purple-800', bg: 'bg-purple-100' }, shipped: { text: 'text-cyan-800', bg: 'bg-cyan-100' }, delivered: { text: 'text-green-800', bg: 'bg-green-100' }, failed: { text: 'text-red-800', bg: 'bg-red-100' }, cancelled: { text: 'text-gray-800', bg: 'bg-gray-200' } }; return colors[status] || colors.cancelled; }
 function calculateProgress(status) { const progressMap = { processing: 0, confirmed: 25, packaging: 50, shipped: 75, delivered: 100, failed: 0, cancelled: 0 }; return progressMap[status] ?? 0; }
 function getStatusIcon(status) { const icons = { processing: 'fas fa-cogs', confirmed: 'fas fa-check', packaging: 'fas fa-box-open', shipped: 'fas fa-truck', delivered: 'fas fa-home', failed: 'fas fa-times-circle', cancelled: 'fas fa-ban' }; return `<i class="${icons[status] || 'fas fa-question'}"></i>`; }
-function getStepIcon(status) { const icons = { processing: '1', confirmed: '2', packaging: '3', shipped: '4', delivered: '<i class="fas fa-check"></i>' }; return icons[status]; }
+function getStepIcon(status) { const icons = { processing: '1', confirmed: '2', 'packaging': '3', shipped: '4', delivered: '<i class="fas fa-check"></i>' }; return icons[status]; }
 
 
 // =================================================================
@@ -520,6 +557,7 @@ function getStepIcon(status) { const icons = { processing: '1', confirmed: '2', 
 Object.assign(window, {
     // Global Utilities
     showToast,
+    sendTelegramNotification, // <--- আপনার নতুন ফাংশন
     // Header UI
     openSidebar, closeSidebar, toggleSubMenuMobile, handleSubMenuItemClick,
     toggleSubMenuDesktop, openCartSidebar, closeCartSidebar, focusMobileSearch,
@@ -530,6 +568,7 @@ Object.assign(window, {
     buyNow, addToCart, updateQuantity, removeFromCart,
     // Product Detail
     showProductDetail, changeDetailQuantity, addToCartWithQuantity, buyNowWithQuantity,
+    initializeProductDetailPage, initializeOrderTrackPage, // order track init functions added to window
 });
 
 // =================================================================
