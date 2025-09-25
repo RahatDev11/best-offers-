@@ -4,16 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>অর্ডার ফর্ম - Any's Beauty Corner</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> <!-- Updated Font Awesome -->
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Updated jQuery -->
-    <!-- External Stylesheet -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="styles.css">
     <style>
-        /* আপনার আগের CSS কোড এখানে পেস্ট করুন */
+        /* আপনার পূর্বের সমস্ত CSS স্টাইল এখানে থাকবে */
         /* কাস্টম কালার */
         .bg-lipstick { background-color: #A52A2A; }
         .text-lipstick { color: #A52A2A; }
@@ -24,7 +20,7 @@
         /* ফর্ম ফিল্ড স্টাইল */
         .form-group { margin-bottom: 1.5rem; }
         .form-group label { display: block; font-size: 0.95rem; font-weight: 500; color: #4a5568; margin-bottom: 0.5rem; }
-        .form-group label .required-star { color: #ef4444; /* red-500 */ margin-left: 2px; }
+        .form-group label .required-star { color: #ef4444; margin-left: 2px; }
         .form-group input, .form-group textarea, .form-group select {
             width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 0.5rem; font-size: 1rem; color: #333; background: #fafafa; transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
@@ -51,10 +47,10 @@
         .checkout-items { margin-bottom: 1.5rem; }
         .checkout-item { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 0.625rem; }
         .checkout-item:last-child { border-bottom: none; margin-bottom: 0; }
-        .checkout-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 5px; background-color: #eee; } /* Added background for loading */
+        .checkout-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 5px; background-color: #eee; }
         .checkout-item-details { flex: 1; margin-left: 0.9375rem; }
         .checkout-item-details p { font-size: 0.95rem; color: #4a5568; margin-bottom: 0.3125rem; line-height: 1.4; }
-        .checkout-item-details p.item-name { font-weight: 600; color: #1f2937; } /* Make name bold */
+        .checkout-item-details p.item-name { font-weight: 600; color: #1f2937; }
 
 
         /* ডেলিভারি ফি এবং মোট মূল্য */
@@ -62,21 +58,18 @@
         .price-summary p { font-size: 0.95rem; color: #4a5568; margin-bottom: 0.5rem; display: flex; justify-content: space-between; }
         .price-summary p span:last-child { font-weight: 500; color: #374151; }
         .price-summary p.total-row { font-weight: 700; color: #1f2937; border-top: 1px solid #e2e8f0; padding-top: 0.75rem; margin-top: 0.5rem; margin-bottom: 0; font-size: 1.05rem; }
-        .price-summary p.total-row span:last-child { font-weight: 700; color: #A52A2A; } /* Highlight total price */
+        .price-summary p.total-row span:last-child { font-weight: 700; color: #A52A2A; }
 
         /* সাবমিট বাটন */
         .submit-btn {
-            width: 100%; padding: 0.875rem; background: #A52A2A; color: white; border: none; border-radius: 0.5rem; font-size: 1rem; font-weight: 600; /* Bolder text */ cursor: pointer; transition: background-color 0.3s ease, opacity 0.3s ease; display: inline-flex; align-items: center; justify-content: center; letter-spacing: 0.5px;
+            width: 100%; padding: 0.875rem; background: #A52A2A; color: white; border: none; border-radius: 0.5rem; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background-color 0.3s ease, opacity 0.3s ease; display: inline-flex; align-items: center; justify-content: center; letter-spacing: 0.5px;
         }
         .submit-btn:hover:not(:disabled) { background: #8B1A1A; }
         .submit-btn:disabled { background: #cccccc; cursor: not-allowed; opacity: 0.7; }
 
         /* অর্ডার লিস্ট লিঙ্ক */
-        .order-list-link { display: inline-flex; align-items:center; justify-content: center; text-align: center; margin-top: 1.25rem; color: #A52A2A; text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: color 0.3s ease, background-color 0.3s ease; width: 100%; padding: 0.6rem; border: 1px solid #f3d9d9; /* Lighter border */ border-radius: 0.5rem; background-color: #fff5f7; }
+        .order-list-link { display: inline-flex; align-items:center; justify-content: center; text-align: center; margin-top: 1.25rem; color: #A52A2A; text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: color 0.3s ease, background-color 0.3s ease; width: 100%; padding: 0.6rem; border: 1px solid #f3d9d9; border-radius: 0.5rem; background-color: #fff5f7; }
         .order-list-link:hover { color: #8B1A1A; background-color: #fdecec; border-color: #eebbbb; }
-
-        /* Required field indicator */
-        /* Included in label style */
 
         /* Hide scrollbar utility */
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -87,7 +80,7 @@
             .checkout-item img { width: 50px; height: 50px; }
             .checkout-item-details p { font-size: 0.9rem; }
             .radio-group { flex-direction: column; gap: 0.75rem; align-items: flex-start; }
-            h2 { font-size: 1.25rem; } /* Slightly smaller heading */
+            h2 { font-size: 1.25rem; }
             h3 { font-size: 1.1rem; }
         }
         @media (max-width: 480px) {
@@ -102,37 +95,29 @@
     </style>
 </head>
 <body class="bg-background">
-    <!-- Header Load -->
     <div id="header"></div>
 
-    <!-- Mobile Search Bar -->
-    <!-- Include your mobile search bar HTML if it's not part of header.html -->
-
-    <!-- Main Content -->
     <main class="p-4 pt-24 md:pt-28">
-        <!-- Form Container -->
         <div class="bg-white/60 backdrop-blur-md border border-white/40 rounded-lg shadow-xl p-4 md:p-6 max-w-2xl mx-auto">
             <h2 class="text-2xl font-bold text-center mb-6 text-lipstick">অর্ডার ফর্ম</h2>
 
-             <!-- Loading Indicator -->
-            <div id="loadingIndicator" class="hidden"></div>
+             <div id="loadingIndicator" class="hidden text-center p-4">
+                 <i class="fas fa-spinner fa-spin fa-2x text-lipstick"></i>
+                 <p class="text-gray-600 mt-2">লোড হচ্ছে...</p>
+            </div>
 
-            <!-- Login Prompt -->
-             <div id="loginPrompt" class="text-center p-6 text-red-600 hidden">
+            <div id="loginPrompt" class="text-center p-6 text-red-600 hidden">
                  <i class="fas fa-exclamation-circle fa-2x mb-3"></i>
                  <p>অর্ডার করার জন্য আপনাকে লগইন করতে হবে।</p>
                  <p>আপনাকে লগইন পেজে পাঠানো হচ্ছে...</p>
              </div>
 
-            <!-- Checkout Form (Initially Hidden) -->
             <form id="checkoutForm" class="hidden">
-                <!-- Checkout Items Display -->
                 <h3 class="text-lg font-semibold mb-3 text-gray-700">অর্ডার আইটেম</h3>
                 <div class="checkout-items mb-6 max-h-60 overflow-y-auto no-scrollbar border rounded-md p-2 bg-gray-50/50" id="checkoutItems">
                     <p class="text-center text-gray-500 italic p-4">কার্ট লোড হচ্ছে...</p>
                 </div>
 
-                <!-- Price Summary -->
                 <h3 class="text-lg font-semibold mb-3 text-gray-700">মূল্য বিবরণী</h3>
                 <div class="price-summary mb-6">
                      <p><span>সাব-টোটাল:</span> <span id="subTotalDisplay">০.০০ টাকা</span></p>
@@ -142,25 +127,21 @@
 
                 <h3 class="text-lg font-semibold mb-4 text-gray-700 border-t pt-5">ডেলিভারি তথ্য</h3>
 
-                <!-- Customer Name -->
                 <div class="form-group">
                     <label for="customerName">নাম<span class="required-star">*</span></label>
                     <input type="text" id="customerName" name="customerName" placeholder="আপনার নাম লিখুন" required>
                 </div>
 
-                <!-- Phone Number -->
                 <div class="form-group">
                     <label for="phoneNumber">ফোন নম্বর<span class="required-star">*</span></label>
                     <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="১১ ডিজিটের ফোন নম্বর দিন" pattern="01[3-9][0-9]{8}" title="অনুগ্রহ করে একটি বৈধ ১১ ডিজিটের বাংলাদেশী মোবাইল নম্বর দিন।" required>
                 </div>
 
-                <!-- Address -->
                 <div class="form-group">
                     <label for="address">পূর্ণ ঠিকানা<span class="required-star">*</span></label>
                     <textarea id="address" name="address" placeholder="বাসা/হোল্ডিং নং, রোড নং, এলাকা, থানা, জেলা" rows="3" required></textarea>
                 </div>
 
-                <!-- Delivery Location -->
                 <div class="form-group">
                     <label>ডেলিভারি এলাকা<span class="required-star">*</span></label>
                     <div class="radio-group">
@@ -175,7 +156,6 @@
                     </div>
                 </div>
 
-                <!-- Outside Dhaka Location Dropdown -->
                 <div id="outsideDhakaLocationGroup" class="form-group hidden">
                     <label for="outsideDhakaLocation">ঢাকার বাইরে জেলা<span class="required-star">*</span></label>
                     <select id="outsideDhakaLocation" name="outsideDhakaLocation">
@@ -245,20 +225,16 @@
                         <option value="Sylhet">Sylhet</option>
                         <option value="Tangail">Tangail</option>
                         <option value="Thakurgaon">Thakurgaon</option>
-                        <!-- Add more districts as needed -->
                     </select>
                 </div>
 
-                <!-- Delivery Note -->
                 <div class="form-group">
                     <label for="deliveryNote">ডেলিভারি নোট (ঐচ্ছিক)</label>
                     <textarea id="deliveryNote" name="deliveryNote" placeholder="ডেলিভারিম্যান এর জন্য কোনো বিশেষ নির্দেশনা থাকলে লিখুন" rows="2"></textarea>
                 </div>
 
-                <!-- Payment Section Heading -->
-                 <h3 class="text-lg font-semibold mb-4 text-gray-700 border-t pt-5">পেমেন্ট তথ্য</h3>
+                <h3 class="text-lg font-semibold mb-4 text-gray-700 border-t pt-5">পেমেন্ট তথ্য</h3>
 
-                <!-- Delivery Charge Payment Method (Conditional) -->
                 <div id="deliveryPaymentGroup" class="form-group hidden">
                     <label for="deliveryPaymentMethod">ডেলিভারি চার্জ পেমেন্ট মেথড (১৬০৳ অগ্রিম)<span class="required-star">*</span></label>
                     <select id="deliveryPaymentMethod" name="deliveryPaymentMethod">
@@ -270,37 +246,31 @@
                     <p class="text-xs text-gray-500 mt-1">ঢাকার বাইরের অর্ডারের জন্য ডেলিভারি চার্জ অগ্রিম প্রযোজ্য।</p>
                 </div>
 
-                 <!-- Payment Notice (Conditional) -->
                  <div id="paymentNotice" class="payment-notice">
                     নোট: অনুগ্রহ করে ডেলিভারি চার্জ <strong>১৬০ টাকা</strong> নিচের নম্বরে <strong>বিকাশ/নগদ/রকেট</strong> এর মাধ্যমে <strong>সেন্ড মানি</strong> করুন এবং নিচের ফিল্ডে আপনার নম্বর ও ট্রানজাকশন আইডি দিন। <br>
-                    <strong class="text-base">পেমেন্ট নম্বর: 01972580114</strong> <!-- !!! আপনার আসল নম্বর দিন !!! -->
+                    <strong class="text-base">পেমেন্ট নম্বর: 01972580114</strong>
                 </div>
 
-                <!-- Sender Payment Number (Conditional) -->
                 <div id="paymentNumberGroup" class="form-group hidden">
                     <label for="paymentNumber">আপনার পেমেন্ট নম্বর (যে নম্বর থেকে টাকা পাঠিয়েছেন)<span class="required-star">*</span></label>
                     <input type="tel" id="paymentNumber" name="paymentNumber" placeholder="১১ ডিজিটের মোবাইল নম্বর" pattern="01[3-9][0-9]{8}" title="১১ ডিজিটের মোবাইল নম্বর দিন।" >
                 </div>
 
-                <!-- Transaction ID (Conditional) -->
                 <div id="transactionIdGroup" class="form-group hidden">
                     <label for="transactionId">ট্রানজাকশন আইডি (TrxID)<span class="required-star">*</span></label>
                     <input type="text" id="transactionId" name="transactionId" placeholder="পেমেন্টের পর পাওয়া ট্রানজাকশন আইডি">
                 </div>
 
-                <!-- Product Payment Method (Fixed) -->
                 <div class="form-group">
                     <label for="productPaymentMethodDisplay">প্রোডাক্টের মূল্য পরিশোধ</label>
                     <input type="text" id="productPaymentMethodDisplay" name="productPaymentMethodDisplay" value="ক্যাশ অন ডেলিভারি (প্রোডাক্ট হাতে পেয়ে টাকা দেবেন)" readonly disabled>
                     <input type="hidden" id="productPaymentMethod" name="productPaymentMethod" value="cod">
                 </div>
 
-                <!-- Submit Button -->
                 <button type="submit" id="submitButton" class="submit-btn" disabled>
                     অর্ডার কনফার্ম করুন
                 </button>
 
-                <!-- Order List Link -->
                 <a href="order-track.html" class="order-list-link mt-4">
                    <i class="fas fa-list-alt mr-1"></i> আপনার সকল অর্ডার দেখুন
                 </a>
@@ -308,17 +278,14 @@
         </div>
     </main>
 
-    <!-- Footer Load -->
     <div id="footer"></div>
 
-    <!-- Social Media Floating Button -->
     <div class="fixed bottom-4 right-4 z-50">
         <button id="shareButton" class="bg-lipstick text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center mb-2 hover:bg-lipstick-dark transition-colors duration-300">
             <i class="fas fa-share-alt text-xl"></i>
         </button>
         <div id="socialIcons" class="hidden flex flex-col space-y-2">
-             <!-- Social Links with Titles and Transitions -->
-                         <a href="https://www.facebook.com/share/1PyLUzGE9P/" target="_blank" rel="noopener noreferrer" title="Facebook" class="bg-blue-600 hover:bg-blue-700 text-white w-10 h-10 rounded-full flex items-center justify-center transition-transform transform hover:scale-110"><i class="fab fa-facebook-f"></i></a>
+             <a href="https://www.facebook.com/share/1PyLUzGE9P/" target="_blank" rel="noopener noreferrer" title="Facebook" class="bg-blue-600 hover:bg-blue-700 text-white w-10 h-10 rounded-full flex items-center justify-center transition-transform transform hover:scale-110"><i class="fab fa-facebook-f"></i></a>
              <a href="https://www.instagram.com/anysbeautycorner/?utm_medium=copy_link" target="_blank" rel="noopener noreferrer" title="Instagram" class="bg-pink-500 hover:bg-pink-600 text-white w-10 h-10 rounded-full flex items-center justify-center transition-transform transform hover:scale-110"><i class="fab fa-instagram"></i></a>
              <a href="https://www.tiktok.com/@anysbeautycorner" target="_blank" rel="noopener noreferrer" title="TikTok" class="bg-black hover:bg-gray-800 text-white w-10 h-10 rounded-full flex items-center justify-center transition-transform transform hover:scale-110"><i class="fab fa-tiktok"></i></a>
              <a href="https://youtube.com/@anysbeautycorner?si=oXGtEuakP_SIPH_Q" target="_blank" rel="noopener noreferrer" title="YouTube" class="bg-red-600 hover:bg-red-700 text-white w-10 h-10 rounded-full flex items-center justify-center transition-transform transform hover:scale-110"><i class="fab fa-youtube"></i></a>
@@ -326,722 +293,9 @@
     </div>
 
 
-    <!-- Toast Notification Container -->
     <div id="toast-container" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-[100] w-11/12 max-w-md"></div>
 
-    <!-- Firebase SDK and App Logic -->
-    <script type="module">
-        // Firebase SDK Imports
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, set, push, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getMessaging, getToken, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
-
-        // --- Firebase Configuration ---
-        // !!! আপনার আসল Firebase কনফিগারেশন এখানে দিন !!!
-        const firebaseConfig = {
-             apiKey: "AIzaSyCVSzQS1c7H4BLhsDF_fW8wnqUN4B35LPA", // Replace
-             authDomain: "nahid-6714.firebaseapp.com",          // Replace
-             databaseURL: "https://nahid-6714-default-rtdb.asia-southeast1.firebasedatabase.app", // Replace
-             projectId: "nahid-6714",                     // Replace
-             storageBucket: "nahid-6714.firebasestorage.app",    // Replace
-             messagingSenderId: "505741217147",             // Replace
-             appId: "1:505741217147:web:25ed4e9f0d00e3c4d381de", // Replace
-             measurementId: "G-QZ7CTRKHCW"              // Optional
-         };
-
-        // --- VAPID Key for Push Notifications ---
-        // !!! আপনার আসল VAPID Key এখানে দিন !!!
-        const VAPID_KEY = 'YJmRy7RwHDamT_Wq9GSpJQm3Iexnkq1K9zvRFu3H_oI'; // Replace
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
-        const auth = getAuth(app);
-        let messaging = null;
-        isSupported().then((supported) => {
-            if (supported) {
-                try {
-                     messaging = getMessaging(app);
-                     console.log("Firebase Messaging initialized.");
-                     initializeForegroundMessageHandler(); // Initialize only if supported
-                } catch (err) {
-                     console.error("Error initializing messaging:", err);
-                }
-            } else {
-                console.warn("Firebase Messaging not supported in this browser.");
-            }
-        }).catch(err => {
-             console.error("Error checking messaging support:", err);
-        });
-
-
-        // Global Variables
-        let checkoutCart = []; // Holds items for this checkout session
-        let currentUser = null; // Stores the logged-in user object
-        let authInitialized = false; // Track if auth state check has run
-        let isBuyNowMode = false; // Track if it's a Buy Now checkout
-
-        // --- UI Elements ---
-        const checkoutForm = document.getElementById('checkoutForm');
-        const loadingIndicator = document.getElementById('loadingIndicator');
-        const loginPrompt = document.getElementById('loginPrompt');
-        const submitButton = document.getElementById('submitButton');
-        const checkoutItemsContainer = document.getElementById('checkoutItems');
-        const subTotalDisplay = document.getElementById('subTotalDisplay');
-        const deliveryFeeDisplay = document.getElementById('deliveryFeeDisplay');
-        const totalAmountDisplay = document.getElementById('totalAmountDisplay');
-
-        // --- Helper Functions ---
-
-        // Improved Toast Notification
-        function showToast(message, type = 'success', duration = 4000) {
-             const toastContainer = document.getElementById('toast-container');
-             if (!toastContainer) {
-                 console.warn("Toast container not found! Falling back to alert.");
-                 alert(message);
-                 return;
-             }
-             const toast = document.createElement('div');
-             const iconClass = type === 'success' ? 'fa-check-circle text-green-600' :
-                              type === 'error' ? 'fa-exclamation-triangle text-red-600' :
-                              'fa-info-circle text-blue-600'; // Info type
-
-             toast.className = `flex items-start p-4 rounded-lg shadow-lg mb-2 text-sm font-medium border w-full break-words ${
-                 type === 'success' ? 'bg-green-50 border-green-300 text-green-800' :
-                 type === 'error' ? 'bg-red-50 border-red-300 text-red-800' :
-                 'bg-blue-50 border-blue-300 text-blue-800' // Info type
-             }`;
-             toast.innerHTML = `
-                 <i class="fas ${iconClass} mr-3 mt-1 text-lg"></i>
-                 <span class="flex-1">${message}</span>
-                 <button class="ml-3 text-xl font-semibold leading-none opacity-70 hover:opacity-100 focus:outline-none" onclick="this.parentElement.remove()">×</button>
-                 `;
-
-             toastContainer.prepend(toast); // Prepend to show newest on top
-
-             setTimeout(() => {
-                 if (toast.parentElement) { // Check if still exists
-                     toast.style.opacity = '0';
-                     toast.style.transition = 'opacity 0.5s ease';
-                     setTimeout(() => toast.remove(), 500);
-                 }
-             }, duration);
-         }
-
-
-        // FCM Token Management (Request only once per session or if needed)
-        let fcmTokenRequested = false;
-        async function requestNotificationPermissionAndGetToken(userId) {
-            if (!messaging || fcmTokenRequested) return null; // Don't request if no support or already requested this session
-
-            fcmTokenRequested = true; // Mark as requested for this session
-            console.log("Attempting to request Notification permission and get FCM token...");
-
-            try {
-                const currentPermission = Notification.permission;
-                let finalPermission = currentPermission;
-
-                if (currentPermission === 'default') {
-                    console.log("Requesting notification permission...");
-                    finalPermission = await Notification.requestPermission();
-                }
-
-                if (finalPermission === 'granted') {
-                    console.log("Notification permission granted. Getting FCM token...");
-                    const token = await getToken(messaging, { vapidKey: VAPID_KEY });
-                    if (token) {
-                        console.log('FCM Token obtained:', token);
-                        // Save token to user profile in DB
-                        await set(ref(database, `users/${userId}/fcmToken`), token);
-                        console.log("FCM token saved to DB for user:", userId);
-                        return token;
-                    } else {
-                         console.warn("Failed to retrieve FCM token even with permission granted.");
-                         return null;
-                     }
-                } else {
-                    console.warn(`Notification permission was not granted: ${finalPermission}`);
-                    // Optional: Store preference that user denied/ignored prompt
-                    // await set(ref(database, `users/${userId}/notificationPref`), 'denied');
-                    return null;
-                }
-            } catch (error) {
-                console.error('Error in notification/FCM process:', error);
-                 if (error.code && (error.code.includes('permission') || error.code.includes('notifications-blocked'))) {
-                     console.warn("Browser or OS level notification blocking detected.");
-                 } else {
-                     // Avoid showing toast for permission issues, log instead
-                     // showToast('নোটিফিকেশন সেটআপে সমস্যা হয়েছে।', 'error');
-                 }
-                return null;
-            }
-        }
-
-
-        // Foreground Notification Handler
-        function initializeForegroundMessageHandler() {
-            if (!messaging) return;
-             try {
-                 onMessage(messaging, (payload) => {
-                     console.log('Foreground message received:', payload);
-                     const title = payload.notification?.title || 'নতুন বার্তা';
-                     const body = payload.notification?.body || '(কোনো বিবরণ নেই)';
-                     const options = {
-                         body: body,
-                         icon: payload.notification?.icon || '/images/logo.png' // Use your logo path
-                     };
-                     // Show in-app toast instead of system notification for foreground
-                     showToast(`"${title}": ${body}`, 'info', 6000);
-
-                     // Optional: If you *really* want a system notification even if app is open:
-                     // navigator.serviceWorker.getRegistration().then(reg => {
-                     //     if (reg) {
-                     //         reg.showNotification(title, options);
-                     //     }
-                     // });
-                 });
-                 console.log("Foreground message handler initialized.");
-             } catch (err) {
-                  console.error("Error setting up foreground message handler:", err);
-             }
-         }
-
-
-        // --- Core Logic ---
-
-        // Auth State Change Listener
-        onAuthStateChanged(auth, async (user) => {
-            authInitialized = true;
-            currentUser = user;
-            loadingIndicator.classList.add('hidden'); // Always hide loading indicator once checked
-
-            loginPrompt.classList.add('hidden'); // Always hide login prompt
-            checkoutForm.classList.remove('hidden'); // Always show the form
-            submitButton.disabled = true; // Keep disabled until cart loads and is valid
-            submitButton.textContent = 'আইটেম লোড হচ্ছে...';
-
-            if (user) {
-                console.log("User Logged In. UID:", user.uid, "Email:", user.email); // Log email too
-
-                // Prefill user info if available
-                const customerNameInput = document.getElementById('customerName');
-                if (customerNameInput && !customerNameInput.value && user.displayName) {
-                    customerNameInput.value = user.displayName;
-                    console.log("Prefilled name:", user.displayName);
-                }
-
-                // Attempt to get FCM token (non-blocking)
-                 requestNotificationPermissionAndGetToken(user.uid).catch(err => {
-                     console.error("Background FCM token request failed:", err); // Log errors from the async request
-                 });
-
-            } else {
-                console.log("User Not Logged In. Proceeding as guest.");
-                // For guest users, we can pre-fill from localStorage if we want, but for now, we'll just let them fill the form.
-            }
-
-            // Load checkout data for both logged-in users and guests
-            await loadCheckoutData(); // This will enable button if cart has items
-        });
-
-        // Load Checkout Data (Decides between Buy Now or Cart)
-        async function loadCheckoutData() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const productId = urlParams.get('id');
-            const quantityParam = urlParams.get('quantity');
-
-            checkoutCart = []; // Reset cart before loading
-
-            if (productId) {
-                isBuyNowMode = true;
-                console.log(`Mode: Buy Now. Product ID: ${productId}, Quantity: ${quantityParam || 'default 1'}`);
-                const quantity = parseInt(quantityParam) || 1;
-                await loadSingleProductForCheckout(productId, quantity);
-            } else {
-                isBuyNowMode = false;
-                console.log("Mode: Cart Checkout (from localStorage).");
-                loadCartItemsFromLocalStorage();
-            }
-
-            // Update UI and button state after loading attempt
-            displayCheckoutItems(); // Display whatever is in checkoutCart (could be empty)
-            updateCartTotal(); // Update totals
-
-            if(checkoutCart.length > 0) {
-                 submitButton.disabled = false;
-                 submitButton.textContent = 'অর্ডার কনফার্ম করুন';
-                 console.log("Checkout items loaded, submit button enabled.");
-                 // Initialize delivery fields based on default selection *after* cart loads
-                 handleDeliveryLocationChange();
-            } else {
-                  submitButton.disabled = true;
-                  submitButton.textContent = 'কার্টে কোনো আইটেম নেই';
-                  console.log("Checkout cart is empty, submit button disabled.");
-             }
-        }
-
-
-        // Load Single Product (Buy Now) - Refined error handling
-        async function loadSingleProductForCheckout(productId, quantity) {
-            checkoutItemsContainer.innerHTML = '<p class="text-center text-gray-500 italic p-4">প্রোডাক্ট লোড হচ্ছে...</p>';
-            try {
-                console.log(`Fetching product data for ID: ${productId}`);
-                const productRef = ref(database, `products/${productId}`);
-                const snapshot = await get(productRef);
-
-                if (snapshot.exists()) {
-                    const product = snapshot.val();
-                    console.log("Product data received:", product);
-
-                    // Validate essential data
-                    const price = parseFloat(product.price);
-                    if (!product.name || product.name.trim() === "") {
-                        throw new Error(`Product (ID: ${productId}) has an invalid or missing name.`);
-                    }
-                     if (isNaN(price) || price <= 0) {
-                         throw new Error(`Product (ID: ${productId}, Name: ${product.name}) has an invalid price: ${product.price}`);
-                     }
-                    const validQuantity = quantity > 0 ? quantity : 1; // Ensure quantity is at least 1
-
-                    const item = {
-                        id: productId,
-                        name: product.name,
-                        price: price,
-                        quantity: validQuantity,
-                        image: product.image ? String(product.image).split(',')[0].trim() : null // Ensure string before split
-                    };
-                    checkoutCart = [item]; // Set cart to this single item
-                    console.log("Single product added to checkoutCart:", checkoutCart);
-                } else {
-                    throw new Error(`Product with ID '${productId}' not found in Firebase.`);
-                }
-            } catch (error) {
-                console.error("Error loading single product:", error);
-                showToast(`প্রোডাক্ট লোড করতে সমস্যা হয়েছে: ${error.message}`, 'error');
-                checkoutCart = []; // Ensure cart is empty on error
-            }
-            // UI update happens in loadCheckoutData after this promise resolves/rejects
-        }
-
-
-        // Load Cart Items (Cart Checkout) - Refined parsing and validation
-        function loadCartItemsFromLocalStorage() {
-             const cartItemsJSON = localStorage.getItem('cartItems');
-             let items = [];
-             checkoutCart = []; // Reset cart first
-
-             if (cartItemsJSON) {
-                 try {
-                     items = JSON.parse(cartItemsJSON);
-                     if (!Array.isArray(items)) {
-                         console.warn("Cart data in localStorage is not an array. Clearing.");
-                         items = [];
-                         localStorage.removeItem('cartItems');
-                     }
-                 } catch (e) {
-                     console.error("Error parsing cart items from localStorage:", e);
-                     items = [];
-                     localStorage.removeItem('cartItems'); // Clear potentially corrupted data
-                 }
-             }
-
-             // Filter out invalid items and ensure correct types
-             checkoutCart = items.map(item => {
-                  // Basic validation for each item structure
-                  if (typeof item !== 'object' || item === null) return null;
-
-                  const price = parseFloat(item.price);
-                  const quantity = parseInt(item.quantity);
-
-                  if (!item.id || typeof item.name !== 'string' || item.name.trim() === "" || isNaN(price) || price <= 0 || isNaN(quantity) || quantity <= 0) {
-                      console.warn("Filtering out invalid cart item from localStorage:", item);
-                      return null; // Mark for removal
-                  }
-                  return {
-                      id: String(item.id), // Ensure ID is string
-                      name: item.name,
-                      price: price,
-                      quantity: quantity,
-                      image: item.image ? String(item.image).split(',')[0].trim() : null // Ensure string before split
-                  };
-             }).filter(item => item !== null); // Remove null entries
-
-             console.log("Cart items loaded from localStorage:", checkoutCart);
-             // UI update happens in loadCheckoutData after this function runs
-        }
-
-
-        // Display Items in the UI - Improved Styling
-        function displayCheckoutItems() {
-            checkoutItemsContainer.innerHTML = ''; // Clear previous
-            if (checkoutCart.length > 0) {
-                checkoutCart.forEach(item => {
-                    const imageUrl = item.image || 'https://via.placeholder.com/60'; // Default placeholder
-                    const price = item.price.toFixed(2);
-                    const itemTotal = (item.price * item.quantity).toFixed(2);
-
-                    const itemDiv = document.createElement('div');
-                    itemDiv.className = 'checkout-item bg-white rounded-md shadow-sm p-3';
-                    itemDiv.innerHTML = `
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <img src="${imageUrl}" alt="${item.name}" class="w-16 h-16 object-cover rounded-md" onerror="this.onerror=null; this.src='https://via.placeholder.com/60'; this.alt='ছবি লোড হয়নি';">
-                                <div class="ml-4">
-                                    <p class="item-name text-sm md:text-base">${item.name}</p>
-                                    <p class="text-sm md:text-base text-lipstick font-bold">${item.price} * ${item.quantity} = ${itemTotal}৳</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-end mt-2">
-                            <button type="button" onclick="decreaseQuantity('${item.id}')" class="bg-lipstick text-white px-2 py-1 rounded">-</button>
-                            <span class="text-gray-800 mx-2">${item.quantity}</span>
-                            <button type="button" onclick="increaseQuantity('${item.id}')" class="bg-lipstick text-white px-2 py-1 rounded">+</button>
-                        </div>
-                    `;
-                    checkoutItemsContainer.appendChild(itemDiv);
-                });
-            } else {
-                checkoutItemsContainer.innerHTML = '<p class="text-center text-gray-500 italic p-4">আপনার শপিং কার্ট খালি। হোম পেজ থেকে প্রোডাক্ট যোগ করুন।</p>';
-            }
-        }
-
-        window.increaseQuantity = function(productId) {
-            const item = checkoutCart.find(p => p.id === productId);
-            if (item) {
-                item.quantity++;
-                displayCheckoutItems();
-                updateCartTotal();
-            }
-        }
-
-        window.decreaseQuantity = function(productId) {
-            const item = checkoutCart.find(p => p.id === productId);
-            if (item && item.quantity > 1) {
-                item.quantity--;
-                displayCheckoutItems();
-                updateCartTotal();
-            } else if (item && item.quantity === 1) {
-                const itemIndex = checkoutCart.findIndex(p => p.id === productId);
-                checkoutCart.splice(itemIndex, 1);
-                displayCheckoutItems();
-                updateCartTotal();
-            }
-        }
-
-
-        // Update Price Summary UI - Consistent Formatting
-        function updateCartTotal() {
-             const deliveryLocationRadio = document.querySelector('input[name="deliveryLocation"]:checked');
-             const deliveryLocation = deliveryLocationRadio ? deliveryLocationRadio.value : 'insideDhaka';
-             const deliveryFee = deliveryLocation === 'insideDhaka' ? 70.00 : 160.00;
-             const cartSubTotal = checkoutCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-             const totalAmount = cartSubTotal + deliveryFee;
-
-             if (subTotalDisplay) subTotalDisplay.textContent = `${cartSubTotal.toFixed(2)} টাকা`;
-             if (deliveryFeeDisplay) deliveryFeeDisplay.textContent = `${deliveryFee.toFixed(2)} টাকা`;
-             if (totalAmountDisplay) totalAmountDisplay.textContent = `${totalAmount.toFixed(2)} টাকা`;
-         }
-
-
-        // Update Conditional Form Fields UI - Improved Safety & Reset
-        function updateDeliveryPaymentFields(deliveryLocation) {
-            // Get elements (assuming they exist based on HTML structure)
-            const deliveryPaymentGroup = document.getElementById('deliveryPaymentGroup');
-            const paymentNumberGroup = document.getElementById('paymentNumberGroup');
-            const transactionIdGroup = document.getElementById('transactionIdGroup');
-            const paymentNotice = document.getElementById('paymentNotice');
-            const outsideDhakaLocationGroup = document.getElementById('outsideDhakaLocationGroup');
-            const deliveryPaymentMethodSelect = document.getElementById('deliveryPaymentMethod');
-            const outsideDhakaLocationSelect = document.getElementById('outsideDhakaLocation');
-            const paymentNumberInput = document.getElementById('paymentNumber');
-            const transactionIdInput = document.getElementById('transactionId');
-
-            const isOutsideDhaka = deliveryLocation === 'outsideDhaka';
-
-            // Toggle visibility
-            outsideDhakaLocationGroup.classList.toggle('hidden', !isOutsideDhaka);
-            deliveryPaymentGroup.classList.toggle('hidden', !isOutsideDhaka);
-            paymentNotice.style.display = isOutsideDhaka ? 'block' : 'none';
-
-            // Determine if payment details should be shown
-            const selectedPaymentMethod = deliveryPaymentMethodSelect.value;
-            const showPaymentDetails = isOutsideDhaka && ['bkash', 'nagad', 'rocket'].includes(selectedPaymentMethod);
-            paymentNumberGroup.classList.toggle('hidden', !showPaymentDetails);
-            transactionIdGroup.classList.toggle('hidden', !showPaymentDetails);
-
-            // Set required attributes
-            outsideDhakaLocationSelect.required = isOutsideDhaka;
-            deliveryPaymentMethodSelect.required = isOutsideDhaka;
-            paymentNumberInput.required = showPaymentDetails;
-            transactionIdInput.required = showPaymentDetails;
-
-            // Reset values if visibility or main location changes
-             if (!isOutsideDhaka) {
-                 outsideDhakaLocationSelect.value = '';
-                 deliveryPaymentMethodSelect.value = '';
-             }
-             if (!showPaymentDetails || !isOutsideDhaka) {
-                  paymentNumberInput.value = '';
-                  transactionIdInput.value = '';
-             }
-             // No need to reset deliveryPaymentMethodSelect if isOutsideDhaka is true but showPaymentDetails is false
-
-            updateCartTotal(); // Recalculate total
-        }
-
-
-        // --- Event Handlers ---
-
-        // Delivery Location Change Handler
-        function handleDeliveryLocationChange(event) {
-            // event.target.value gives the value of the clicked radio
-             updateDeliveryPaymentFields(event.target.value);
-         }
-
-        // Delivery Payment Method Change Handler
-        function handleDeliveryPaymentMethodChange() {
-             const deliveryLocationRadio = document.querySelector('input[name="deliveryLocation"]:checked');
-             // Only update visibility of num/trxid if outside Dhaka is active
-             if (deliveryLocationRadio && deliveryLocationRadio.value === 'outsideDhaka') {
-                 updateDeliveryPaymentFields(deliveryLocationRadio.value);
-             }
-         }
-
-
-        // Order Form Submit Handler - **Aligned Data Structure**
-        async function handleOrderSubmit(event) {
-            event.preventDefault(); // Prevent default form submission
-            if (checkoutCart.length === 0) {
-                showToast('আপনার কার্ট খালি। অর্ডার করার জন্য অনুগ্রহ করে আইটেম যোগ করুন।', 'error');
-                return;
-            }
-
-            submitButton.disabled = true;
-            submitButton.textContent = 'আপনার অর্ডার প্রসেস করা হচ্ছে...';
-
-            // Get Form Data using FormData for reliability
-            const formData = new FormData(checkoutForm);
-            const customerName = formData.get('customerName')?.trim() || '';
-            const phoneNumber = formData.get('phoneNumber')?.trim() || '';
-            const address = formData.get('address')?.trim() || '';
-            const deliveryLocation = formData.get('deliveryLocation'); // 'insideDhaka' or 'outsideDhaka'
-            const outsideDhakaLocation = formData.get('outsideDhakaLocation'); // Value or empty string
-            const deliveryNote = formData.get('deliveryNote')?.trim() || '';
-            const deliveryPaymentMethod = formData.get('deliveryPaymentMethod'); // Value or empty string
-            const paymentNumber = formData.get('paymentNumber')?.trim() || '';
-            const transactionId = formData.get('transactionId')?.trim() || '';
-            const productPaymentMethod = formData.get('productPaymentMethod'); // Hidden field 'cod'
-
-
-            // --- Comprehensive Validation ---
-             let isValid = true;
-             const errors = [];
-             if (!customerName) errors.push("নাম প্রয়োজন।");
-             if (!phoneNumber) errors.push("ফোন নম্বর প্রয়োজন।");
-             else if (!/^01[3-9][0-9]{8}$/.test(phoneNumber)) errors.push("১১ ডিজিটের সঠিক ফোন নম্বর প্রয়োজন।");
-             if (!address) errors.push("ঠিকানা প্রয়োজন।");
-             if (!deliveryLocation) errors.push("ডেলিভারি এলাকা নির্বাচন করুন।"); // Should not happen with default checked
-
-             if (deliveryLocation === 'outsideDhaka') {
-                  if (!outsideDhakaLocation) errors.push("ঢাকার বাইরের জেলা নির্বাচন করুন।");
-                  if (!deliveryPaymentMethod) errors.push("ডেলিভারি চার্জের পেমেন্ট মেথড নির্বাচন করুন।");
-                  else if (['bkash', 'nagad', 'rocket'].includes(deliveryPaymentMethod)) {
-                      if (!paymentNumber) errors.push("আপনার পেমেন্ট নম্বর প্রয়োজন।");
-                      else if (!/^01[3-9][0-9]{8}$/.test(paymentNumber)) errors.push("১১ ডিজিটের সঠিক পেমেন্ট নম্বর প্রয়োজন।");
-                      if (!transactionId) errors.push("পেমেন্টের ট্রানজাকশন আইডি প্রয়োজন।");
-                  }
-             }
-
-             if (errors.length > 0) {
-                  showToast(`অনুগ্রহ করে ফর্মটি সঠিকভাবে পূরণ করুন: ${errors.join(' ')}`, 'error');
-                  // Focus logic can be added here if desired
-                  submitButton.disabled = false;
-                  submitButton.textContent = 'অর্ডার কনফার্ম করুন';
-                  return; // Stop submission
-              }
-
-
-            // --- Prepare Order Data (Matching User's Simpler Structure + Required Fields) ---
-            const deliveryFee = deliveryLocation === 'insideDhaka' ? 70.00 : 160.00;
-            const cartSubTotal = checkoutCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const totalAmount = cartSubTotal + deliveryFee;
-
-            const getGuestUserId = () => {
-                let userId = localStorage.getItem('tempUserId');
-                if (!userId) {
-                    userId = 'guest_' + Date.now().toString() + Math.random().toString(36).substr(2, 9);
-                    localStorage.setItem('tempUserId', userId);
-                }
-                return userId;
-            };
-
-            const userId = currentUser ? currentUser.uid : getGuestUserId();
-            const userEmail = currentUser ? currentUser.email : null;
-
-            const orderData = {
-                // --- Fields from User's Simpler Structure ---
-                customerName,
-                phoneNumber,
-                address,
-                deliveryLocation,
-                outsideDhakaLocation: deliveryLocation === 'outsideDhaka' ? outsideDhakaLocation : null,
-                deliveryNote: deliveryNote || null,
-                deliveryPaymentMethod: deliveryLocation === 'outsideDhaka' ? deliveryPaymentMethod : 'cod', // Use 'cod' if inside Dhaka
-                paymentNumber: deliveryLocation === 'outsideDhaka' && ['bkash', 'nagad', 'rocket'].includes(deliveryPaymentMethod) ? paymentNumber : null, // Store only if relevant
-                transactionId: deliveryLocation === 'outsideDhaka' && ['bkash', 'nagad', 'rocket'].includes(deliveryPaymentMethod) ? transactionId : null, // Store only if relevant
-                productPaymentMethod, // Should be 'cod'
-
-                // Cart items in the desired format
-                cartItems: checkoutCart.map(item => ({
-                    id: item.id,
-                    name: item.name,
-                    price: item.price,
-                    quantity: item.quantity,
-                    image: item.image // Already processed image URL
-                })),
-
-                deliveryFee,
-                totalAmount,
-                orderDate: new Date().toISOString(), // Use standard ISO format
-                advancePayment: deliveryLocation === 'outsideDhaka' ? deliveryFee : 0,
-
-                // --- Essential Fields from Complex Structure (for rules/queries) ---
-                userEmail: userEmail,
-                userId: userId,
-                status: 'pending' // Initial status is crucial
-            };
-
-            // NOTE: We are NOT including `orderId: Date.now()` because `push()` generates the ID.
-
-            console.log("Submitting Final Order Data Structure:", JSON.stringify(orderData, null, 2));
-
-            // --- Submit to Firebase using push() ---
-            try {
-                const ordersRef = ref(database, 'orders'); // Reference to the 'orders' list
-                const newOrderRef = await push(ordersRef, orderData); // Use push for unique ID
-                const newOrderId = newOrderRef.key; // Get the generated ID from Firebase
-
-                console.log("Order submitted successfully! Firebase Auto-Generated Order ID:", newOrderId);
-
-                const successMsg = `আপনার অর্ডার (ID: ${newOrderId}) সফলভাবে প্লেস করা হয়েছে।`;
-                showToast(successMsg, 'success', 5000); // Show longer success message
-
-                // Clear relevant data and reset form
-                 if (!isBuyNowMode) { // Clear localStorage only if it was a cart checkout
-                    console.log("Clearing localStorage cartItems (Cart Mode).");
-                    localStorage.removeItem('cartItems');
-                 } else {
-                     console.log("Skipping localStorage clear (Buy Now Mode).");
-                 }
-
-                checkoutCart = []; // Clear the internal cart array
-                displayCheckoutItems(); // Update UI to show empty cart
-                updateCartTotal(); // Update totals to zero
-                checkoutForm.reset(); // Reset form fields
-
-                // Reset delivery location to default and update conditional fields
-                 document.querySelector('input[name="deliveryLocation"][value="insideDhaka"]').checked = true;
-                 updateDeliveryPaymentFields('insideDhaka');
-
-                 // Prefill name again if available after reset
-                 if (currentUser && currentUser.displayName) {
-                    document.getElementById('customerName').value = currentUser.displayName;
-                  }
-
-                 // Disable button again after successful submission and reset
-                  submitButton.disabled = true;
-                  submitButton.textContent = 'অর্ডার সফল হয়েছে!';
-
-
-                 // Optionally redirect after a delay
-                 // setTimeout(() => { window.location.href = `order-success.html?orderId=${newOrderId}`; }, 2500);
-
-
-            } catch (error) {
-                console.error("Firebase order submission failed:", error);
-                // Provide more context if possible
-                showToast(`অর্ডার সাবমিট করার সময় একটি ত্রুটি হয়েছে। (${error.code || error.message}) অনুগ্রহ করে আবার চেষ্টা করুন।`, 'error');
-                 // Re-enable button on failure to allow retry
-                 submitButton.disabled = false;
-                 submitButton.textContent = 'অর্ডার কনফার্ম করুন';
-            }
-            // The finally block is removed as the button state is handled within try/catch
-        }
-
-
-        // Setup Share Button Toggle
-        function setupShareButton() {
-            const shareButton = document.getElementById('shareButton');
-            const socialIcons = document.getElementById('socialIcons');
-            if (!shareButton || !socialIcons) return;
-            shareButton.addEventListener('click', (e) => {
-                e.stopPropagation(); socialIcons.classList.toggle('hidden');
-            });
-            // Close when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!shareButton.contains(e.target) && !socialIcons.contains(e.target)) {
-                    socialIcons.classList.add('hidden');
-                }
-            });
-        }
-
-        // --- Initial Setup on DOM Load ---
-        document.addEventListener("DOMContentLoaded", () => {
-            console.log("DOM fully loaded and parsed.");
-            loadingIndicator.classList.add('hidden');
-            checkoutForm.classList.add('hidden');    // Hide form initially
-            loginPrompt.classList.add('hidden');   // Hide login prompt initially
-
-            // Load Header/Footer using jQuery
-             try {
-                  $("#header").load("header.html", (response, status, xhr) => {
-                     if (status === "error") console.error("Header load failed:", xhr.status, xhr.statusText);
-                     else console.log("Header loaded successfully.");
-                 });
-                 $("#footer").load("footer.html", (response, status, xhr) => {
-                      if (status === "error") console.error("Footer load failed:", xhr.status, xhr.statusText);
-                      else console.log("Footer loaded successfully.");
-                 });
-             } catch (e) {
-                 console.error("Error initiating header/footer load:", e);
-             }
-
-
-            // Attach Event Listeners to form elements *after* ensuring form exists
-            if (checkoutForm) {
-                document.querySelectorAll('input[name="deliveryLocation"]').forEach(radio => {
-                    radio.addEventListener('change', handleDeliveryLocationChange);
-                });
-                const deliveryMethodSelect = document.getElementById('deliveryPaymentMethod');
-                if (deliveryMethodSelect) {
-                    deliveryMethodSelect.addEventListener('change', handleDeliveryPaymentMethodChange);
-                }
-                checkoutForm.addEventListener('submit', handleOrderSubmit);
-                console.log("Form event listeners attached.");
-            } else {
-                 console.error("Checkout form not found on DOMContentLoaded!");
-            }
-
-
-            // Setup other UI interactions
-            setupShareButton();
-
-            // Timeout for auth state check (Fallback)
-            setTimeout(() => {
-                 if (!authInitialized) {
-                     console.warn("Auth state check timed out after 7 seconds.");
-                     loadingIndicator.classList.add('hidden');
-                     if (!currentUser) { // Only show error if user is still not determined
-                        loginPrompt.classList.add('hidden'); // Hide potential redirect message
-                        showToast("ব্যবহারকারী সেশন লোড করতে সমস্যা হচ্ছে। ইন্টারনেট সংযোগ পরীক্ষা করে পেজ রিফ্রেশ করুন।", "error");
-                     }
-                 }
-             }, 7000); // 7 seconds timeout
-
-        });
-
-    </script>
+    <script type="module" src="./order-form-logic.js"></script>
 
 </body>
 </html>
