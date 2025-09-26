@@ -6,8 +6,10 @@ const fetch = require('node-fetch');
 // ===============================================
 // ১. আপনার টেলিগ্রামের তথ্য
 // ===============================================
-const BOT_TOKEN = '7516151873:AAESiHvoSJovELfQ_9HrDv-25BQuBFNYnCs'; 
-const CHAT_ID = '6247184686';
+// For local development, you can use a .env file with this variable.
+// In Netlify, set this in the build & deploy environment variables.
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '7516151873:AAESiHvoSJovELfQ_9HrDv-25BQuBFNYnCs'; 
+const CHAT_ID = process.env.TELEGRAM_CHAT_ID || '6247184686';
 
 // Helper function to format cart items
 function formatCartItems(cartItems) {

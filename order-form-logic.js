@@ -405,9 +405,10 @@ async function handleOrderSubmit(event) {
         sendTelegramNotification(orderData);
         // ==================================
 
-        // 5. Clear Cart (if not Buy Now AND if logged in)
-        if (!isBuyNowMode && !orderData.isGuest) {
-            // Only clear the cart if the user was logged in (not a GUEST)
+        // 5. Clear Cart
+        if (orderData.isGuest) {
+            localStorage.removeItem('cartItems');
+        } else if (!isBuyNowMode) {
             await set(ref(database, `carts/${window.currentUserId}`), null);
         }
         
@@ -523,23 +524,18 @@ function initializeOrderForm() {
     loadingIndicator.classList.add('hidden');
     checkoutForm.classList.remove('hidden');
 
-    // Check if user is logged in (optional, for data retrieval/pre-filling only)
     onAuthStateChanged(auth, user => {
         if (user) {
-            // User is logged in, use their details
             window.currentUserId = user.uid;
             window.currentUserEmail = user.email;
-
-            // Fetch profile to pre-fill form
             fetchUserProfile(user.uid);
-            // Initialize checkout (loads cart for logged-in user)
             initializeCheckout(user.uid);
-
         } else {
-            // User is NOT logged in (Guest). Use default GUEST_ID.
-            // Initialize checkout (loads Buy Now product, or shows empty cart for guests)
-            initializeCheckout(null);
-            // Fallback for form initialization if no profile was fetched
+            // Guest user
+            const localCart = localStorage.getItem('cartItems');
+            checkoutCart = localCart ? JSON.parse(localCart) : [];
+            renderCheckoutItems(checkoutCart);
+            calculateAndDisplayPrices(checkoutCart);
             handleDeliveryLocationChange();
         }
     });

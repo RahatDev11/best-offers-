@@ -386,14 +386,20 @@ function filterProducts(category) {
 // SECTION: HEADER & SIDEBAR UI CONTROLS
 // =================================================================
 
-function openSidebar() {
-    document.getElementById('sidebarOverlay')?.classList.remove('hidden');
-    document.getElementById('sidebar')?.classList.remove('-translate-x-full');
-};
+function openSidebar(event) {
+    event.stopPropagation();
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const sidebar = document.getElementById('sidebar');
+    if (sidebarOverlay) sidebarOverlay.classList.remove('hidden');
+    if (sidebar) sidebar.classList.remove('-translate-x-full');
+}
+
 function closeSidebar() {
-    document.getElementById('sidebarOverlay')?.classList.add('hidden');
-    document.getElementById('sidebar')?.classList.add('-translate-x-full');
-};
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const sidebar = document.getElementById('sidebar');
+    if (sidebarOverlay) sidebarOverlay.classList.add('hidden');
+    if (sidebar) sidebar.classList.add('-translate-x-full');
+}
 function toggleSubMenuMobile(event) {
     event.stopPropagation();
     document.getElementById('subMenuMobile')?.classList.toggle('hidden');
@@ -582,6 +588,36 @@ function main() {
             console.log("Header loaded successfully.");
             onAuthStateChanged(auth, user => updateLoginButton(user));
             loadCart();
+
+            const mobileMenuButton = document.getElementById('mobileMenuButton');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const sidebar = document.getElementById('sidebar');
+            const closeSidebarButton = document.getElementById('closeSidebarButton');
+
+            if (mobileMenuButton) {
+                mobileMenuButton.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    openSidebar();
+                });
+            }
+
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', () => {
+                    closeSidebar();
+                });
+            }
+
+            if (closeSidebarButton) {
+                closeSidebarButton.addEventListener('click', () => {
+                    closeSidebar();
+                });
+            }
+
+            if (sidebar) {
+                sidebar.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                });
+            }
         });
         $("#footer").load("footer.html");
     }
@@ -625,7 +661,7 @@ document.addEventListener('DOMContentLoaded', main);
 
 // গ্লোবাল ক্লিক হ্যান্ডলার
 document.addEventListener("click", (event) => {
-    if (!event.target.closest('#sidebar') && !event.target.closest('button[onclick="openSidebar()"]')) closeSidebar();
+    if (event.target.id === 'sidebarOverlay') closeSidebar();
     if (!event.target.closest('#cartSidebar') && !event.target.closest('#cartButton')) closeCartSidebar();
     if (!event.target.closest('#desktopSubMenuBar') && !event.target.closest('button[onclick="toggleSubMenuDesktop()"]')) document.getElementById('desktopSubMenuBar')?.classList.add('hidden');
     
