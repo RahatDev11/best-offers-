@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>আমার অর্ডারসমূহ - Any's Beauty Corner</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="bg-gray-100">
@@ -34,125 +35,6 @@
 
     <div id="footer"></div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCVSzQS1c7H4BLhsDF_fW8wnqUN4B35LPA",
-            authDomain: "nahid-6714.firebaseapp.com",
-            databaseURL: "https://nahid-6714-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "nahid-6714",
-            storageBucket: "nahid-6714.appspot.com",
-            messagingSenderId: "505741217147",
-            appId: "1:505741217147:web:25ed4e9f0d00e3c4d381de",
-            measurementId: "G-QZ7CTRKHCW"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
-
-        async function loadPartials() {
-            try {
-                const [headerResponse, footerResponse] = await Promise.all([
-                    fetch('header.html'),
-                    fetch('footer.html')
-                ]);
-                if (headerResponse.ok) document.getElementById('header').innerHTML = await headerResponse.text();
-                if (footerResponse.ok) document.getElementById('footer').innerHTML = await footerResponse.text();
-            } catch (error) {
-                console.error('Error loading partials:', error);
-            }
-        }
-
-        function getStatusInfo(status) {
-            const statuses = {
-                'Pending': { text: 'পেন্ডিং', color: 'bg-yellow-500' },
-                'Confirmed': { text: 'কনফার্মড', color: 'bg-blue-500' },
-                'Processing': { text: 'প্রসেসিং', color: 'bg-indigo-500' },
-                'Shipped': { text: 'শিপড', color: 'bg-purple-500' },
-                'Delivered': { text: 'ডেলিভারি সম্পন্ন', color: 'bg-green-500' },
-                'Cancelled': { text: 'বাতিল হয়েছে', color: 'bg-red-500' },
-                'Returned': { text: 'ফেরত এসেছে', color: 'bg-gray-500' }
-            };
-            return statuses[status] || { text: 'অজানা', color: 'bg-gray-400' };
-        }
-
-        function displayOrder(order) {
-            const container = document.getElementById('orderListContainer');
-            const statusInfo = getStatusInfo(order.orderStatus);
-
-            const orderCard = document.createElement('div');
-            orderCard.className = 'p-4 hover:bg-gray-50 transition-colors cursor-pointer';
-            orderCard.onclick = () => {
-                window.location.href = `order-track.html?orderId=${order.orderId}`;
-            };
-
-            let itemsSummary = order.items.map(item => `${item.name} (x${item.quantity})`).join(', ');
-            if (itemsSummary.length > 100) {
-                itemsSummary = itemsSummary.substring(0, 100) + '...';
-            }
-
-            orderCard.innerHTML = `
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="font-bold text-lg text-gray-800">অর্ডার #${order.orderId}</p>
-                        <p class="text-sm text-gray-500">${new Date(order.timestamp).toLocaleString('bn-BD')}</p>
-                        <p class="mt-2 text-gray-700">${itemsSummary}</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="font-semibold text-lg">${order.totalAmount.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</p>
-                        <span class="mt-1 inline-block text-white text-xs font-semibold px-2 py-1 rounded-full ${statusInfo.color}">${statusInfo.text}</span>
-                    </div>
-                </div>
-            `;
-            container.appendChild(orderCard);
-        }
-
-        async function loadMyOrders() {
-            const loadingIndicator = document.getElementById('loadingIndicator');
-            const noOrdersMessage = document.getElementById('noOrdersMessage');
-            const orderListContainer = document.getElementById('orderListContainer');
-
-            const myOrderIds = JSON.parse(localStorage.getItem('myOrders')) || [];
-
-            if (myOrderIds.length === 0) {
-                loadingIndicator.classList.add('hidden');
-                noOrdersMessage.classList.remove('hidden');
-                return;
-            }
-
-            try {
-                const orderPromises = myOrderIds.map(orderId => {
-                    const orderRef = ref(database, 'orders/' + orderId);
-                    return get(orderRef);
-                });
-
-                const orderSnapshots = await Promise.all(orderPromises);
-                
-                const orders = orderSnapshots
-                    .map(snapshot => snapshot.exists() ? snapshot.val() : null)
-                    .filter(order => order !== null)
-                    .sort((a, b) => b.timestamp - a.timestamp); // Newest first
-
-                if (orders.length > 0) {
-                    orders.forEach(order => displayOrder(order));
-                } else {
-                    noOrdersMessage.classList.remove('hidden');
-                }
-
-            } catch (error) {
-                console.error("Error fetching orders:", error);
-                orderListContainer.innerHTML = '<p class="text-red-500 text-center py-8">অর্ডার লোড করার সময় একটি ত্রুটি হয়েছে।</p>';
-            } finally {
-                loadingIndicator.classList.add('hidden');
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            loadPartials();
-            loadMyOrders();
-        });
-    </script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>

@@ -1,6 +1,7 @@
+/* Order Form Page Styles */
 /* কাস্টম কালার */
 .bg-brushstroke { background-color: #F4A7B9; }
-.text-lipstick { color: black; }
+.text-lipstick { color: #A52A2A; }
 .bg-lipstick { background-color: #A52A2A; }
 .border-lipstick { border-color: #A52A2A; }
 .hover\:bg-lipstick-dark:hover { background-color: #8B1A1A; }
@@ -8,507 +9,63 @@
 .text-highlight { color: black; }
 .bg-background { background-color: #FFF5F7; }
 
-/* হোম সেকশন */
-#home {
-    background-image: url('welcome.jpg'); /* আপনার ছবির URL দিন */
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    padding: 0rem;
+/* ফর্ম ফিল্ড স্টাইল */
+.form-group { margin-bottom: 1.5rem; }
+.form-group label { display: block; font-size: 0.95rem; font-weight: 500; color: #4a5568; margin-bottom: 0.5rem; }
+.form-group label .required-star { color: #ef4444; margin-left: 2px; }
+.form-group input, .form-group textarea, .form-group select {
+    width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 0.5rem; font-size: 1rem; color: #333; background: #fafafa; transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+    border-color: #A52A2A; box-shadow: 0 0 0 3px rgba(165, 42, 42, 0.1); outline: none;
+}
+.form-group textarea { resize: vertical; }
+.form-group select {
+    -webkit-appearance: none; -moz-appearance: none; appearance: none;
+    background: url('data:image/svg+xml;utf8,<svg fill="gray" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center;
+    background-size: 20px; background-color: #fafafa;
+}
+.form-group input[disabled], .form-group select[disabled], .form-group input[readonly] { background-color: #f3f4f6; cursor: not-allowed; opacity: 0.7; }
 
-.glass-effect {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    padding: 2rem;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
+/* রেডিও বাটন স্টাইল */
+.radio-group { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+.radio-group label { display: flex; align-items: center; font-size: 0.95rem; color: #4a5568; margin-bottom: 0; cursor:pointer; }
+.radio-group input[type="radio"] { accent-color: #A52A2A; margin-right: 0.5rem; }
 
-#home h1,
-#home p {
-    color: black;
-    text-shadow: none;
-}
+/* পেমেন্ট নোটিশ */
+.payment-notice { background: #fef2f2; padding: 0.75rem; border-radius: 0.5rem; font-size: 0.9rem; color: #dc2626; margin-bottom: 1.5rem; display: none; border: 1px solid #fecaca; }
 
-#home button {
-    color: white;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
+/* কার্ট আইটেম স্টাইল */
+.checkout-items { margin-bottom: 1.5rem; }
+.checkout-item { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-bottom: 1px solid #e2e8f0; margin-bottom: 0.625rem; }
+.checkout-item:last-child { border-bottom: none; margin-bottom: 0; }
+.checkout-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 5px; background-color: #eee; }
+.checkout-item-details { flex: 1; margin-left: 0.9375rem; }
+.checkout-item-details p { font-size: 0.95rem; color: #4a5568; margin-bottom: 0.3125rem; line-height: 1.4; }
+.checkout-item-details p.item-name { font-weight: 600; color: #1f2937; }
 
-/* মোডাল স্টাইল */
-#loginModal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
 
-#loginModal.hidden {
-    display: none;
-}
+/* ডেলিভারি ফি এবং মোট মূল্য */
+.price-summary { background: #f9fafb; padding: 0.9375rem; border-radius: 0.5rem; margin-bottom: 1.5rem; border: 1px solid #e5e7eb; }
+.price-summary p { font-size: 0.95rem; color: #4a5568; margin-bottom: 0.5rem; display: flex; justify-content: space-between; }
+.price-summary p span:last-child { font-weight: 500; color: #374151; }
+.price-summary p.total-row { font-weight: 700; color: #1f2937; border-top: 1px solid #e2e8f0; padding-top: 0.75rem; margin-top: 0.5rem; margin-bottom: 0; font-size: 1.05rem; }
+.price-summary p.total-row span:last-child { font-weight: 700; color: #A52A2A; }
 
-.login-modal-content {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(20px);
-    border-radius: 8px;
-    padding: 20px;
-    width: 90%;
-    max-width: 400px;
-    position: relative;
-    margin: 0 auto;
-    top: 20%;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+/* সাবমিট বাটন */
+.submit-btn {
+    width: 100%; padding: 0.875rem; background: #A52A2A; color: white; border: none; border-radius: 0.5rem; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background-color 0.3s ease, opacity 0.3s ease; display: inline-flex; align-items: center; justify-content: center; letter-spacing: 0.5px;
 }
+.submit-btn:hover:not(:disabled) { background: #8B1A1A; }
+.submit-btn:disabled { background: #cccccc; cursor: not-allowed; opacity: 0.7; }
 
-.close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 24px;
-    cursor: pointer;
-    color: black;
-}
+/* অর্ডার লিস্ট লিঙ্ক */
+.order-list-link { display: inline-flex; align-items:center; justify-content: center; text-align: center; margin-top: 1.25rem; color: #A52A2A; text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: color 0.3s ease, background-color 0.3s ease; width: 100%; padding: 0.6rem; border: 1px solid #f3d9d9; border-radius: 0.5rem; background-color: #fff5f7; } 
+.order-list-link:hover { color: #8B1A1A; background-color: #fdecec; border-color: #eebbbb; }
 
-.close:hover {
-    color: black;
-}
-
-/* সার্চ বার স্টাইল */
-.search-bar {
-    position: relative;
-    width: 100%;
-    max-width: 400px;
-    z-inde:ConcurrentModificationException 1000;
-}
-
-.search-bar input {
-    width: 100%;
-    padding: 8px 32px 8px 12px;
-    border: 1px solid #e2e8f0;
-    border-radius: 4px;
-    font-size: 14px;
-    color: black;
-    outline: none;
-    background-color: white;
-}
-
-.search-bar input::placeholder {
-    color: #808080;
-}
-
-.search-bar .fa-search {
-    position: absolute;
-    top: 50%;
-    left: 10px;
-    transform: translateY(-50%);
-    color: #808080;
-    pointer-events: none;
-}
-
-/* সার্চ রেজাল্ট স্টাইল */
-#searchResults, 
-#searchResultsDesktop {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    max-height: 200px;
-    overflow-y: auto;
-    background-color: white;
-    border: 0; /* Change this line */
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    color: black;
-    margin-top: 4px;
-    z-index: 1000;
-}
-#searchResults.hidden,
-#searchResultsDesktop.hidden {
-    display: none;
-}
-
-#searchResultsDesktop .search-item {
-    padding: 8px 12px;
-    border-bottom: 1px solid #e2e8f0;
-    cursor: pointer;
-    color: black;
-}
-
-#searchResultsDesktop .search-item:hover {
-    background-color: #f7fafc;
-}
-
-/* সাইডবারের জন্য এনিমেশন */
-@keyframes slideInWithBounce {
-    0% { transform: translateX(-100%); }
-    70% { transform: translateX(10%); }
-    80% { transform: translateX(-5%); }
-    90% { transform: translateX(5%); }
-    100% { transform: translateX(0); }
-}
-
-#sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 80%;
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(10px);
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-    transform: translateX(-100%);
-    transition: transform 0.5s ease-in-out;
-    z-index: 50;
-    animation: slideInWithBounce 0.8s ease-out forwards;
-}
-
-#sidebar.slide-in {
-    transform: translateX(0);
-}
-
-#sidebar ul li a,
-#sidebar ul li button {
-    display: block;
-    padding: 12px 16px;
-    margin: 8px;
-    background: rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(5px);
-    color: #1a202c;
-    text-decoration: none;
-    transition: all 0.3s ease-in-out;
-    width: 100%;
-    text-align: left;
-}
-
-#sidebar ul li a:hover,
-#sidebar ul li button:hover {
-    background: rgba(255, 255, 255, 0.5);
-    transform: translateX(10px);
-}
-
-#subMenuMobile {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(5px);
-    border-radius: 12px;
-    margin-top: 8px;
-    padding: 8px;
-    display: none;
-}
-
-#subMenuMobile:not(.hidden) {
-    display: block;
-}
-
-#subMenuMobile a {
-    display: block;
-    padding: 8px 12px;
-    margin: 4px 0;
-    background: #FF99CC;
-    backdrop-filter: blur(3px);
-    border-radius: 8px;
-    color: #333;
-    text-decoration: none;
-    transition: all 0.3s ease-in-out;
-}
-
-#subMenuMobile a:hover {
-    background: rgba(255, 255, 255, 0.5);
-    transform: translateX(5px);
-}
-
-#desktopSubMenuBar {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(20px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    padding: 8px;
-    z-index: 40;
-    transform: translateY(-20px);
-    opacity: 0;
-    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
-}
-
-#desktopSubMenuBar:not(.hidden) {
-    display: flex;
-    flex-direction: row;
-    gap: 8px;
-    transform: translateY(0);
-    opacity: 1;
-    animation: bounce 0.5s ease-in-out;
-}
-
-@keyframes bounce {
-    0% { transform: translateY(100); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0); }
-}
-
-#desktopSubMenuBar a {
-    display: block;
-    padding: 8px 12px;
-    color: #2d3748;
-    border-radius: 6px;
-    background: #FF99CC;
-    backdrop-filter: blur(5px);
-    transition: background 0.3s ease;
-}
-
-#desktopSubMenuBar a:hover {
-    background: rgba(255, 255, 255, 0.5);
-}
-
-#subMenuMobile.open {
-    display: block;
-}
-
-/* স্টক স্ট্যাটাস স্টাইল */
-.in-stock {
-    color: #38a169;
-    font-weight: 600;
-}
-
-.out-of-stock {
-    color: #e53e3e;
-    font-weight: 600;
-}
-
-/* পরিমাণ ড্রপডাউন স্টাইল */
-select#productQuantity {
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 0.5rem center;
-    background-size: 1.5em;
-}
-
-/* সাইডবার ওভারলে স্টাইল */
-#sidebarOverlay {
-    display: none;
-}
-
-#sidebarOverlay.active {
-    display: block;
-}
-
-/* কার্ট সাইডবার স্টাইল */
-.cart-sidebar {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 80%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
-    transform: translateX(100%);
-    transition: transform 0.3s ease-in-out;
-    z-index: 1000;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-}
-
-.cart-sidebar:not(.translate-x-full) {
-    transform: translateX(0);
-}
-
-.cart-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.cart-header h2 {
-    font-size: 1.25rem;
-    font-weight: bold;
-    color: #1f2937;
-}
-
-.close-btn {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: black;
-}
-
-.close-btn:hover {
-    color: black;
-}
-
-.cart-items {
-    flex: 1;
-    overflow-y: auto;
-    padding: 1rem;
-}
-
-.cart-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1rem;
-    background: #FF99CC;
-    backdrop-filter: blur(5px);
-    border-radius: 12px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.cart-item img {
-    width: 60px;
-    height: 60px;
-    object-fit: cover;
-    border-radius: 8px;
-}
-
-.cart-item h3 {
-    font-size: 1rem;
-    font-weight: bold;
-    color: #1f2937;
-}
-
-.cart-item p {
-    font-size: 0.875rem;
-    color: #ef4444;
-    font-weight: bold;
-}
-
-.cart-item button {
-    background: #ef4444;
-    color: white;
-    border: none;
-    padding: 0.5rem;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-.cart-item button:hover {
-    background: #dc2626;
-}
-
-    .cart-footer {
-    padding: 1rem;
-    border-top: 1px solid #e5e7eb;
-    text-align: center;
-    margin-top: 20px;
-    background-color: #f4a7b9;
-}
-.cart-footer p {
-    font-size: 1.125rem;
-    font-weight: bold;
-    color: #ffffff;
-    margin-bottom: 1rem;
-}
-
-.checkout-btn {
-    background: #f4a7b9;
-    color: white;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    cursor: pointer;
-    width: 100%;
-    font-size: 1rem;
-    transition: background-color 0.3s ease;
-}
-
-.checkout-btn:hover {
-    background: #E093A5;
-}
-
-.cart-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
-    display: none;
-}
-
-#cartSidebar:not(.translate-x-full) + #cartOverlay {
-    display: block;
-}
-
-/* টোস্ট নোটিফিকেশন স্টাইল */
-#toast {
-    position: fixed;
-    bottom: 4rem;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #A52A2A;
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    transition: opacity 0.3s ease;
-}
-
-#toast.hidden {
-    opacity: 0;
-}
-
-/* Skeleton Loader Styles */
-.skeleton {
-    background-color: #e0e0e0;
-    border-radius: 4px;
-    animation: shimmer 1.5s infinite linear;
-}
-
-.skeleton-img {
-    height: 192px; /* h-48 */
-    width: 100%;
-}
-
-.skeleton-title {
-    height: 28px; /* text-lg */
-    width: 75%;
-    margin-bottom: 0.5rem;
-}
-
-.skeleton-price {
-    height: 24px; /* text-lipstick */
-    width: 50%;
-    margin-bottom: 1rem;
-}
-
-.skeleton-desc {
-    height: 40px; /* description */
-    width: 100%;
-    margin-bottom: 1rem;
-}
-
-.skeleton-button {
-    height: 20px;
-    width: 30%;
-}
-
-@keyframes shimmer {
-    0% {
-        background-color: #e0e0e0;
-    }
-    50% {
-        background-color: #f0f0f0;
-    }
-    100% {
-        background-color: #e0e0e0;
-    }
-}
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
 /* Responsive */
 @media (max-width: 768px) {

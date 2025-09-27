@@ -4,108 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>অর্ডার ট্র্যাক - আমার দোকান</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        .order-item {
-            border: 1px solid #e5e7eb;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .order-item:hover {
-            background-color: #f3f4f6;
-        }
-        .status-processing { color: #f59e0b; }
-        .status-confirmed { color: #3b82f6; }
-        .status-packaging { color: #8b5cf6; }
-        .status-shipped { color: #10b981; }
-        .status-delivered { color: #22c55e; }
-        .status-failed { color: #ef4444; }
-        .status-cancelled { color: #6b7280; }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .modal-content {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 0.5rem;
-            max-width: 90%;
-            max-height: 90%;
-            overflow-y: auto;
-            position: relative;
-        }
-        .modal-close {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-        .cart-items {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        .cart-item {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-        .cart-item img {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 0.25rem;
-        }
-        .progress-bar-container {
-            margin-top: 1rem;
-        }
-        .progress-bar {
-            width: 100%;
-            background-color: #e5e7eb;
-            height: 0.5rem;
-            border-radius: 0.25rem;
-            overflow: hidden;
-        }
-        .progress-bar-fill {
-            height: 100%;
-            background-color: #f43f5e;
-            transition: width 0.3s;
-        }
-        .timeline {
-            position: relative;
-            padding-left: 2rem;
-        }
-        .timeline-item {
-            position: relative;
-            margin-bottom: 1rem;
-        }
-        .timeline-dot {
-            position: absolute;
-            left: -1.5rem;
-            top: 0.25rem;
-            width: 1rem;
-            height: 1rem;
-            background-color: #f43f5e;
-            border-radius: 50%;
-        }
-        .timeline-content {
-            border-left: 2px solid #e5e7eb;
-            padding-left: 1rem;
-        }
-    </style>
 </head>
 <body class="bg-gray-100">
     <!-- হেডার -->
@@ -165,25 +67,6 @@
         </div>
     </div>
 
-    <!-- সোশ্যাল মিডিয়া শেয়ার বাটনের জন্য স্ক্রিপ্ট -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const shareButton = document.getElementById('shareButton');
-            const socialIcons = document.getElementById('socialIcons');
 
-            if (shareButton && socialIcons) {
-                shareButton.addEventListener('click', () => {
-                    socialIcons.classList.toggle('hidden');
-                });
-
-                // বাইরে ক্লিক করলে সোশ্যাল আইকন বন্ধ হবে
-                document.addEventListener('click', (event) => {
-                    if (!shareButton.contains(event.target) && !socialIcons.contains(event.target)) {
-                        socialIcons.classList.add('hidden');
-                    }
-                });
-            }
-        });
-    </script>
 </body>
 </html>

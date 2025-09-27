@@ -114,7 +114,7 @@ function updateCartSidebarUI() {
             totalPrice += itemTotal;
             const itemEl = document.createElement("div");
             itemEl.className = "flex items-center justify-between p-2 border-b text-black";
-            itemEl.innerHTML = `<div class="flex items-center"><img src="${item.image ? item.image.split(',')[0].trim() : 'https://via.placeholder.com/40'}" class="w-10 h-10 object-cover rounded mr-3"><div><p class="font-semibold text-sm">${item.name}</p><p class="text-xs text-gray-600">${item.quantity} x ${item.price}৳</p></div></div><div class="flex items-center"><p class="font-semibold mr-3">${itemTotal.toFixed(2)}৳</p><button onclick="window.removeFromCart('${item.id}')" class="text-red-500 hover:text-red-700"><i class="fas fa-trash-alt"></i></button></div>`;
+            itemEl.innerHTML = `<div class="flex items-center"><img src="${item.image ? item.image.split(',')[0].trim() : 'https://via.placeholder.com/40'}" class="w-10 h-10 object-cover rounded mr-3"><div><p class="font-semibold text-sm">${item.name}</p><p class="text-xs text-gray-600">${item.quantity} x ${item.price}৳</p></div></div><div class="flex items-center"><p class="font-semibold mr-3">${itemTotal.toFixed(2)}৳</p><button onclick="event.stopPropagation(); window.removeFromCart('${item.id}')" class="text-red-500 hover:text-red-700"><i class="fas fa-trash-alt"></i></button></div>`;
             cartItemsEl.appendChild(itemEl);
         });
     } else {
@@ -673,6 +673,99 @@ function getStepIcon(status) { const icons = { processing: '1', confirmed: '2', 
 
 
 // =================================================================
+// SECTION: ORDER LIST PAGE LOGIC
+// =================================================================
+
+function getStatusInfo(status) {
+    const statuses = {
+        'Pending': { text: 'পেন্ডিং', color: 'bg-yellow-500' },
+        'Confirmed': { text: 'কনফার্মড', color: 'bg-blue-500' },
+        'Processing': { text: 'প্রসেসিং', color: 'bg-indigo-500' },
+        'Shipped': { text: 'শিপড', color: 'bg-purple-500' },
+        'Delivered': { text: 'ডেলিভারি সম্পন্ন', color: 'bg-green-500' },
+        'Cancelled': { text: 'বাতিল হয়েছে', color: 'bg-red-500' },
+        'Returned': { text: 'ফেরত এসেছে', color: 'bg-gray-500' }
+    };
+    return statuses[status] || { text: 'অজানা', color: 'bg-gray-400' };
+}
+
+function displayOrder(order) {
+    const container = document.getElementById('orderListContainer');
+    if (!container) return; // Added check for container
+    const statusInfo = getStatusInfo(order.orderStatus);
+
+    const orderCard = document.createElement('div');
+    orderCard.className = 'p-4 hover:bg-gray-50 transition-colors cursor-pointer';
+    orderCard.onclick = () => {
+        window.location.href = `order-track.html?orderId=${order.orderId}`;
+    };
+
+    let itemsSummary = order.items.map(item => `${item.name} (x${item.quantity})`).join(', ');
+    if (itemsSummary.length > 100) {
+        itemsSummary = itemsSummary.substring(0, 100) + '...';
+    }
+
+    orderCard.innerHTML = `
+        <div class="flex justify-between items-start">
+            <div>
+                <p class="font-bold text-lg text-gray-800">অর্ডার #${order.orderId}</p>
+                <p class="text-sm text-gray-500">${new Date(order.timestamp).toLocaleString('bn-BD')}</p>
+                <p class="mt-2 text-gray-700">${itemsSummary}</p>
+            </div>
+            <div class="text-right">
+                <p class="font-semibold text-lg">${order.totalAmount.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</p>
+                <span class="mt-1 inline-block text-white text-xs font-semibold px-2 py-1 rounded-full ${statusInfo.color}">${statusInfo.text}</span>
+            </div>
+        </div>
+    `;
+    container.appendChild(orderCard);
+}
+
+async function loadMyOrders() {
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    const noOrdersMessage = document.getElementById('noOrdersMessage');
+    const orderListContainer = document.getElementById('orderListContainer');
+
+    if (loadingIndicator) loadingIndicator.classList.remove('hidden');
+    if (noOrdersMessage) noOrdersMessage.classList.add('hidden');
+    if (orderListContainer) orderListContainer.innerHTML = ''; // Clear previous orders
+
+    const myOrderIds = JSON.parse(localStorage.getItem('myOrders')) || [];
+
+    if (myOrderIds.length === 0) {
+        if (loadingIndicator) loadingIndicator.classList.add('hidden');
+        if (noOrdersMessage) noOrdersMessage.classList.remove('hidden');
+        return;
+    }
+
+    try {
+        const orderPromises = myOrderIds.map(orderId => {
+            const orderRef = ref(database, 'orders/' + orderId);
+            return get(orderRef);
+        });
+
+        const orderSnapshots = await Promise.all(orderPromises);
+
+        const orders = orderSnapshots
+            .map(snapshot => snapshot.exists() ? { key: snapshot.key, ...snapshot.val() } : null) // Include key
+            .filter(order => order !== null)
+            .sort((a, b) => b.timestamp - a.timestamp); // Newest first
+
+        if (orders.length > 0) {
+            orders.forEach(order => displayOrder(order));
+        } else {
+            if (noOrdersMessage) noOrdersMessage.classList.remove('hidden');
+        }
+
+    } catch (error) {
+        console.error("Error fetching orders:", error);
+        if (orderListContainer) orderListContainer.innerHTML = '<p class="text-red-500 text-center py-8">অর্ডার লোড করার সময় একটি ত্রুটি হয়েছে।</p>';
+    } finally {
+        if (loadingIndicator) loadingIndicator.classList.add('hidden');
+    }
+}
+
+// =================================================================
 // SECTION: GLOBAL FUNCTION ASSIGNMENT (গুরুত্বপূর্ণ)
 // =================================================================
 
@@ -690,7 +783,9 @@ Object.assign(window, {
     buyNow, addToCart, updateQuantity, removeFromCart,
     // Product Detail
     showProductDetail, changeDetailQuantity, addToCartWithQuantity, buyNowWithQuantity,
-    initializeProductDetailPage, initializeOrderTrackPage, // order track init functions added to window
+    initializeProductDetailPage, initializeOrderTrackPage,
+    // Order List
+    loadMyOrders, // Added loadMyOrders to global scope
 });
 
 async function loadHeaderAndSetup() {
@@ -790,7 +885,7 @@ function main() {
     onValue(productsRef, snapshot => {
         if (snapshot.exists()) {
             products = Object.keys(snapshot.val()).map(key => ({ id: key, ...snapshot.val()[key] }));
-            
+
             const currentPage = window.location.pathname;
             if (currentPage.endsWith('/') || currentPage.endsWith('index.html')) {
                 const urlParams = new URLSearchParams(window.location.search);
@@ -821,7 +916,15 @@ function main() {
     if (currentPage.includes('order-form.html')) {
         initializeOrderFormPage();
     }
+
+    if (currentPage.includes('order-list.html')) {
+        loadMyOrders();
+    }
+    if (currentPage.includes('order-list.html')) { // Call loadMyOrders for order-list.html
+        loadMyOrders();
+    }
 }
+
 
 // =================================================================
 // SECTION: ORDER FORM PAGE LOGIC (MERGED FROM order-form-logic.js)
@@ -891,12 +994,20 @@ function renderCheckoutItems(items) {
         return;
     }
     items.forEach(item => {
+        // Add checks for item properties
+        const itemId = item.id || 'N/A';
+        const itemName = item.name || 'Unknown Product';
+        const itemPrice = parseFloat(item.price) || 0;
+        const itemQuantity = item.quantity || 1;
+        const itemImage = item.image || 'placeholder.jpg';
+        const itemVariant = item.variant || '';
+
         const itemHtml = `
             <div class="checkout-item">
-                <img src="${item.image || 'placeholder.jpg'}" alt="${item.name}" loading="lazy">
+                <img src="${itemImage}" alt="${itemName}" loading="lazy">
                 <div class="checkout-item-details">
-                    <p class="item-name">${item.name} (${item.variant || ''})</p>
-                    <p>${item.quantity} x ${item.price.toFixed(2)} টাকা = ${(item.price * item.quantity).toFixed(2)} টাকা</p>
+                    <p class="item-name">${itemName} ${itemVariant ? `(${itemVariant})` : ''}</p>
+                    <p>${itemQuantity} x ${itemPrice.toFixed(2)} টাকা = ${(itemPrice * itemQuantity).toFixed(2)} টাকা</p>
                 </div>
             </div>
         `;
@@ -916,12 +1027,19 @@ function initializeCheckout(user) {
             checkoutCart = JSON.parse(decodeURIComponent(urlCartData));
         } catch (e) {
             console.error("Could not parse cart data from URL", e);
+            showToast("কার্ট ডেটা লোড করতে সমস্যা হয়েছে।", "error");
             checkoutCart = [];
         }
     } else {
         // Otherwise, load the cart from the main localStorage item.
         isBuyNowMode = false;
-        checkoutCart = JSON.parse(localStorage.getItem('anyBeautyCart') || '[]');
+        try {
+            checkoutCart = JSON.parse(localStorage.getItem('anyBeautyCart') || '[]');
+        } catch (e) {
+            console.error("Could not parse cart data from localStorage", e);
+            showToast("কার্ট ডেটা লোড করতে সমস্যা হয়েছে।", "error");
+            checkoutCart = [];
+        }
     }
 
     renderCheckoutItems(checkoutCart);
@@ -948,7 +1066,7 @@ function handleDeliveryLocationChange() {
     const outsideGroup = document.getElementById('outsideDhakaLocationGroup');
     const notice = document.getElementById('paymentNotice');
     const deliveryPaymentGroup = document.getElementById('deliveryPaymentGroup');
-    
+
     const isOutsideDhaka = location === 'outsideDhaka';
 
     outsideGroup.classList.toggle('hidden', !isOutsideDhaka);
@@ -957,7 +1075,7 @@ function handleDeliveryLocationChange() {
 
     document.getElementById('outsideDhakaLocation').required = isOutsideDhaka;
     document.getElementById('deliveryPaymentMethod').required = isOutsideDhaka;
-    
+
     handleDeliveryPaymentMethodChange();
     calculateAndDisplayPrices(checkoutCart);
 }
@@ -967,7 +1085,7 @@ function handleDeliveryPaymentMethodChange() {
     const method = document.getElementById('deliveryPaymentMethod').value;
     const paymentNumberGroup = document.getElementById('paymentNumberGroup');
     const transactionIdGroup = document.getElementById('transactionIdGroup');
-    
+
     const shouldShow = location === 'outsideDhaka' && method;
     paymentNumberGroup.classList.toggle('hidden', !shouldShow);
     transactionIdGroup.classList.toggle('hidden', !shouldShow);
@@ -1050,13 +1168,13 @@ async function handleOrderSubmit(event) {
         }
 
         if (orderData.isGuest && !isBuyNowMode) {
-            localStorage.removeItem('anyBeautyCart'); 
+            localStorage.removeItem('anyBeautyCart');
             cart = [];
             updateAllCartUIs();
         } else if (!orderData.isGuest && !isBuyNowMode) {
             await set(ref(database, `carts/${window.currentUserId}`), null);
         }
-        
+
         showToast(`অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে! অর্ডার আইডি: ${orderId}`, "success");
 
         window.location.href = `thank-you.html?orderId=${orderId}`;
