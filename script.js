@@ -1180,8 +1180,8 @@ async function handleOrderSubmit(event) {
         window.location.href = `index.html?orderId=${orderId}`;
 
     } catch (error) {
-        console.error("Error placing order:", error);
-        showToast(`Order Error: ${error.message}`, "error");
+        console.error("Error placing order:", error.code, error.message, error); // Log specific error details
+        showToast(`অর্ডার সাবমিট করতে সমস্যা হয়েছে: ${error.message || 'Unknown Error'}। অনুগ্রহ করে আবার চেষ্টা করুন।`, "error");
         submitButton.disabled = false;
         submitButton.innerHTML = 'অর্ডার কনফার্ম করুন';
     }
