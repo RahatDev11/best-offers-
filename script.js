@@ -2,12 +2,7 @@
 // SECTION: FIREBASE INITIALIZATION & CONFIGURATION
 // =================================================================
 
-// Firebase SDK imports
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, onValue, set, get, query, orderByChild, equalTo, update, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-// Firebase Configuration
+// Firebase Configuration - Moved to top for proper scope
 const firebaseConfig = {
     apiKey: "AIzaSyCVSzQS1c7H4BLhsDF_fW8wnqUN4B35LPA",
     authDomain: "nahid-6714.firebaseapp.com",
@@ -19,21 +14,23 @@ const firebaseConfig = {
     measurementId: "G-QZ7CTRKHCW"
 };
 
-// Global Variables
-let app, auth, database, provider;
+// Firebase SDK imports
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, set, get, query, orderByChild, equalTo, update, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, addDoc, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"; // Added for Firestore
+
+// Global Variables (declared once and assigned)
 let products = [];
 let cart = [];
 let eventSlider;
 
-// Firebase Initialization
-try {
-    app = initializeApp(firebaseConfig);
-    auth = getAuth(app);
-    database = getDatabase(app);
-    provider = new GoogleAuthProvider();
-} catch (e) {
-    console.error("Firebase Initialization Error:", e);
-}
+// Firebase Initialization (consolidated and corrected)
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const database = getDatabase(app); // Realtime Database instance
+const db = getFirestore(app); // Firestore instance
+const provider = new GoogleAuthProvider(); // Auth provider
 
 // =================================================================
 // SECTION: UTILITY & HELPER FUNCTIONS
@@ -194,6 +191,11 @@ function addToCart(productId) {
     }
     saveCart();
     showToast(`${product.name} কার্টে যোগ করা হয়েছে`, "success");
+    // Hide social media button when item is added to cart
+    const socialMediaButton = document.getElementById('socialShareButton');
+    if (socialMediaButton) {
+        socialMediaButton.classList.add('hidden');
+    }
 };
 
 function updateQuantity(productId, change) {
@@ -222,15 +224,20 @@ function checkout() {
     }
 };
 
-function buyNow(productId) {
+function buyNow(productId) { // Removed quantity parameter
     const product = products.find(p => p.id === productId);
     if (!product) return;
+
+    // Check if the product is already in the cart and use its quantity
+    const cartItem = cart.find(item => item.id === productId);
+    const quantityToBuy = cartItem ? cartItem.quantity : 1; // Use cart quantity or default to 1
+
     const tempCart = [{
         id: product.id,
         name: product.name,
         price: product.price,
         image: product.image ? product.image.split(',')[0].trim() : '',
-        quantity: 1
+        quantity: quantityToBuy // Use the determined quantity
     }];
     const cartData = encodeURIComponent(JSON.stringify(tempCart));
     window.location.href = `order-form.html?cart=${cartData}`;
@@ -443,14 +450,25 @@ function toggleSubMenuDesktop() {
     document.getElementById('desktopArrowIcon')?.classList.toggle('rotate-180');
 };
 function openCartSidebar() {
-    hideSocialMediaIcons();
-    document.getElementById('cartSidebar')?.classList.remove('translate-x-full');
-    document.getElementById('cartOverlay')?.classList.remove('hidden');
-};
+    document.getElementById('cartSidebar').classList.remove('translate-x-full');
+    document.getElementById('cartOverlay').classList.remove('hidden');
+    document.body.classList.add('overflow-hidden'); // Prevent scrolling on body
+    // Hide social media button if it exists on the page
+    const socialMediaButton = document.getElementById('socialShareButton');
+    if (socialMediaButton) {
+        socialMediaButton.classList.add('hidden');
+    }
+}
 function closeCartSidebar() {
-    document.getElementById('cartSidebar')?.classList.add('translate-x-full');
-    document.getElementById('cartOverlay')?.classList.add('hidden');
-};
+    document.getElementById('cartSidebar').classList.add('translate-x-full');
+    document.getElementById('cartOverlay').classList.add('hidden');
+    document.body.classList.remove('overflow-hidden'); // Re-enable scrolling on body
+    // Show social media button if it exists on the page
+    const socialMediaButton = document.getElementById('socialShareButton');
+    if (socialMediaButton) {
+        socialMediaButton.classList.remove('hidden');
+    }
+}
 function focusMobileSearch() {
     document.getElementById('mobileSearchBar')?.classList.toggle('hidden');
     document.getElementById('searchInput')?.focus();
@@ -579,18 +597,76 @@ function updateModalImage() { document.getElementById('modalImage').src = galler
 // =================================================================
 
 async function initializeOrderTrackPage() {
-    const params = new URLSearchParams(window.location.search);
-    const orderId = params.get('orderId');
+    // Order tracking by ID logic
+    const orderIdInput = document.getElementById('orderIdInput');
+    const trackOrderButton = document.getElementById('trackOrderButton');
+    const orderIdError = document.getElementById('orderIdError');
+    const orderListContainer = document.getElementById('orderListContainer');
+    const orderListDiv = document.getElementById('orderList'); // Assuming this is where individual orders will be rendered
 
-    if (orderId) {
-        // If an orderId is in the URL, fetch and display that single order
-        const orderRef = ref(database, `orders/${orderId}`);
-        const snapshot = await get(orderRef);
-        if (snapshot.exists()) {
-            displayOrderCards([snapshot.val()]);
-        } else {
-            document.getElementById('orderListContainer').innerHTML = '<p class="text-center text-red-500">দুঃখিত, এই অর্ডার আইডি দিয়ে কোনো অর্ডার খুঁজে পাওয়া যায়নি।</p>';
+    trackOrderButton.addEventListener('click', async () => {
+        const orderId = orderIdInput.value.trim();
+        if (!orderId) {
+            orderIdError.textContent = 'অনুগ্রহ করে একটি অর্ডার আইডি দিন।';
+            orderIdError.style.display = 'block';
+            orderListContainer.style.display = 'none';
+            return;
         }
+        orderIdError.style.display = 'none';
+        await trackOrderById(orderId);
+    });
+
+    async function trackOrderById(orderId) {
+        orderListDiv.innerHTML = '<p class="text-center text-gray-500 italic p-4">অর্ডার লোড হচ্ছে...</p>';
+        orderListContainer.style.display = 'block'; // Show container while loading
+
+        try {
+            const orderDocRef = doc(db, 'orders', orderId);
+            const orderDocSnap = await getDoc(orderDocRef);
+
+            if (orderDocSnap.exists()) {
+                const orderData = orderDocSnap.data();
+                renderOrderDetails(orderData, orderId); // Function to render details
+            } else {
+                orderListDiv.innerHTML = '<p class="text-center text-red-500 italic p-4">এই আইডি দিয়ে কোনো অর্ডার খুঁজে পাওয়া যায়নি।</p>';
+            }
+        } catch (error) {
+            console.error("Error tracking order:", error);
+            orderListDiv.innerHTML = '<p class="text-center text-red-500 italic p-4">অর্ডার ট্র্যাকিং এ সমস্যা হয়েছে।</p>';
+        }
+    }
+
+    // Function to render order details (needs to be defined)
+    function renderOrderDetails(order, orderId) {
+        orderListDiv.innerHTML = ''; // Clear previous content
+
+        const orderCard = document.createElement('div');
+        orderCard.className = 'bg-white p-4 rounded-lg shadow-md mb-4';
+        orderCard.innerHTML = `
+            <h3 class="text-xl font-semibold text-lipstick mb-2">অর্ডার আইডি: ${orderId}</h3>
+            <p><strong>তারিখ:</strong> ${new Date(order.timestamp.toDate()).toLocaleString()}</p>
+            <p><strong>নাম:</strong> ${order.customerName}</p>
+            <p><strong>ফোন:</strong> ${order.phoneNumber}</p>
+            <p><strong>ঠিকানা:</strong> ${order.address}, ${order.deliveryLocation === 'outsideDhaka' ? order.outsideDhakaLocation : 'ঢাকা'}</p>
+            <p><strong>মোট মূল্য:</strong> ${order.totalAmount} টাকা</p>
+            <p><strong>স্ট্যাটাস:</strong> <span class="font-bold text-green-600">${order.status || 'Pending'}</span></p>
+            <h4 class="font-semibold mt-3 mb-1">অর্ডারকৃত পণ্যসমূহ:</h4>
+            <ul class="list-disc pl-5">
+                ${order.items.map(item => `<li>${item.name} (পরিমাণ: ${item.quantity}, মূল্য: ${item.price} টাকা)</li>`).join('')}
+            </ul>
+        `;
+        orderListDiv.appendChild(orderCard);
+    }
+
+    // Hide login prompt as it's no longer needed for order tracking
+    document.getElementById('loginPrompt').style.display = 'none';
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlOrderId = urlParams.get('orderId');
+
+    if (urlOrderId) {
+        // If an orderId is in the URL, fetch and display that single order
+        await trackOrderById(urlOrderId); // Use the new trackOrderById function
     } else {
         // Otherwise, load orders from localStorage
         await loadLocalOrders();
@@ -1172,11 +1248,11 @@ async function handleOrderSubmit(event) {
     showToast("Submitting to database...", "info"); // Debug Toast 2
 
     try {
-        const newOrderRef = push(ref(database, 'orders'));
-        await set(newOrderRef, orderData);
+        const ordersCollectionRef = collection(db, 'orders');
+        const newOrderDocRef = await addDoc(ordersCollectionRef, orderData); // Add document to Firestore
 
-        const orderId = newOrderRef.key;
-        await update(newOrderRef, { orderId: orderId });
+        const orderId = newOrderDocRef.id; // Get the auto-generated ID from Firestore
+        await updateDoc(newOrderDocRef, { orderId: orderId }); // Update the document with its own ID
         orderData.orderId = orderId;
 
         sendTelegramNotification(orderData);
