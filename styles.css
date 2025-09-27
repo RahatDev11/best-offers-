@@ -510,10 +510,20 @@ select#productQuantity {
     }
 }
 
-body {
-    color: black;
+/* Responsive */
+@media (max-width: 768px) {
+    .checkout-item img { width: 50px; height: 50px; }
+    .checkout-item-details p { font-size: 0.9rem; }
+    .radio-group { flex-direction: column; gap: 0.75rem; align-items: flex-start; }
+    h2 { font-size: 1.25rem; }
+    h3 { font-size: 1.1rem; }
 }
-
-footer {
-    background-color: #FF69B4;
-}
+@media (max-width: 480px) {
+     .checkout-item { padding: 0.6rem; }
+     .checkout-item img { width: 45px; height: 45px; }
+     .checkout-item-details { margin-left: 0.75rem; }
+     .checkout-item-details p { font-size: 0.85rem; }
+     .price-summary p { font-size: 0.9rem; }
+     .submit-btn { font-size: 0.95rem; padding: 0.75rem; }
+     .order-list-link { font-size: 0.9rem; padding: 0.5rem; }
+ }

@@ -66,6 +66,15 @@
             </div>
         </div>
     </main>
+    <div id="place-order-bar" class="fixed bottom-0 left-0 w-full bg-white p-3 shadow-lg z-40 hidden" style="box-shadow: 0 -2px 10px rgba(0,0,0,0.1);">
+        <div class="flex justify-between items-center">
+            <div>
+                <span class="text-gray-600">Total Items: <span id="bar-item-count" class="font-bold text-lipstick">0</span></span>
+                <p class="font-bold text-lg text-lipstick">BDT <span id="bar-total-price">0.00</span></p>
+            </div>
+            <button onclick="checkout()" class="font-bold py-3 px-6 rounded-lg bg-lipstick text-white hover:bg-lipstick-dark transition-colors">Place Order</button>
+        </div>
+    </div>
     <div id="footer"></div>
 
     <!-- ফুল-স্ক্রিন মোডাল -->

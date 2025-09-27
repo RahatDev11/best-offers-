@@ -144,7 +144,7 @@ function renderCheckoutItems(items) {
     items.forEach(item => {
         const itemHtml = `
             <div class="checkout-item">
-                <img src="${item.imageUrl || 'placeholder.jpg'}" alt="${item.name}" loading="lazy">
+                <img src="${item.image || 'placeholder.jpg'}" alt="${item.name}" loading="lazy">
                 <div class="checkout-item-details">
                     <p class="item-name">${item.name} (${item.variant || ''})</p>
                     <p>${item.quantity} x ${item.price.toFixed(2)} টাকা = ${(item.price * item.quantity).toFixed(2)} টাকা</p>
@@ -368,6 +368,13 @@ async function handleOrderSubmit(event) {
         // Securely send notification via Netlify Function
         sendTelegramNotification(orderData);
 
+        // Store orderId in localStorage for guest users
+        if (orderData.isGuest) {
+            let myOrders = JSON.parse(localStorage.getItem('myOrders')) || [];
+            myOrders.push(orderId);
+            localStorage.setItem('myOrders', JSON.stringify(myOrders));
+        }
+
         // Clear cart based on user type
         if (orderData.isGuest) {
             localStorage.removeItem('cartItems');
@@ -377,9 +384,7 @@ async function handleOrderSubmit(event) {
         
         showToast(`অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে! অর্ডার আইডি: ${orderId}`, "success");
 
-        setTimeout(() => {
-            window.location.href = `order-track.html?orderId=${orderId}`;
-        }, 1500);
+        window.location.href = `thank-you.html?orderId=${orderId}`;
 
     } catch (error) {
         console.error("Error placing order:", error);

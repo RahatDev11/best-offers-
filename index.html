@@ -161,47 +161,17 @@
         </section>
 
     </main>
-    
-    <!-- বাকি HTML (আগের মতোই থাকবে) -->
-    <div class="fixed bottom-4 right-4 z-10">
-        <button id="shareButton" class="bg-lipstick text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center"><i class="fas fa-user-circle"></i></button>
-        <div id="socialIcons" class="hidden space-y-2 mt-2">
-            <a href="https://www.facebook.com/share/1PyLUzGE9P/" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center"><i class="fab fa-facebook"></i></a>
-            <a href="https://www.instagram.com/anysbeautycorner/?utm_medium=copy_link" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center"><i class="fab fa-instagram"></i></a>
-            <a href="https://www.tiktok.com/@anysbeautycorner" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center"><i class="fab fa-tiktok"></i></a>
-            <a href="https://youtube.com/@anysbeautycorner?si=oXGtEuakP_SIPH_Q" class="bg-lipstick text-white w-10 h-10 rounded-full flex items-center justify-center"><i class="fab fa-youtube"></i></a>
-        </div>
-    </div>
+
     <div id="place-order-bar" class="fixed bottom-0 left-0 w-full bg-white p-3 shadow-lg z-40 hidden" style="box-shadow: 0 -2px 10px rgba(0,0,0,0.1);">
         <div class="flex justify-between items-center">
             <div>
-                <span class="text-gray-600">Total Items: <span id="bar-item-count" class="font-bold pink-text" style="color: rgb(232, 232, 232);">0</span></span>
+                <span class="text-gray-600">Total Items: <span id="bar-item-count" class="font-bold text-lipstick">0</span></span>
                 <p class="font-bold text-lg text-lipstick">BDT <span id="bar-total-price">0.00</span></p>
             </div>
-            <button onclick="checkout()" class="font-bold py-3 px-6 rounded-lg bg-[#FF99CC] text-lipstick hover:bg-lipstick hover:text-lipstick-dark transition-colors">Place Order</button>
+            <button onclick="checkout()" class="font-bold py-3 px-6 rounded-lg bg-lipstick text-white hover:bg-lipstick-dark transition-colors">Place Order</button>
         </div>
     </div>
     <div id="footer"></div>
-    <div id="loginModal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm">
-        <div class="login-modal-content bg-white/20 backdrop-blur-lg rounded-lg p-6 max-w-md mx-auto mt-20 shadow-lg border border-white/20">
-            <span class="close text-gray-600 hover:text-gray-900 cursor-pointer text-2xl absolute top-4 right-4" onclick="closeModal('loginModal')">×</span>
-            <h2 class="text-xl font-bold mb-4 text-lipstick">লগইন</h2>
-            <div class="text-center">
-                <button onclick="loginWithGmail()" class="bg-lipstick text-white px-4 py-2 rounded w-full hover:bg-lipstick-dark transition-colors">Gmail দিয়ে লগইন করুন</button>
-            </div>
-        </div>
-    </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const shareButton = document.getElementById('shareButton');
-            const socialIcons = document.getElementById('socialIcons');
-            if (shareButton && socialIcons) {
-                shareButton.addEventListener('click', () => socialIcons.classList.toggle('hidden'));
-                document.addEventListener('click', (event) => {
-                    if (!shareButton.contains(event.target) && !socialIcons.contains(event.target)) socialIcons.classList.add('hidden');
-                });
-            }
-        });
-    </script>
+
 </body>
 </html>
