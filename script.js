@@ -1177,7 +1177,7 @@ async function handleOrderSubmit(event) {
 
         showToast(`অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে! অর্ডার আইডি: ${orderId}`, "success");
 
-        window.location.href = `thank-you.html?orderId=${orderId}`;
+        window.location.href = `index.html?orderId=${orderId}`;
 
     } catch (error) {
         console.error("Error placing order:", error);
