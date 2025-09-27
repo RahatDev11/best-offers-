@@ -597,41 +597,18 @@ function updateModalImage() { document.getElementById('modalImage').src = galler
 // =================================================================
 
 async function initializeOrderTrackPage() {
-    // Order tracking by ID logic (search UI removed)
     const orderListContainer = document.getElementById('orderListContainer');
-    const orderListDiv = document.getElementById('orderList'); // Assuming this is where individual orders will be rendered
+    const loginPrompt = document.getElementById('loginPrompt'); // Get login prompt
 
- 
-
-    // Function to render order details (needs to be defined)
-    function renderOrderDetails(order, orderId) {
-        orderListDiv.innerHTML = ''; // Clear previous content
-
-        const orderCard = document.createElement('div');
-        orderCard.className = 'bg-white p-4 rounded-lg shadow-md mb-4';
-        orderCard.innerHTML = `
-            <h3 class="text-xl font-semibold text-lipstick mb-2">অর্ডার আইডি: ${orderId}</h3>
-            <p><strong>তারিখ:</strong> ${new Date(order.timestamp.toDate()).toLocaleString()}</p>
-            <p><strong>নাম:</strong> ${order.customerName}</p>
-            <p><strong>ফোন:</strong> ${order.phoneNumber}</p>
-            <p><strong>ঠিকানা:</strong> ${order.address}, ${order.deliveryLocation === 'outsideDhaka' ? order.outsideDhakaLocation : 'ঢাকা'}</p>
-            <p><strong>মোট মূল্য:</strong> ${order.totalAmount} টাকা</p>
-            <p><strong>স্ট্যাটাস:</strong> <span class="font-bold text-green-600">${order.status || 'Pending'}</span></p>
-            <h4 class="font-semibold mt-3 mb-1">অর্ডারকৃত পণ্যসমূহ:</h4>
-            <ul class="list-disc pl-5">
-                ${order.items.map(item => `<li>${item.name} (পরিমাণ: ${item.quantity}, মূল্য: ${item.price} টাকা)</li>`).join('')}
-            </ul>
-        `;
-        orderListDiv.appendChild(orderCard);
-    }
+    // Always hide login prompt as per user's non-login tracking request
+    if (loginPrompt) loginPrompt.style.display = 'none';
 
     const urlParams = new URLSearchParams(window.location.search);
     const urlOrderId = urlParams.get('orderId');
 
     if (urlOrderId) {
-        // If an orderId is in the URL, fetch and display that single order
-        // Directly fetch and render the order since search UI is removed
-        orderListDiv.innerHTML = '<p class="text-center text-gray-500 italic p-4">অর্ডার লোড হচ্ছে...</p>';
+        // If an orderId is in the URL, fetch and display that single order in a modal
+        orderListContainer.innerHTML = '<p class="text-center text-gray-500 italic p-4">অর্ডার লোড হচ্ছে...</p>';
         orderListContainer.style.display = 'block'; // Ensure container is visible
 
         try {
@@ -640,18 +617,23 @@ async function initializeOrderTrackPage() {
 
             if (orderDocSnap.exists()) {
                 const orderData = orderDocSnap.data();
-                renderOrderDetails(orderData, urlOrderId); // Function to render details
+                showOrderDetailsModal(orderData); // Display in modal
+                orderListContainer.style.display = 'none'; // Hide list if modal is shown for single order
             } else {
-                orderListDiv.innerHTML = '<p class="text-center text-red-500 italic p-4">এই আইডি দিয়ে কোনো অর্ডার খুঁজে পাওয়া যায়নি।</p>';
+                orderListContainer.innerHTML = '<p class="text-center text-red-500 italic p-4">এই আইডি দিয়ে কোনো অর্ডার খুঁজে পাওয়া যায়নি।</p>';
+                orderListContainer.style.display = 'block';
             }
         } catch (error) {
             console.error("Error tracking order from URL:", error);
-            orderListDiv.innerHTML = '<p class="text-center text-red-500 italic p-4">অর্ডার লোড করতে সমস্যা হয়েছে।</p>';
+            orderListContainer.innerHTML = '<p class="text-center text-red-500 italic p-4">অর্ডার লোড করতে সমস্যা হয়েছে।</p>';
+            orderListContainer.style.display = 'block';
         }
     } else {
-        // Otherwise, load orders from localStorage
+        // Otherwise, load all local orders and display them as cards
         await loadLocalOrders();
+        orderListContainer.style.display = 'block'; // Ensure container is visible for list
     }
+}
 }
 
 async function loadLocalOrders() {

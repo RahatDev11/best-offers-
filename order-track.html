@@ -19,13 +19,25 @@
 
         <!-- Loading UI removed -->
 
-        <!-- অর্ডার লিস্ট -->
-        <div id="orderListContainer" class="max-w-2xl mx-auto p-4 bg-white rounded-lg shadow-md">
-            <div id="orderList">
-                <p class="text-center text-gray-500 italic p-4">অর্ডার লোড হচ্ছে...</p>
-            </div>
-            <p id="noOrdersMessage" class="text-center text-gray-600 hidden p-4">আপনার কোনো অর্ডার এখনো নেই।</p>
+        <!-- লগইন প্রম্পট -->
+        <div id="loginPrompt" class="text-center" style="display: none;">
+            <p class="text-lg text-gray-600 mb-4">আপনার অর্ডার দেখতে অনুগ্রহ করে লগইন করুন।</p>
+            <button id="loginButton" class="bg-lipstick text-white px-6 py-2 rounded-lg hover:bg-opacity-90">লগইন করুন</button>
         </div>
+
+        <!-- অর্ডার লিস্ট -->
+        <div id="orderListContainer" style="display: none;">
+            <div id="orderList"></div>
+        </div>
+    </div>
+
+    <!-- মডাল -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <span id="modalClose" class="modal-close">&times;</span>
+            <div id="modalContent"></div>
+        </div>
+    </div>
     </div>
 
     <!-- মডাল -->
