@@ -49,6 +49,10 @@ function showToast(message, type = "success") {
     setTimeout(() => { toast.remove() }, 3000);
 };
 
+function hideSocialMediaIcons() {
+    document.getElementById('socialIcons')?.classList.add('hidden');
+}
+
 // === START: TELEGRAM NOTIFICATION FUNCTION (NEW CODE) ===
 /**
  * Netlify Function কে কল করে Telegram এ নোটিফিকেশন পাঠায়।
@@ -230,6 +234,7 @@ function buyNow(productId) {
 // =================================================================
 
 function openLoginModal() {
+    hideSocialMediaIcons();
     document.getElementById('loginModal')?.classList.remove('hidden');
 }
 
@@ -399,6 +404,7 @@ function filterProducts(category) {
 // =================================================================
 
 function openSidebar() {
+    hideSocialMediaIcons();
     const sidebarOverlay = document.getElementById('sidebarOverlay');
     const sidebar = document.getElementById('sidebar');
     if (sidebarOverlay) sidebarOverlay.classList.remove('hidden');
@@ -425,10 +431,12 @@ function handleSubMenuItemClick(category) {
     closeSidebar();
 };
 function toggleSubMenuDesktop() {
+    hideSocialMediaIcons();
     document.getElementById('desktopSubMenuBar')?.classList.toggle('hidden');
     document.getElementById('desktopArrowIcon')?.classList.toggle('rotate-180');
 };
 function openCartSidebar() {
+    hideSocialMediaIcons();
     document.getElementById('cartSidebar')?.classList.remove('translate-x-full');
     document.getElementById('cartOverlay')?.classList.remove('hidden');
 };
@@ -552,7 +560,9 @@ function buyNowWithQuantity(productId) {
 
 let galleryImages = []; let currentImageModalIndex = 0;
 function setupImageGallery(images) { galleryImages = images; const mainImage = document.getElementById('mainImage'); const thumbnailContainer = document.getElementById('thumbnailContainer'); thumbnailContainer.innerHTML = ''; if (images.length > 0) { mainImage.src = images[0]; images.forEach((img, index) => { const thumb = document.createElement('img'); thumb.src = img; thumb.className = 'thumbnail'; if (index === 0) thumb.classList.add('active'); thumb.onclick = () => { mainImage.src = img; currentImageModalIndex = index; document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active')); thumb.classList.add('active'); }; thumbnailContainer.appendChild(thumb); }); } else { mainImage.src = 'https://via.placeholder.com/500x400.png?text=No+Image'; } mainImage.addEventListener('click', openImageModal); }
-function openImageModal() { if (galleryImages.length === 0) return; const modal = document.getElementById('imageModal'); modal.style.display = 'flex'; updateModalImage(); document.getElementById('modalCloseBtn').onclick = closeImageModal; document.getElementById('modalPrevBtn').onclick = () => changeModalImage(-1); document.getElementById('modalNextBtn').onclick = () => changeModalImage(1); }
+function openImageModal() {
+    hideSocialMediaIcons();
+    if (galleryImages.length === 0) return; const modal = document.getElementById('imageModal'); modal.style.display = 'flex'; updateModalImage(); document.getElementById('modalCloseBtn').onclick = closeImageModal; document.getElementById('modalPrevBtn').onclick = () => changeModalImage(-1); document.getElementById('modalNextBtn').onclick = () => changeModalImage(1); }
 function closeImageModal() { document.getElementById('imageModal').style.display = 'none'; }
 function changeModalImage(direction) { currentImageModalIndex = (currentImageModalIndex + direction + galleryImages.length) % galleryImages.length; updateModalImage(); }
 function updateModalImage() { document.getElementById('modalImage').src = galleryImages[currentImageModalIndex]; }
@@ -635,7 +645,8 @@ function displayOrderCards(orders) {
     });
 }
 
-function showOrderDetailsModal(order) { 
+function showOrderDetailsModal(order) {
+    hideSocialMediaIcons();
     const modal = document.getElementById('orderModal');
     const modalContent = document.getElementById('modalContent');
     if(!modal || !modalContent) return;
@@ -843,6 +854,10 @@ function setupSocialMediaButtons() {
     shareButton.addEventListener('click', (event) => {
         event.stopPropagation();
         socialIcons.classList.toggle('hidden');
+        // Ensure it's shown if it was hidden by another event
+        if (!socialIcons.classList.contains('hidden')) {
+            socialIcons.classList.remove('hidden');
+        }
     });
 
     // Hide if clicked outside
