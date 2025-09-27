@@ -131,8 +131,14 @@ function updateCartSidebarUI() {
 function updateFloatingBarUI() {
     const bar = document.getElementById("place-order-bar");
     if (!bar) return;
-    if (cart.length === 0) { bar.classList.add("hidden"); return; }
+    if (cart.length === 0) { 
+        bar.classList.add("hidden"); 
+        // If bar is hidden, social media icons can be shown if not hidden by other means
+        // This is handled by the general click handler for social media button
+        return; 
+    }
     bar.classList.remove("hidden");
+    hideSocialMediaIcons(); // Hide social media icons when place order bar is visible
     const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
     const totalPrice = cart.reduce((sum, item) => sum + parseFloat(item.price || 0) * (item.quantity || 0), 0);
     document.getElementById("bar-item-count").textContent = totalItems;
@@ -208,6 +214,7 @@ function removeFromCart(productId) {
 
 function checkout() {
     if (cart.length > 0) {
+        hideSocialMediaIcons(); // Hide social media icons before redirecting to order form
         // The cart is already saved in localStorage by saveCart(). Just redirect.
         window.location.href = 'order-form.html';
     } else {
