@@ -597,43 +597,80 @@ function updateModalImage() { document.getElementById('modalImage').src = galler
 // =================================================================
 
 async function initializeOrderTrackPage() {
+    // Order tracking by ID logic
+    const orderIdInput = document.getElementById('orderIdInput');
+    const trackOrderButton = document.getElementById('trackOrderButton');
+    const orderIdError = document.getElementById('orderIdError');
     const orderListContainer = document.getElementById('orderListContainer');
-    const loginPrompt = document.getElementById('loginPrompt'); // Get login prompt
+    const orderListDiv = document.getElementById('orderList'); // Assuming this is where individual orders will be rendered
 
-    // Always hide login prompt as per user's non-login tracking request
-    if (loginPrompt) loginPrompt.style.display = 'none';
+    trackOrderButton.addEventListener('click', async () => {
+        const orderId = orderIdInput.value.trim();
+        if (!orderId) {
+            orderIdError.textContent = 'অনুগ্রহ করে একটি অর্ডার আইডি দিন।';
+            orderIdError.style.display = 'block';
+            orderListContainer.style.display = 'none';
+            return;
+        }
+        orderIdError.style.display = 'none';
+        await trackOrderById(orderId);
+    });
+
+    async function trackOrderById(orderId) {
+        orderListDiv.innerHTML = '<p class="text-center text-gray-500 italic p-4">অর্ডার লোড হচ্ছে...</p>';
+        orderListContainer.style.display = 'block'; // Show container while loading
+
+        try {
+            const orderDocRef = doc(db, 'orders', orderId);
+            const orderDocSnap = await getDoc(orderDocRef);
+
+            if (orderDocSnap.exists()) {
+                const orderData = orderDocSnap.data();
+                renderOrderDetails(orderData, orderId); // Function to render details
+            } else {
+                orderListDiv.innerHTML = '<p class="text-center text-red-500 italic p-4">এই আইডি দিয়ে কোনো অর্ডার খুঁজে পাওয়া যায়নি।</p>';
+            }
+        } catch (error) {
+            console.error("Error tracking order:", error);
+            orderListDiv.innerHTML = '<p class="text-center text-red-500 italic p-4">অর্ডার ট্র্যাকিং এ সমস্যা হয়েছে।</p>';
+        }
+    }
+
+    // Function to render order details (needs to be defined)
+    function renderOrderDetails(order, orderId) {
+        orderListDiv.innerHTML = ''; // Clear previous content
+
+        const orderCard = document.createElement('div');
+        orderCard.className = 'bg-white p-4 rounded-lg shadow-md mb-4';
+        orderCard.innerHTML = `
+            <h3 class="text-xl font-semibold text-lipstick mb-2">অর্ডার আইডি: ${orderId}</h3>
+            <p><strong>তারিখ:</strong> ${new Date(order.timestamp.toDate()).toLocaleString()}</p>
+            <p><strong>নাম:</strong> ${order.customerName}</p>
+            <p><strong>ফোন:</strong> ${order.phoneNumber}</p>
+            <p><strong>ঠিকানা:</strong> ${order.address}, ${order.deliveryLocation === 'outsideDhaka' ? order.outsideDhakaLocation : 'ঢাকা'}</p>
+            <p><strong>মোট মূল্য:</strong> ${order.totalAmount} টাকা</p>
+            <p><strong>স্ট্যাটাস:</strong> <span class="font-bold text-green-600">${order.status || 'Pending'}</span></p>
+            <h4 class="font-semibold mt-3 mb-1">অর্ডারকৃত পণ্যসমূহ:</h4>
+            <ul class="list-disc pl-5">
+                ${order.items.map(item => `<li>${item.name} (পরিমাণ: ${item.quantity}, মূল্য: ${item.price} টাকা)</li>`).join('')}
+            </ul>
+        `;
+        orderListDiv.appendChild(orderCard);
+    }
+
+    // Hide login prompt as it's no longer needed for order tracking
+    document.getElementById('loginPrompt').style.display = 'none';
 
     const urlParams = new URLSearchParams(window.location.search);
     const urlOrderId = urlParams.get('orderId');
 
     if (urlOrderId) {
-        // If an orderId is in the URL, fetch and display that single order in a modal
-        orderListContainer.innerHTML = '<p class="text-center text-gray-500 italic p-4">অর্ডার লোড হচ্ছে...</p>';
-        orderListContainer.style.display = 'block'; // Ensure container is visible
-
-        try {
-            const orderDocRef = doc(db, 'orders', urlOrderId);
-            const orderDocSnap = await getDoc(orderDocRef);
-
-            if (orderDocSnap.exists()) {
-                const orderData = orderDocSnap.data();
-                showOrderDetailsModal(orderData); // Display in modal
-                orderListContainer.style.display = 'none'; // Hide list if modal is shown for single order
-            } else {
-                orderListContainer.innerHTML = '<p class="text-center text-red-500 italic p-4">এই আইডি দিয়ে কোনো অর্ডার খুঁজে পাওয়া যায়নি।</p>';
-                orderListContainer.style.display = 'block';
-            }
-        } catch (error) {
-            console.error("Error tracking order from URL:", error);
-            orderListContainer.innerHTML = '<p class="text-center text-red-500 italic p-4">অর্ডার লোড করতে সমস্যা হয়েছে।</p>';
-            orderListContainer.style.display = 'block';
-        }
+        // If an orderId is in the URL, fetch and display that single order
+        await trackOrderById(urlOrderId); // Use the new trackOrderById function
     } else {
-        // Otherwise, load all local orders and display them as cards
+        // Otherwise, load orders from localStorage
         await loadLocalOrders();
-        orderListContainer.style.display = 'block'; // Ensure container is visible for list
     }
-}
 }
 
 async function loadLocalOrders() {
