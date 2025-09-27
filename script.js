@@ -920,9 +920,7 @@ function main() {
     if (currentPage.includes('order-list.html')) {
         loadMyOrders();
     }
-    if (currentPage.includes('order-list.html')) { // Call loadMyOrders for order-list.html
-        loadMyOrders();
-    }
+
 }
 
 
